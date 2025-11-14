@@ -1,0 +1,10 @@
+.form-control{
+  margin-bottom: 15px;
+}
+.form-btn{
+  padding:3px 20px;
+}
+.form-btn:hover{
+  color:black;
+  background-color: #f8f9fa;
+}

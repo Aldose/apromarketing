@@ -1,0 +1,228 @@
+extends layout
+block append head
+  title= t('faqMeta.title')
+  meta(name='description', content=t('faqMeta.description'))
+  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/faq`)
+  meta(name="keywords", content=t('faqMeta.keywords'))
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content=t('faqMeta.title'))
+  meta(property='og:description', content=t('faqMeta.description'))
+  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/faq`)
+  meta(property='og:image', content=`https://a-pro.ai/images/faq-image.jpg`)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:type', content='website')
+  meta(property='og:locale', content=lang)
+  script(type="application/ld+json").
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "lastReviewed": "#{new Date("2025-06-13").toISOString()}",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "#{t('whatIsAPro.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('whatIsAPro.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('whatFeaturesDoesAProOffer.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('whatFeaturesDoesAProOffer.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('howIsAProDifferentFromOtherAiToolsLikeChatGpt.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('howIsAProDifferentFromOtherAiToolsLikeChatGpt.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('willGoogleLikeMyContent.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('willGoogleLikeMyContent.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('isAProEasyToUseForBeginners.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('isAProEasyToUseForBeginners.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('doesAProOfferAFreeTrial.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('doesAProOfferAFreeTrial.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('canAProBuildMyWebsite.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('canAProBuildMyWebsite.schemaOrg.description')}"
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "#{t('howDoIGetStarted.schemaOrg.title')}",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "#{t('howDoIGetStarted.schemaOrg.description')}"
+          }
+        }
+      ]
+    }
+block content
+  .container.d-flex.justify-content-center
+    section.faq-section
+      .row
+        .col-12.text-center
+          h1.text-center #{t('faqTitle')}
+          img.text-center(src="/images/faq-image.jpg" style="margin-bottom:20px")
+      p.
+        #{t('faqDescription')}
+      .row 
+        .col-12.table-of-contents
+          h4.text-center #{t('faqTableOfContents')}
+          ul
+            li 
+              strong 
+                a(href="#what-is-a-pro") #{t('whatIsAPro.title')}
+            li 
+              strong 
+                a(href="#what-features-does-a-pro-offer") #{t('whatFeaturesDoesAProOffer.title')}
+            li 
+              strong 
+                a(href="#how-is-a-pro-different-from-other-ai-tools-like-chatgpt") #{t('howIsAProDifferentFromOtherAiToolsLikeChatGpt.title')}
+            li 
+              strong 
+                a(href="#will-google-like-my-content") #{t('willGoogleLikeMyContent.title')}
+            li 
+              strong 
+                a(href="#is-a-pro-easy-to-use-for-beginners") #{t('isAProEasyToUseForBeginners.title')}
+            li 
+              strong 
+                a(href="#does-a-pro-offer-a-free-trial") #{t('doesAProOfferAFreeTrial.title')}
+            li 
+              strong 
+                a(href="#does-a-pro-offer-subscription-plans-that-grow-with-my-business") #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.title')}
+            li 
+              strong 
+                a(href="#can-a-pro-build-my-website") #{t('canAProBuildMyWebsite.title')}
+            li 
+              strong 
+                a(href="#do-you-provide-full-service-digital-marketing") #{t('doYouProvideFullServiceDigitalMarketing.title')}
+            li 
+              strong 
+                a(href="#how-do-i-get-started") #{t('howDoIGetStarted.title')}
+
+      h2(id="what-is-a-pro") #{t('whatIsAPro.title')}
+      p.
+        #{t('whatIsAPro.description')}
+
+      h2(id="what-features-does-a-pro-offer") #{t('whatFeaturesDoesAProOffer.title')}
+      ul
+        li
+          strong #{t('whatFeaturesDoesAProOffer.offer1.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer1.description')}
+        li
+          strong #{t('whatFeaturesDoesAProOffer.offer2.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer2.description')}
+        li
+          strong #{t('whatFeaturesDoesAProOffer.offer3.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer3.description')}
+        li
+          strong #{t('whatFeaturesDoesAProOffer.offer4.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer4.description')}
+        li
+          strong #{t('whatFeaturesDoesAProOffer.offer5.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer5.description')}
+        //- li
+          strong #{t('whatFeaturesDoesAProOffer.offer6.title')}
+          |  #{t('whatFeaturesDoesAProOffer.offer6.description')}
+
+      h2(id="how-is-a-pro-different-from-other-ai-tools-like-chatgpt") #{t('howIsAProDifferentFromOtherAiToolsLikeChatGpt.title')}
+      p!=t('howIsAProDifferentFromOtherAiToolsLikeChatGpt.description')
+      h2(id="will-google-like-my-content") #{t('willGoogleLikeMyContent.title')}
+      p!=t('willGoogleLikeMyContent.description')
+      
+      h2(id="is-a-pro-easy-to-use-for-beginners") #{t('isAProEasyToUseForBeginners.title')}
+      p!=t('isAProEasyToUseForBeginners.description')
+
+      h2(id="does-a-pro-offer-a-free-trial") #{t('doesAProOfferAFreeTrial.title')}
+      p!=t('doesAProOfferAFreeTrial.description')
+
+      h2(id="does-a-pro-offer-subscription-plans-that-grow-with-my-business") #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.title')}
+      p!=t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.description')
+      ul
+        li
+          strong #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan1.title')} : 
+          span!=t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan1.description')
+        li
+          strong #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan2.title')} : 
+          span!=t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan2.description')
+        li
+          strong #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan3.title')} : 
+          span!=t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.plan3.description')
+      p
+        | #{t('doesAProOfferSubscriptionPlansThatGrowWithMyBusiness.upgradeDowngrade.title')}
+      
+      h2(id="can-a-pro-build-my-website") #{t('canAProBuildMyWebsite.title')}
+      p!=t('canAProBuildMyWebsite.description')
+      ul
+        li #{t('canAProBuildMyWebsite.services.service1.title')}
+        li #{t('canAProBuildMyWebsite.services.service2.title')}
+        li #{t('canAProBuildMyWebsite.services.service3.title')}
+        li #{t('canAProBuildMyWebsite.services.service4.title')}
+      p!=t('canAProBuildMyWebsite.services.conclusion.title')
+
+      h2(id="do-you-provide-full-service-digital-marketing") #{t('doYouProvideFullServiceDigitalMarketing.title')}
+      p!=t('doYouProvideFullServiceDigitalMarketing.description')
+      ul
+        li #{t('doYouProvideFullServiceDigitalMarketing.services.service1.title')}
+        li #{t('doYouProvideFullServiceDigitalMarketing.services.service2.title')}
+        li #{t('doYouProvideFullServiceDigitalMarketing.services.service3.title')}
+        li #{t('doYouProvideFullServiceDigitalMarketing.services.service4.title')}
+        li #{t('doYouProvideFullServiceDigitalMarketing.services.service5.title')}
+      p
+        | #{t('doYouProvideFullServiceDigitalMarketing.services.conclusion.title')}
+
+      h2(id="how-do-i-get-started") #{t('howDoIGetStarted.title')}
+      p!=t('howDoIGetStarted.description')
+      ol
+        li!=t('howDoIGetStarted.steps.step1.title')
+        li!=t('howDoIGetStarted.steps.step2.title')
+        li!=t('howDoIGetStarted.steps.step3.title')
+      p.text-center
+        a.btn-primary.cta-btn(style="background:white;color:black;" href=`https://app.a-pro.ai/register?lang=${lang}` hx-boost="true")
+          img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
+          span(style="text-transform: uppercase;")= t('homeHeroBtn')
+      p!=t('faqContactUs.title')
+block append styles
+  style.
+    .faq-section{
+      max-width:900px;
+    }
+    .faq-section h2{
+      margin-top:60px;
+      text-align:center;
+    }
+    .table-of-contents{
+      margin-top:40px;
+      border:1px solid #0fffad;
+      border-radius:10px;
+      padding:10px;
+      }

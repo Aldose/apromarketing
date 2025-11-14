@@ -1,0 +1,67 @@
+[
+  {
+    "title": "tier1.name",
+    "price_Yearly": "tier1.price_Yearly",
+    "price_Yearly_NTD":"tier1.price_Yearly_NTD",
+    "price_Monthly": "tier1.price_Monthly",
+    "price_Monthly_NTD":"tier1.price_Monthly_NTD",
+    "price_unit": "tier1.price_unit",
+    "price_unit_NTD":"tier1.price_unit_NTD",
+    "savings": "basicSavings",
+    "description": "basicPlanDesc",
+    "button": "upgrade",
+    "bg": "rgba(80, 199, 147, 0.16)",
+    "img": "backgrounds/big-shap3.png",
+    "features": 6
+  },
+  {
+    "title": "tier2.name",
+    "price_Yearly": "tier2.price_Yearly",
+    "price_Yearly_NTD":"tier2.price_Yearly_NTD",
+    "price_Monthly": "tier2.price_Monthly",
+    "price_Monthly_NTD":"tier2.price_Monthly_NTD",
+    "price_unit": "tier2.price_unit",
+    "price_unit_NTD":"tier2.price_unit_NTD",
+    "includes": "tier2.includes",
+    "savings": "advancedSavings",
+    "description": "advancedPlanDesc",
+    "button": "upgrade",
+    "bg": "rgba(250, 145, 107, 0.16)",
+    "img": "backgrounds/big-shap1.png",
+    "features": 6
+    
+  },
+  {
+    "title": "tier3.name",
+    "price_Yearly": "tier3.price_Yearly",
+    "price_Yearly_NTD":"tier3.price_Yearly_NTD",
+    "price_Monthly": "tier3.price_Monthly",
+    "price_Monthly_NTD":"tier3.price_Monthly_NTD",
+    "price_unit": "tier3.price_unit",
+    "price_unit_NTD":"tier3.price_unit_NTD",
+    "savings": "businessSavings",
+    "description": "businessPlanDesc",
+    "button": "upgrade",
+    "bg": "rgba(12, 231, 250, 0.16)",
+    "includes": "tier3.includes",
+    "img": "backgrounds/big-shap2.png",
+    "features": 5
+  },
+  {
+    "title": "tier4.name",
+    "price_Yearly": "tier4.price_Yearly",
+    "price_Yearly_NTD":"tier4.price_Yearly_NTD",
+    "price_Monthly": "tier4.price_Monthly",
+    "price_Monthly_NTD":"tier4.price_Monthly_NTD",
+    "price_unit": "tier4.price_unit",
+    "price_unit_NTD":"tier4.price_unit_NTD",
+    "price_id_Yearly": "",
+    "price_id_Monthly": "",
+    "savings": "enterpriseSavings",
+    "description": "enterprisePlanDesc",
+    "button": "upgrade",
+    "bg": "rgba(70, 105, 250, 0.16)",
+    "img": "backgrounds/big-shap4.png",
+    "contactUs": true
+  }
+]

@@ -1,0 +1,55 @@
+extends layout
+block append head
+  title= t('contactMeta.title')
+  meta(name='description', content=t('contactMeta.description'))
+  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/contact`)
+  meta(name="keywords", content=t('contactMeta.keywords'))
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content=t('contactMeta.title'))
+  meta(property='og:description', content=t('contactMeta.description'))
+  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/contact`)
+  meta(property='og:image', content=`https://a-pro.ai/images/backgrounds/contact-hero.jpg`)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:type', content='website')
+  meta(property='og:locale', content=lang)
+
+block content
+  .container
+    section
+      h1.text-center #{t('contactUs')}
+      .row.justify-content-center
+        .col-lg-4.col-sm-8
+          #contact-response()
+          form(hx-post=`/${lang}/contact` hx-target="#contact-response" hx-on::after-request="if(event.detail.successful){ console.log(event.detail); this.reset();}" hx-swap="innerHTML" method="post")
+            .input-group
+              input(type="text" class="form-control" name="name" placeholder=t('name') aria-label=t('name') aria-describedby="basic-addon1" required)
+            .form-group
+              input#email.form-control(type="email" name="email" placeholder=t('email') aria-label=t('email') required)
+            .form-group
+              textarea#message.form-control(name="message" required placeholder=t('message') rows="5")
+            .flex.justify-content-end
+              button.btn-primary.form-btn(type="submit")
+                .icon-send=t('submit')
+    section.contact-info.mt-5
+      h3.text-center=t('ourContactInformation')
+      p.text-center
+        | Email:
+        a(href="mailto:contact@a-pro.ai") contact@a-pro.ai
+block append scripts
+  script(type="application/ld+json").
+    {
+      "@context": "https://schema.org",
+      "@type": "ContactPage",
+      "url": "https://a-pro.ai/contact",
+      "name": "Contact Us",
+      "description": "!{t('contactMeta.description')}",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "contact@a-pro.ai",
+        "contactType": "customer service"
+      }
+    }
+
+block append styles
+  link(rel="stylesheet", href="/css/contact.css")

@@ -1,0 +1,191 @@
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: var(--text-color);
+  border-radius: var(--border-radius);
+  border:solid 2px black;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:hover {
+  background:lightgrey;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.cta-btn {
+  font-size: large;
+}
+
+.cta-btn img {
+  width: 24px;
+  height: 24px;
+  margin-right: 0.5rem;
+  transition: transform .5s ease-in-out;
+}
+
+.cta-btn:hover img {
+  transform: rotate(180deg);
+}
+
+/* Cards */
+.dash-card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  height: 100%;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease-in forwards;
+  opacity: 0;
+}
+
+.dash-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-section {
+  padding: 1rem;
+}
+
+/* Navigation */
+.nav-btn {
+  padding: 0.5rem 1rem;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.nav-btn:hover {
+  color: var(--primary-color);
+}
+
+/* Hero Section */
+/* h1 {
+  font-size: 91px;
+  line-height: 1.2em;
+  margin-top: 20px;
+  color: black;
+} */
+
+.gradient {
+  background: linear-gradient(to right, #2b90d9, #74ebd5);
+  background-size: 300% 300%;
+  animation: gradient 12s ease infinite;
+}
+
+/* Mobile Menu */
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: white;
+  padding: 80px 2rem 2rem;
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.menu-open .mobile-menu {
+  transform: translateX(0);
+}
+
+.mobile-menu a {
+  display: block;
+  padding: 1rem 0;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  text-decoration: none;
+  border-bottom: 1px solid #eee;
+}
+
+.mobile-menu a:last-child {
+  border-bottom: none;
+}
+
+/* Hamburger Menu */
+.hamburger {
+  display: none;
+  cursor: pointer;
+  width: 30px;
+  height: 24px;
+  position: relative;
+  margin-left: auto;
+  margin-right:50px;
+  z-index: 102;
+}
+
+.hamburger span {
+  display: block;
+  position: absolute;
+  height: 2px;
+  width: 100%;
+  background: var(--text-color);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger span:nth-child(1) { top: 0; }
+.hamburger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+.hamburger span:nth-child(3) { bottom: 0; }
+
+/* Hamburger Animation */
+.menu-open .hamburger span:nth-child(1) {
+  transform: translateY(11px) rotate(45deg);
+}
+
+.menu-open .hamburger span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-open .hamburger span:nth-child(3) {
+  transform: translateY(-11px) rotate(-45deg);
+} 
+
+/* Show hamburger on mobile */
+@media (max-width: 1023px) {
+  .hamburger {
+    display: block;
+  }
+  
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Animation Delays */
+.animation-delay-1 { animation-delay: 0.1s; }
+.animation-delay-2 { animation-delay: 0.2s; }
+.animation-delay-3 { animation-delay: 0.3s; }
+.animation-delay-4 { animation-delay: 0.4s; }

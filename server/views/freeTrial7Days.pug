@@ -1,0 +1,56 @@
+extends layout
+block append head
+  title Free 7 Day Trial | A-Pro.ai
+  meta(name='description', content="Unlock the full power of A-Pro with a 7-day free trial. A-Pro gives you everything you need to create high-ranking, optimized content in minutes that Google loves.")
+  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/free-7-day-trial`)
+  meta(name="keywords", content=t('homePageMeta.keywords'))
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content="Free 7 Day Trial | A-Pro.ai")
+  meta(property='og:description', content="Unlock the full power of A-Pro with a 7-day free trial. A-Pro gives you everything you need to create high-ranking, optimized content in minutes that Google loves.")
+  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/`)
+  meta(property='og:image', content=`https://a-pro.ai/images/video-poster-freeTrial7Days.jpg`)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:type', content='website')
+  meta(property='og:locale', content=lang)
+block content
+  .container
+    .row
+      .col-12.text-center
+        h1 Try A-Pro Free for 7 Days!
+        h2 Experience the power of AI-driven content creation
+      //- .col-12.text-center
+        img.free-trial-img( src='/images/freeTrial7Days.png', alt='A-Pro AI Tools', class='img-fluid')
+      .d-flex.justify-content-center
+        .col-12.col-md-6.text-center
+          video.free-trial-video(autoplay muted loop playsinline controls width="100%" height="100%" alt="A-Pro 7 Day Free Trial" poster="/images/video-poster-freeTrial7Days.jpg")
+            source(src="https://s3.us-east-1.wasabisys.com/apro-us/apro-trial.mp4" type="video/mp4")
+            track(kind="subtitles" src="/videos/freetrial7days.vtt" srclang="en" label="English" default)
+
+      .text-center(style="max-width:800px; margin:0 auto;")
+        p.
+          Unlock the full power of A-Pro with a <b>7-day</b> free trial.  
+          <br>
+          A-Pro gives you everything you need to create high-ranking, optimized content in minutes that Google loves.
+          <br>
+        p.
+          Join hundreds of marketers across the U.S. who trust A-Pro to accelerate their SEO strategy. <br>No risk, no commitment—just smarter, faster content marketing.<br> Try it free today and see the results for yourself.
+      .text-center(style="max-width:800px;margin:0 auto;")
+        a.btn-primary.cta-btn(style="background:white;color:black;" href=`https://app.a-pro.ai/register?lang=${lang}` hx-boost="true")
+          img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
+          span(style="text-transform: uppercase;")= t('homeHeroBtn')
+
+block append scripts
+  
+block append styles
+  style.
+    .free-trial-img{
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    @media (max-width: 768px) {
+      .free-trial-img{
+        max-width: 80%;
+        margin: 0 auto;
+      }
+    }

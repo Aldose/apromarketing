@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} | A-Pro.ai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200..900&display=swap">
+</head>
+<body>
+    <header>
+        <nav class="row no-wrap">
+            <div class="col-6 col-md-6 bg-white text-black">
+                <a href="{{ url_for('index', lang=get_locale()) }}" class="col-4 col-sm-2 col-lg-2">
+                    <img src="{{ url_for('static', filename='images/logo/apro-logo1.png') }}" alt="A-Pro Logo" class="logo">
+                </a>
+            </div>
+            <div class="flex justify-end">
+                <div class="gt-sm">
+                    <a href="{{ url_for('pricing', lang=get_locale()) }}" class="nav-btn">{{ _('pricing') }}</a>
+                    <a href="{{ url_for('contact', lang=get_locale()) }}" class="nav-btn">{{ _('contact') }}</a>
+                    <a href="https://app.a-pro.ai/login?lang={{ get_locale() }}" class="nav-btn">{{ _('login') }}</a>
+                    <a href="https://app.a-pro.ai/register?lang={{ get_locale() }}" class="nav-btn">{{ _('register') }}</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center">
+        <p>&copy; {{ now.year }} APro {{ _('allRightsReserved') }}</p>
+        <div class="language-selector">
+            <a href="{{ url_for(request.endpoint, lang='en') }}" hreflang="en-us">English</a>
+            <a href="{{ url_for(request.endpoint, lang='zh') }}" hreflang="zh-tw">繁体中文</a>
+            <a href="{{ url_for(request.endpoint, lang='es') }}" hreflang="es-mx">Español</a>
+            <a href="{{ url_for(request.endpoint, lang='nl') }}" hreflang="nl">Nederlands</a>
+        </div>
+        <div class="social-links">
+            <p class="mb-none mt-lg">{{ _('followUs') }}</p>
+            <a href="https://www.facebook.com/people/A-Pro/61564548263252/" target="_blank">
+                <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="https://www.linkedin.com/company/a-pro-solutions-inc/" target="_blank">
+                <i class="fa-brands fa-linkedin"></i>
+            </a>
+        </div>
+    </footer>
+</body>
+</html> 

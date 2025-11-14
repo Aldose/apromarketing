@@ -1,0 +1,39 @@
+extends layout
+block append head
+  -var description = article.excerpt.replace(/<[^>]*>/g, '')
+  title!=`${article.title} | A-Pro ${t('articles')}`
+  meta(name='description', content=description)
+  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/article/${article.slug}`)
+  //- meta(name="keywords", content=t('articlesMeta.keywords'))
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content=`${article.title} | A-Pro ${t('articles')}`)
+  meta(property='og:description', content!=`${article.excerpt}`)
+  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/article/${article.slug}`)
+  meta(property='og:image', content=article.img)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:type', content='article')
+  meta(property='og:locale', content=lang)
+
+block content
+  .container
+    section.blog.q-pa-md(style=('view-transition-name:'+article.slug))
+      h1.text-center!=article.title
+      .row
+        .col-lg-3.col-md-2
+        .col-lg-6.col-md-8
+          .article-wrapper
+            .media-block.text-center(v-if="article.img")
+              img.blur-up.lazyload(src=article.img layout="responsive" loading="lazy" )
+            .article-content!=article.content
+        .col-lg-3.col-md-2
+          .q-mt-lg.author-meta.text-center
+            img.blur-up.lazyload(style="width:80px; height:80px; border-radius:90px" src=article.authorImg alt="Author profile image" loading="lazy")
+            .author-name #{ article.author }
+            .date #{ article.date }
+block append scripts
+  script(src="/js/lazy-sizes.js" async="")
+  script(type="application/ld+json").
+    !{JSON.stringify(jsonLD, null, 2)}
+block append styles
+  link(rel="stylesheet" href="/css/pages/blog.css")

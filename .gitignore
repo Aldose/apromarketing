@@ -1,0 +1,7 @@
+.DS_Store
+./server/node_modules
+./server/public/sitemap.xml
+deploy.sh
+./server/.env
+.env
+.windsurfrules

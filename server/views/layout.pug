@@ -1,0 +1,102 @@
+doctype html
+html(lang=lang)
+  head    
+    meta(charset="utf-8")
+    meta(name="viewport" content=" initial-scale=1,  minimum-scale=1, width=device-width")    
+    link(rel="shortcut icon" type="image/x-icon" href="/images/icons/favicon.ico")
+    link(rel="apple-touch-icon" sizes="180x180" href="/images/icons/apple-touch-icon.png")
+    link(rel="icon" type="image/png" sizes="32x32" href="/images/icons/favicon-32x32.png")
+    link(rel="icon" type="image/png" sizes="16x16" href="/images/icons/favicon-16x16.png")
+    link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css")
+    link(rel="stylesheet" href="/css/main.css")
+    meta( name="ahrefs-site-verification" content="7ff8c91d61261209488f462af197e033b73feaca5911856183c57ef31a60d3a8")
+    script( src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js" )
+    script( async src="https://assets.endorsely.com/endorsely.js" data-endorsely="5bb1d451-51ff-457a-8037-dd667ed42daa")
+    meta( name="facebook-domain-verification" content="iplnkugt95lf3gg4l97vctbp54jws3" )
+    meta(property="fb:app_id" content="447977480928831")
+
+    block head
+  body(style="width:100%;")
+    div(style="box-shadow:none; padding:0 15px;" )
+      nav
+        .row.d-flex.justify-content-between.align-items-center
+          a.col-8.col-md-6.col-lg-2(href=lang != 'en' ? `/${lang}` : '/')
+            img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
+          //- Desktop Menu
+          .col-4.col-md-6.nav-links.gt-md.flex.justify-content-end.align-items-center.roboto
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
+            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/team` : '/team')= t('team')
+            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/features` : '/features')= t('features')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
+          
+          //- Hamburger Menu
+          .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
+            span
+            span
+            span
+          //- Mobile Menu
+          .mobile-menu
+            a(href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
+            a(href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
+            a(href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
+            a(href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
+            a(href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
+            a(href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
+    main
+      block content
+    
+    footer.q-mt-xl.text-center.q-pa-md
+      - const currentPath = originalUrl ? originalUrl.replace(/^\/(zh|es|nl)/, '') : ''
+      p &copy; #{new Date().getFullYear()} APro #{t('allRightsReserved')}
+      if currentPath && currentPath.indexOf('/article/') !== -1 && article != null
+        if article.translations && article.translations.en
+          span.lang-link
+            a(hreflang="en-us" rel="alternate" href=`/article/${article.translations.en.slug}`)= "English"
+        if article.translations && article.translations.zh
+          span.lang-link
+            a(hreflang="zh-tw" rel="alternate" href=`/zh/article/${article.translations.zh.slug}`)= "繁体中文"
+        //- if article.translations.es
+          span.lang-link
+            a(hreflang="es-mx" rel="alternate" href=`/es/blog/${article.translations.zh.slug}`)= "Español"
+        //- if article.translations.nl
+          span.lang-link
+            a(hreflang="nl" rel="alternate" href=`/nl/blog/${article.translations.nl.slug}`)= "Nederlands"
+      else
+        div
+          span.lang-link
+            a(hreflang="en-us" rel="alternate" href=`${currentPath}`)= "English"
+          span.lang-link
+            a(hreflang="zh-tw" rel="alternate" href=`/zh${currentPath}`)= "繁体中文"
+          //- span.lang-link
+            a(hreflang="es-mx" rel="alternate" href=`/es${currentPath}`)= "Español"
+          //- span
+            a(hreflang="nl" rel="alternate" href=`/nl${currentPath}`)= "Nederlands"
+      div(style="margin:20px auto 0 auto; max-width:400px;")
+        p.q-mb-none.q-mt-lg= t('followUs')
+        div(style="display:flex; justify-content:space-around; align-items:center;")
+          a(href="https://www.linkedin.com/company/a-pro-solutions-inc/" target="_blank")
+            img(style="margin-right:25px;" width="20" src="/images/icons/linkedin-brands-solid.svg" alt="LinkedIn")
+          a(href="https://www.facebook.com/apro.aiseo/" target="_blank")
+            img(style="margin-right:25px;" width="20" src="/images/icons/square-facebook-brands-solid.svg" alt="facebook")
+          a(href="https://www.instagram.com/apro.ai" target="_blank")
+            img(style="margin-right:25px;" width="20" src="/images/icons/square-instagram-brands-solid.svg" alt="Instagram")
+          a(href="https://www.youtube.com/@apro-solutions" target="_blank")
+            img(style="margin-right:25px;" width="20" src="/images/icons/square-youtube-brands-solid.svg" alt="Youtube")
+          //- a(href="https://www.linkedin.com/company/a-pro-solutions-inc/" target="_blank")
+            img(style="margin-right:25px;" src="/images/icons/square-x-twitter-brands-solid.svg" alt="X-Twitter")
+          a(href="https://bsky.app/profile/apro-solutions.bsky.social" target="_blank")
+            img(style="margin-right:25px;" width="20" src="/images/icons/square-bluesky-brands-solid.svg" alt="Bluesky")
+    block styles
+      link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200..900&display=swap")
+      link(rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@200..900&display=swap")
+    
+    block scripts
+      //- script( src="/js/main.js" )
+      //- script( src="/js/transitions.js")
+      script( src="https://www.googletagmanager.com/gtag/js?id=G-GX7SSEZV18" async )
+      script( src="https://analytics.ahrefs.com/analytics.js" data-key="MfUDwaIs7axc5LpBCFNGRw" async)

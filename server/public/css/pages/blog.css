@@ -1,0 +1,42 @@
+h1{
+  font-size: 3.75rem;
+  /* line-height: 1.2em; */
+  /* margin-top: 20px; */
+  /* color: black; */
+  font-weight:800;
+}
+
+.article-content{
+  margin-top: 30px;
+}
+.article-content a{
+  text-decoration: underline;
+}
+
+.blur-up {
+  -webkit-filter: blur(5px);
+  filter: blur(5px);
+  transition: filter 400ms, -webkit-filter 400ms;
+}
+.blur-up.lazyloaded {
+  -webkit-filter: blur(0);
+  filter: blur(0);
+}
+.fade-box .lazyload,
+.fade-box .lazyloading {
+  opacity: 0;
+  transition: opacity 400ms;
+}
+
+.fade-box img.lazyloaded {
+  opacity: 1;
+}
+.alignright, .alignright img {
+  float: right;
+  margin: 0 0 1rem 1rem;
+}
+.alignleft, .alignleft img {
+  float: left;
+  margin: 0 1rem 1rem 0;
+}
+.aligncenter, .aligncenter img { display: block; margin-left: auto; margin-right: auto; }

@@ -1,0 +1,37 @@
+/* @font-face {
+  font-family: 'Poppins';
+  src: url('/fonts/Poppins-Bold.woff2') format('woff2'),
+       url('/fonts/Poppins-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+} */
+@font-face {
+  font-family: 'poppins_bold';
+  font-display: swap;
+  src: url('../fonts/Poppins/Poppins-Bold.ttf');
+}
+@font-face {
+  font-family: 'poppins_light';
+  src: url('../fonts/Poppins/Poppins-Light.ttf');
+}
+@font-face{
+  font-family:'baloo2';
+  font-display: swap;
+  src: url('../fonts/Baloo_Paaji_2/BalooPaaji2-VariableFont_wght.ttf')
+}
+/* @font-face{
+  font-family:'roboto';
+  font-display: swap;
+  src: url('../fonts/Roboto/Roboto.ttf');
+} */
+.poppins-bold{
+  font-family:poppins_bold !important;
+}
+.roboto{
+  font-family:'Roboto' !important;
+}
+.balooXBold{
+  font-family:'baloo2';
+  font-variation-settings: 'wght' 900;
+}

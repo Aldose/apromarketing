@@ -1,0 +1,452 @@
+[
+  {
+    "id": 24,
+    "count": 0,
+    "description": "Our Blogs",
+    "link": "https://blog.a-pro.ai/category/blog/",
+    "name": "Blog",
+    "slug": "blog",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/24",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=24"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 28,
+    "count": 1,
+    "description": "",
+    "link": "https://blog.a-pro.ai/zh/category/blog-tw/",
+    "name": "Blog-tw",
+    "slug": "blog-tw",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/28",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=28"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 32,
+    "count": 0,
+    "description": "",
+    "link": "https://blog.a-pro.ai/category/case-studies/",
+    "name": "Case-studies",
+    "slug": "case-studies",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/32",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=32"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 34,
+    "count": 0,
+    "description": "",
+    "link": "https://blog.a-pro.ai/zh/category/case-studies-tw/",
+    "name": "Case-studies-tw",
+    "slug": "case-studies-tw",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/34",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=34"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 26,
+    "count": 0,
+    "description": "Guides on using A Pro",
+    "link": "https://blog.a-pro.ai/category/guides/",
+    "name": "Guides",
+    "slug": "guides",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/26",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=26"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 30,
+    "count": 0,
+    "description": "",
+    "link": "https://blog.a-pro.ai/zh/category/guides-tw/",
+    "name": "Guides-tw",
+    "slug": "guides-tw",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/30",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=30"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 20,
+    "count": 1,
+    "description": "Our news",
+    "link": "https://blog.a-pro.ai/category/news/",
+    "name": "News",
+    "slug": "news",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/20",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=20"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 22,
+    "count": 0,
+    "description": "",
+    "link": "https://blog.a-pro.ai/zh/category/news-tw/",
+    "name": "News-tw",
+    "slug": "news-tw",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/22",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=22"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "count": 4,
+    "description": "",
+    "link": "https://blog.a-pro.ai/category/uncategorized/",
+    "name": "Uncategorized",
+    "slug": "uncategorized",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/1",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=1"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  },
+  {
+    "id": 16,
+    "count": 1,
+    "description": "",
+    "link": "https://blog.a-pro.ai/zh/category/uncategorized-tw/",
+    "name": "Uncategorized-tw",
+    "slug": "uncategorized-tw",
+    "taxonomy": "category",
+    "parent": 0,
+    "meta": [],
+    "_links": {
+      "self": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories/16",
+          "targetHints": {
+            "allow": [
+              "GET"
+            ]
+          }
+        }
+      ],
+      "collection": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/categories"
+        }
+      ],
+      "about": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/taxonomies/category"
+        }
+      ],
+      "wp:post_type": [
+        {
+          "href": "https://blog.a-pro.ai/wp-json/wp/v2/posts?categories=16"
+        }
+      ],
+      "curies": [
+        {
+          "name": "wp",
+          "href": "https://api.w.org/{rel}",
+          "templated": true
+        }
+      ]
+    }
+  }
+]

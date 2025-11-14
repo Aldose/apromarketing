@@ -1,0 +1,68 @@
+.pricing-card{
+  animation: fadeIn 0.3s ease-in forwards;
+  opacity: 0;
+  transition: all 0.2s ease-in;
+  border-radius:20px;
+  border:solid 1px rgb(15, 255, 173);
+  box-shadow:rgba(0, 0, 0, 0.2) 0px 1px 5px 0px;
+  padding:16px;
+}
+.pricing-card:hover{      
+  translate: 0px -7px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  border-color:#56868f;
+}
+
+.cta-btn{
+  border: solid black 2px;
+  padding: 5px 15px 5px 15px;
+  display: inline-flex;
+  justify-content: space-between;
+  transition: .3s;
+}
+.cta-btn:hover{
+  color:black;
+  background:white;
+}
+.animation-delay-0 {
+  animation-delay: 0.1s;
+}
+.animation-delay-1 {
+  animation-delay: 0.2s;
+}
+.animation-delay-2 {
+  animation-delay: 0.3s;
+}
+.animation-delay-3 {
+  animation-delay: 0.4s;
+}
+.animation-delay-4 {
+  animation-delay: 0.4s;
+}
+.animation-delay-5 {
+  animation-delay: 0.5s;
+}
+.animation-delay-6 {
+  animation-delay: 0.6s;
+}
+.animation-delay-7 {
+  animation-delay: 0.7s;
+}
+.currency-btn{
+  background:white;
+  border: solid black 2px;
+  border-radius: 5px;
+  padding: 3px 15px ;
+  margin-right:20px;
+  margin-bottom:20px;
+  cursor:pointer;
+  transition: .3s;
+}
+.currency-btn.active{
+  background:rgba(0,0,0,0.1);
+  
+}
+.currency-btn:hover{
+  transform: translateY(-3px);
+  box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.3);
+}

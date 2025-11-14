@@ -1,0 +1,69 @@
+if currency == 'usd'
+  each item, i in pricingPlans
+    .col-12.col-sm-6.col-md-3(class=item.bg)
+      .pricing-card(class='animation-delay-' + i, style="height:100%; overflow:hidden; background-color:" + item.bg)
+        if item.ribon
+          .billing-ribon.rotate-45 #{t(item.ribon)}
+        .card-section.text-center
+          h2.poppins-bold
+            b #{t(item.title)}
+          .space-x-4.text-center.relative.flex.justify-content-center.align-items-center
+            span.text-bold(style="font-size:32px;") #{yearly ? t(item.price_Yearly) : t(item.price_Monthly)}
+            if !item.contactUs
+              span.text-bold.text-body2 #{t(item.price_unit)} / #{ t('month') }
+            else 
+              span.text-bold.text-body2 / #{ t('month') }
+            if yearly
+              span.text-right.bg-white.q-px-sm.q-ml-sm.text-bold.rounded #{t(item.savings)}
+        .card-section.price-body.text-center
+          p #{t(item.description)}
+          - var j = 1;
+          while j < item.features
+            .text-h6(style="margin:15px 0;")
+              b #{t('tier' + (i+1) + '.tier' + (i+1) + '_feature' + j)}
+              br
+            - j++
+          .text-center(style="margin-top: 40px;")
+            if !item.contactUs
+              a.q-mt-lg.btn-primary.cta-btn(href="https://app.a-pro.ai/register?lang=" + lang)                            
+                img(src="/icons/apro-star1.png", alt="icon")
+                span.q-ml-sm #{t('homeHeroBtn')}
+            else
+              a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://a-pro.ai/" + lang + "/contact" : "https://a-pro.ai/contact"))
+                img(src="/icons/apro-star1.png", alt="icon")
+                span #{t('contactUs')}
+                if pricingPlans
+if currency == 'ntd'                
+  each item, i in pricingPlans
+    .col-12.col-sm-6.col-md-3(class=item.bg)
+      .pricing-card(class='animation-delay-' + i, style="height:100%; overflow:hidden; background-color:" + item.bg)
+        if item.ribon
+          .billing-ribon.rotate-45 #{t(item.ribon)}
+        .card-section.text-center
+          h2.poppins-bold
+            b #{t(item.title)}
+          .space-x-4.text-center.relative.flex.justify-content-center.align-items-center
+            span.text-bold(style="font-size:32px;") #{yearly ? t(item.price_Yearly_NTD) : t(item.price_Monthly_NTD)}
+            if !item.contactUs
+              span.text-bold.text-body2 #{t(item.price_unit_NTD)} / #{ t('month') }
+            else 
+              span.text-bold.text-body2 / #{ t('month') }
+            if yearly
+              span.text-right.bg-white.q-px-sm.q-ml-sm.text-bold.rounded #{t(item.savings)}
+        .card-section.price-body.text-center
+          p #{t(item.description)}
+          - var j = 1;
+          while j < item.features
+            .text-h6(style="margin:15px 0;")
+              b #{t('tier' + (i+1) + '.tier' + (i+1) + '_feature' + j)}
+              br
+            - j++
+          .text-center(style="margin-top: 40px;")
+            if !item.contactUs
+              a.q-mt-lg.btn-primary.cta-btn(href="https://app.a-pro.ai/register?lang=" + lang)                            
+                img(src="/icons/apro-star1.png", alt="icon")
+                span.q-ml-sm #{t('homeHeroBtn')}
+            else
+              a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://a-pro.ai/" + lang + "/contact" : "https://a-pro.ai/contact"))
+                img(src="/icons/apro-star1.png", alt="icon")
+                span #{t('contactUs')}
