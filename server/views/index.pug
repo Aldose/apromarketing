@@ -2,13 +2,13 @@ extends layout
 block append head
   title= t('homePageMeta.title')
   meta(name='description', content=t('homePageMeta.description'))
-  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/`)
+  link(rel='canonical', href=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/`)
   meta(name="keywords", content=t('homePageMeta.keywords'))
   meta(name='robots', content='index, follow')
   meta(property='og:title', content=t('homePageMeta.title'))
   meta(property='og:description', content=t('homePageMeta.description'))
-  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/`)
-  meta(property='og:image', content=`https://a-pro.ai/images/homepageImg.png`)
+  meta(property='og:url', content=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/`)
+  meta(property='og:image', content=`https://apromarketing.com/images/homepageImg.png`)
   meta(property='og:image:width', content='1200')
   meta(property='og:image:height', content='630')
   meta(property='og:type', content='website')
@@ -20,51 +20,74 @@ block content
     section.hero-section
       .row
         .col-lg-6.col-sm-12.text-center
-          h1.poppins-bold #{t('homeHeroTitle')} 
+          h1.poppins-bold Your AI Digital Marketer
             br
             //- span.green-underline A Pro!
-          h2.poppins-bold.q-mb-lg= t('homeHeroSubTitle')        
-          a.btn-primary.cta-btn(style="background:white;color:black;" href=`https://app.a-pro.ai/register?lang=${lang}` hx-boost="true")
-            img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
-            span(style="text-transform: uppercase;")= t('homeHeroBtn')
+          h2.text-center.poppins-bold.q-mb-lg Meet Jade, your always-on <br> AI digital marketer
         .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center
-          input.col-md-6.col-sm-12(type="text" placeholder="Enter your website URL")
+          h2.mb-5.poppins-bold.q-mb-lg Analyze → Strategize → Schedule → Post <br> <br> Jade helps you grow automatically, intelligently, and affordably.
+          input.mb-5.col-md-6.col-sm-12(type="text" placeholder="Enter your website URL")
           br
-          button.mt-3.col-md-3.col-sm-10.btn-primary.cta-btn(type="button")= t('homeHeroBtn')
-
-          img(src="/images/homepageImg.png" alt="A-Pro Hero image" width="100%")
+          a.btn-primary.cta-btn(style="background:white;color:black;" href=`` hx-boost="true")
+            img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
+            span(style="text-transform: uppercase;") Try it out
+          //- img(src="/images/homepageImg.png" alt="A-Pro Hero image" width="100%")
     .mt-3
-      .text-h1.text-center= t('whatYouCanDo')
+      h2.poppins-bold.text-center(style="font-size:60px") How It Works
       .row
-        .col-12   
-          .card-section
-            .row.align-items-center
-              .col-lg-5.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-0.dash-card
-                h3.line-after.poppins-bold How it works
-                .row.text-center
-                  .col-lg-6.col-md-6.col-12.flex.align-items-center.flex-column
-                    img.icon(src="/images/icons/stack-up.webp" alt="Stack Up Icon" width="75")
-                    .text-center
-                      h6.q-my-sm.poppins-bold #{ t('featuresOverviewFeature1') }
-                      p #{ t('featuresOverviewDescription1') }
-                  .col-lg-6.col-md-6.col-12.flex.align-items-center.flex-column
-                    img.icon(src="/images/icons/serp.webp" alt="Search Engine Icon" width="75")
-                    .text-center
-                      h6.q-my-sm.poppins-bold #{ t('featuresOverviewFeature2') }
-                      p #{ t('featuresOverviewDescription2') }                        
-                  .col-lg-6.col-md-6.col-12.flex.align-items-center.flex-column
-                    img.icon(src="/images/icons/lightbulb.webp" alt="Lightbulb Icon" width="75")
-                    .text-center
-                      h6.q-my-sm.poppins-bold #{ t('featuresOverviewFeature3') }
-                      p #{ t('featuresOverviewDescription3') }
-                  .col-lg-6.col-md-6.col-12.flex.align-items-center.flex-column
-                    img.icon(src="/images/icons/briefcase.webp" alt="Briefcase Icon" width="75")
-                    .text-center
-                      h6.q-my-sm.poppins-bold #{ t('featuresOverviewFeature4') }
-                      p #{ t('featuresOverviewDescription4') }            
-              .col-lg-7.offset-lg-0.col-md-8.offset-md-2.col-12.mt-md-3.mt-sm-3.mt-3
-                video(autoplay loop muted playsinline width="100%" height="100%" alt="a-pro article guide" src="/videos/apro-article-guide.mp4")
-      .row.mt-5
+        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+          .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
+            .how-it-works-icon
+              img(src="/images/icons/home/brain.webp" alt="Brain Icon" style="width:100px;")
+            .article-content
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Automated Strategy, Tailored to You
+              .green-line
+              .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
+              .text-body1
+                |Jade analyzes your website, brand, market, and competitors to understand your business.  
+                br
+                br
+                |No generic templates.  Your strategy is crafted from your actual business data.
+        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+          .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
+            .how-it-works-icon
+              img(src="/images/icons/home/campaign.webp" alt="Brain Icon" style="width:100px;")
+            .article-content
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Campaign Creation & Content Production
+              .green-line
+              .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
+              .text-body1
+                |Get complete campaigns with content schedules, ready to publish.
+                br
+                br
+                |Jade factors in holidays, events, and industry trends, creating content your audience actually cares about.
+        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+          .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
+            .how-it-works-icon
+              img(src="/images/icons/home/paper.webp" alt="Brain Icon" style="width:100px;")
+            .article-content
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Multi-Channel Posting & Analytics
+              .green-line
+              .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
+              .text-body1
+                |Approve your posts, and Jade handles the rest.
+                br
+                br
+                |She publishes to the desired platform, tracking performance so you always know what’s working.
+        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+          .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
+            .how-it-works-icon
+              img(src="/images/icons/home/jade.webp" alt="Brain Icon" style="width:100px;")
+            .article-content
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Human Digital Marketers Included
+              .green-line
+              .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
+              .text-body1
+                |AI does the heavy lifting; humans ensure quality.
+                br
+                br
+                |For advanced needs, our expert digital marketers provide white-glove service, review your content, and guide your growth.
+      //- .row.mt-5
         .col-12.justify-content-center.text-center.d-flex
           //- a( href="https://cta-na2.hubspot.com/web-interactives/public/v1/track/redirect?encryptedPayload=AVxigLKcOLzO%2BF4snjmbHALdKnIdllat3XLN4d9tL0LjJtZqVQViQjeN8W4zKzUmHhkImwuOY45IAxzcfe9D3%2B6vqb5%2FGjd1j2sJI5DA8iSOSMRFOJIpDY1kuZvPsvRcVqxavqaT4Qo8oZCwUFNCtmdvnhAD5T7zY48G1VnHAd8C0IqIgrZI9e6dlibhDgOHeBc8FIdike9PEA%3D%3D&webInteractiveContentId=201143666368&portalId=242233801" target="_blank" rel="noopener" crossorigin="anonymous")
           a( href="https://meetings-na2.hubspot.com/aaron-krygier" target="_blank" rel="noopener" crossorigin="anonymous")
@@ -73,40 +96,7 @@ block content
               span=t('bookDemo')
               //- img( alt="Book a Demo" loading="lazy" src="https://hubspot-no-cache-na2-prod.s3.amazonaws.com/cta/default/242233801/interactive-201143666368.png" style="height: 100%; width: 100%; object-fit: fill"
                 onerror="this.style.display='none'" )
-    .mt-5
-      section.blog.q-pa-md
-        .text-h1.roboto.text-center=t('latestArticles')
-        .q-my-md
-          .container
-            //- h2.text-center=t('articlesSubtitle')
-            if articles.length === 0
-              .row.justify-center.mt-5
-                .col-12.text-center
-                  h3.q-my-md= t('noArticlesFound')
-            else
-              .row.mt-5.justify-content-center
-                each article, i in articles
-                  .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2( style=('view-transition-name:' + article.slug) )
-                    a(href=(lang != 'en' ? '/' + lang : '') + '/article/' + article.slug)
-                      .articles.card.flex.column.justify-between.blog-article(class='animation-delay-' + i, style="height: 100%")
-                        .article-title
-                          img.blur-up.lazyload( data-src=article.medImg loading="lazy" alt=article.imgAlt)
-                        .article-content
-                          h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left!= article.title
-                          .green-line
-                          .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
-                            .flex.align-items-center
-                              .avatar
-                                img.blur-up.lazyload(src=article.authorImg loading="lazy")
-                              .text-subtitle2 #{article.author}
-                            b.text-subtitle2 #{article.date}
-                          a(href=(lang != 'en' ? '/' + lang : '') + '/article/' + article.slug)
-                            .text-body1(style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;")!= article.summary
-                .row.justify-content-end               
-                  .btn(style="width:300px;")
-                    a.btn-primary.cta-btn(style="padding:5px 10px;background:white;color:black;" href=(lang != 'en' ? '/' + lang : '') + '/articles/all/1')
-                      img(style="width:25px;height:25px;" width="25" src="/images/icons/apro-star1.png" alt="star")
-                      span(style="text-transform: uppercase;")= t('more')
+
 
     //- include components/features-overview
     //- .row.justify-center
@@ -121,3 +111,20 @@ block append scripts
     !{JSON.stringify(jsonLD, null, 2)}
 block append styles
   link(rel="stylesheet" href="/css/pages/blogList.css")
+  style.
+    input{
+      padding:15px 20px;
+      border:solid black 2px;
+    }
+    .how-it-works-icon{
+      width:150px; 
+      height:150px; 
+      margin: 20px auto 0px auto;
+      border-radius:50%; 
+      overflow:hidden; 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      border:15px solid #0fffad; 
+      outline:black solid 5px;
+    }
