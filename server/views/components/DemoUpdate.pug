@@ -1,0 +1,149 @@
+.demo-results
+  .progress-container
+    .progress-bar
+      .progress-fill(style="width: 0%")
+    .progress-text Initializing...
+  
+  .steps-container
+    .step(data-step="init")
+      .step-icon 🚀
+      .step-text Starting website analysis...
+    .step(data-step="checking")
+      .step-icon 🔍
+      .step-text Checking for cached data...
+    .step(data-step="scraping")
+      .step-icon 📊
+      .step-text Analyzing website content...
+    .step(data-step="scraped")
+      .step-icon ✅
+      .step-text Website content analyzed
+    .step(data-step="social")
+      .step-icon 📱
+      .step-text Analyzing social media profiles...
+    .step(data-step="lighthouse")
+      .step-icon ⚡
+      .step-text Running performance audit...
+    .step(data-step="analysis")
+      .step-icon 🧠
+      .step-text Generating insights...
+    .step(data-step="keywords")
+      .step-icon 🔑
+      .step-text Generating keyword ideas...
+    .step(data-step="saving")
+      .step-icon 💾
+      .step-text Saving project data...
+    .step(data-step="complete")
+      .step-icon 🎉
+      .step-text Project analysis complete!
+  
+  .results-container(style="display: none;")
+    h3 Analysis Results
+    .result-sections
+      .website-analysis
+        h4 Website Analysis
+        .analysis-content
+      .social-media-analysis
+        h4 Social Media Analysis
+        .social-content
+      .performance-analysis
+        h4 Performance Audit
+        .performance-content
+      .keyword-analysis
+        h4 Keyword Suggestions
+        .keyword-content
+
+script.
+  htmx.on('demoUpdate', function(evt) {
+    const data = evt.detail;
+    const resultsContainer = document.querySelector('.demo-results');
+    
+    if (data.error) {
+      resultsContainer.innerHTML = `<div class="error">Error: ${data.error}</div>`;
+      return;
+    }
+    
+    if (data.step) {
+      updateProgress(data.progress, data.message);
+      updateActiveStep(data.step);
+    }
+    
+    if (data.complete && data.data) {
+      showResults(data.data);
+    }
+  });
+  
+  function updateProgress(progress, message) {
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('.progress-text');
+    
+    progressFill.style.width = `${progress}%`;
+    progressText.textContent = message;
+  }
+  
+  function updateActiveStep(step) {
+    document.querySelectorAll('.step').forEach(el => {
+      el.classList.remove('active', 'completed');
+    });
+    
+    const currentStep = document.querySelector(`.step[data-step="${step}"]`);
+    if (currentStep) {
+      currentStep.classList.add('active');
+      
+      // Mark previous steps as completed
+      let prevStep = currentStep.previousElementSibling;
+      while (prevStep) {
+        prevStep.classList.add('completed');
+        prevStep = prevStep.previousElementSibling;
+      }
+    }
+  }
+  
+  function showResults(data) {
+    const progressContainer = document.querySelector('.progress-container');
+    const stepsContainer = document.querySelector('.steps-container');
+    const resultsContainer = document.querySelector('.results-container');
+    
+    progressContainer.style.display = 'none';
+    stepsContainer.style.display = 'none';
+    resultsContainer.style.display = 'block';
+    
+    // Populate results
+    if (data.analysis) {
+      document.querySelector('.analysis-content').innerHTML = `
+        <p><strong>Company:</strong> ${data.analysis.companyName || 'N/A'}</p>
+        <p><strong>Business Overview:</strong> ${data.analysis.businessOverview || 'N/A'}</p>
+        <p><strong>Target Audience:</strong> ${data.analysis.targetAudience || 'N/A'}</p>
+      `;
+    }
+    
+    if (data.socialMedia && data.socialMedia.length > 0) {
+      const socialHtml = data.socialMedia.map(social => `
+        <div class="social-profile">
+          <p><strong>Platform:</strong> ${social.platform || 'N/A'}</p>
+          <p><strong>Followers:</strong> ${social.followers || 'N/A'}</p>
+          <p><strong>Engagement:</strong> ${social.engagement || 'N/A'}</p>
+        </div>
+      `).join('');
+      document.querySelector('.social-content').innerHTML = socialHtml;
+    }
+    
+    if (data.lighthouse) {
+      document.querySelector('.performance-content').innerHTML = `
+        <p><strong>Performance Score:</strong> ${data.lighthouse.performance || 'N/A'}</p>
+        <p><strong>Accessibility Score:</strong> ${data.lighthouse.accessibility || 'N/A'}</p>
+        <p><strong>Best Practices Score:</strong> ${data.lighthouse.bestPractices || 'N/A'}</p>
+        <p><strong>SEO Score:</strong> ${data.lighthouse.seo || 'N/A'}</p>
+      `;
+    }
+    
+    if (data.keywords && data.keywords.length > 0) {
+      const keywordHtml = data.keywords.slice(0, 10).map(keyword => `
+        <div class="keyword-item">
+          <span><strong>${keyword.keyword || keyword.text || 'N/A'}</strong></span>
+          <span>Volume: ${keyword.volume || 'N/A'}</span>
+          <span>Difficulty: ${keyword.difficulty || 'N/A'}</span>
+        </div>
+      `).join('');
+      document.querySelector('.keyword-content').innerHTML = keywordHtml;
+    }
+  }
