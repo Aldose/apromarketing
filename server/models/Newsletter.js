@@ -37,10 +37,6 @@ const newsletterSchema = new mongoose.Schema({
       message: 'Please enter a valid email address'
     }
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
   subscriptionStatus: {
     type: String,
     enum: ['pending', 'active', 'do not contact'],
@@ -50,7 +46,10 @@ const newsletterSchema = new mongoose.Schema({
     type: String,
     default: 'website'
   }
-});
+},{
+  timestamps:true
+}
+);
 
 // Add indexes for better query performance
 newsletterSchema.index({ createdAt: -1 });
