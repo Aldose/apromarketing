@@ -20,79 +20,66 @@ block content
     section.hero-section
       .row
         .col-lg-6.col-sm-12.text-center
-          h1.poppins-bold Your AI Digital Marketer
+          h1.mb-0.poppins-bold=t('heroTitle1')
+          h1.green-underline=t('heroTitle2')
           br
           img(src="/images/jade/jade1.jpg" alt="Jade" style="width:300px;")
-            //- span.green-underline A Pro!
-          h2.text-center.poppins-bold.q-mb-lg Meet Jade, your always-on <br> AI digital marketer
+          br
+          h2.green-underline.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle1')
+          h3.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle2')
         .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center
-          h2.mb-5.poppins-bold.q-mb-lg 
-            |Jade helps your business grow automatically, intelligently
+          h2.mb-5.poppins-bold.q-mb-lg!=t('heroSubTitle3')
+            
           //- img(src="/images/jade/jade-confident.webp" alt="Jade" style="width:300px;")
           //- a(href=`${appUrl}/demo`) helloasdfasf
           form#demo-form(method="post" action="/demo" hx-post="/demo" hx-target="#demo-results" hx-swap="innerHTML")
-            p Enter your website to get a free analysis
+            p!=t('homeInputTitle')
             .flex
-              input(type="text" name="url" placeholder="Enter your website URL" style="width:70%; margin-right:5%" required)
+              input(type="text" name="url" placeholder!=t('homeInputPlaceholder') style="width:70%; margin-right:5%" required)
               button.btn-primary.cta-btn(type="submit" style="width:25%; background:white;color:black;")
                 img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
-                span(style="text-transform: uppercase;") Submit
-          h2.mb-5.poppins-bold.q-mb-lg Analyze → Strategize → Schedule → Post <br> <i>A Pro </i> does it all for you<br> 
+                span(style="text-transform: uppercase;")=t('homeInputButton')
+          h2.mb-0.poppins-bold!=t('heroSubTitle4') 
+          h2.mb-5.poppins-bold!=t('heroSubTitle5') 
     .mt-3
-      h2.poppins-bold.text-center(style="font-size:60px") How It Works
+      h2.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
       .row
         .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/brain.webp" alt="Brain Icon" style="width:100px;")
             .article-content
-              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Automated Strategy, Tailored to You
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left=t('howItWorksSubTitle1')
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
-              .text-body1
-                |Jade analyzes your website, brand, market, and competitors to understand your business.  
-                br
-                br
-                |No generic templates.  Your strategy is crafted from your actual business data.
+              .text-body1!=t('howItWorksParagraph1')
         .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/campaign.webp" alt="Brain Icon" style="width:100px;")
             .article-content
-              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Campaign Creation & Content Production
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left=t('howItWorksSubTitle2')
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
-              .text-body1
-                |Get complete campaigns with content schedules, ready to publish.
-                br
-                br
-                |Jade factors in holidays, events, and industry trends, creating content your audience actually cares about.
+              .text-body1!=t('howItWorksParagraph2')
         .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/paper.webp" alt="Brain Icon" style="width:100px;")
             .article-content
-              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Multi-Channel Posting & Analytics
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left=t('howItWorksSubTitle3')
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
-              .text-body1
-                |Approve your posts, and Jade handles the rest.
-                br
-                br
-                |She publishes to the desired platform, tracking performance so you always know what’s working.
+              .text-body1!=t('howItWorksParagraph3')
         .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/jade.webp" alt="Brain Icon" style="width:100px;")
             .article-content
-              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left Human Digital Marketers Included
+              h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left=t('howItWorksSubTitle4')
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
-              .text-body1
-                |AI does the heavy lifting; humans ensure quality.
-                br
-                br
-                |For advanced needs, our expert digital marketers provide white-glove service, review your content, and guide your growth.
+              .text-body1!=t('howItWorksParagraph4')
       //- .row.mt-5
         .col-12.justify-content-center.text-center.d-flex
           //- a( href="https://cta-na2.hubspot.com/web-interactives/public/v1/track/redirect?encryptedPayload=AVxigLKcOLzO%2BF4snjmbHALdKnIdllat3XLN4d9tL0LjJtZqVQViQjeN8W4zKzUmHhkImwuOY45IAxzcfe9D3%2B6vqb5%2FGjd1j2sJI5DA8iSOSMRFOJIpDY1kuZvPsvRcVqxavqaT4Qo8oZCwUFNCtmdvnhAD5T7zY48G1VnHAd8C0IqIgrZI9e6dlibhDgOHeBc8FIdike9PEA%3D%3D&webInteractiveContentId=201143666368&portalId=242233801" target="_blank" rel="noopener" crossorigin="anonymous")

@@ -9,6 +9,7 @@ import zhUserDeletion from './zh-user-deletion'
 import zhAbout from './zh-about'
 import zhAboutpageMeta from './zh-meta/zh-aboutpage-meta'
 import zhFaq from './zh-faq'
+import zhHome from './zh-home'
 export default{
   ...zhBilling,
   ...zhTos,
@@ -16,6 +17,7 @@ export default{
   ...zhUserDeletion,
   ...zhAbout,
   ...zhFaq,
+  ...zhHome,
   pricingMeta: zhPricingMeta,
   articlesMeta: zhArticlesMeta,
   homePageMeta:zhHomepageMeta,

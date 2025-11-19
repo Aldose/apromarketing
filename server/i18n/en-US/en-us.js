@@ -11,8 +11,10 @@ import enAbout from "./en-about";
 import enTeam from "./en-team";
 import enAboutMeta from "./en-meta/en-aboutpage-meta";
 import enFaq from "./en-faq";
+import enHome from "./en-home";
 
 export default{
+  ...enHome,
   ...enBilling,
   ...enTos,
   ...enPP,
