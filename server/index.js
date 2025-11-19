@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 const cron = require('node-cron');
 const joi = require('joi');
 const { Contact } = require('./models/contactModel')
+import Newsletter from './models/Newsletter.js';
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const { sendMail } = require('./mailer')
@@ -39,6 +40,13 @@ var schema = joi.object({
   name: joi.string().required(),
   email: joi.string().email().required(),
   message: joi.string().required()
+})
+
+var newsletterSchema = joi.object({
+  name: joi.string().required().max(100),
+  company: joi.string().required().max(150),
+  website: joi.string().uri().required(),
+  email: joi.string().email().required()
 })  
 
 
@@ -278,6 +286,55 @@ app.get('/demo-stream', async (req, res) => {
     res.end();
   }
 });
+
+// Newsletter signup route
+app.post('/newsletter-signup', async (req, res) => {
+  try {
+    const { name, company, website, email } = req.body;
+    const { error, value } = newsletterSchema.validate({...req.body});
+
+    if(error) throw error;
+
+    // Check if MongoDB is connected
+    if (mongoose.connection.readyState === 1) {
+      // MongoDB is connected - save to database
+      const newsletter = new Newsletter({
+        name,
+        company,
+        website,
+        email,
+        subscriptionStatus: 'pending'
+      });
+
+      await newsletter.save();
+      sendMail('newsletter signup', `New newsletter signup - Name: ${name}, Company: ${company}, Email: ${email}, Website: ${website}`);
+    } else {
+      // MongoDB not connected - just log for demo purposes
+      console.log('📧 Newsletter signup (Demo Mode):', { name, company, website, email });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Thank you for subscribing! We\'ll be in touch soon.'
+    });
+
+  } catch(err) {
+    console.log(err.message);
+    if (err.code === 11000) {
+      // Duplicate email error
+      res.status(400).json({
+        success: false,
+        message: 'This email is already subscribed to our newsletter.'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Please check your information and try again.'
+      });
+    }
+  }
+});
+
 // Set up sitemap generation
 const setupSitemapGeneration = () => {
   // Run every Sunday at 2 AM

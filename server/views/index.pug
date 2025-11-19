@@ -109,6 +109,30 @@ block content
       a.btn-lg.btn-primary.cta-btn(href=`https://app.a-pro.ai/register?lang=${lang}` hx-boost="true")
         img(src="/icons/apro-star1.png" alt="star")
         span= t('homeHeroBtn')
+
+    section.newsletter-section.mt-5.py-5(style="background: linear-gradient(135deg, #0fffad, #00d4aa); border-radius: 15px;")
+      .container
+        .row.justify-content-center
+          .col-lg-8.col-md-10.col-sm-12.text-center
+            h2.poppins-bold.text-white.mb-3 Stay Ahead of the Marketing Game
+            p.text-white.mb-4 Get exclusive news and insights and early access to new features.
+
+            form#newsletter-form.newsletter-form(method="post" action="/newsletter-signup")
+              .row.justify-content-center
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.newsletter-input(type="text" name="name" placeholder="Your Name" required)
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.newsletter-input(type="text" name="company" placeholder="Company Name" required)
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.newsletter-input(type="email" name="email" placeholder="Email Address" required)
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.newsletter-input(type="url" name="website" placeholder="Website URL" required)
+                .col-12.text-center
+                  button.btn.btn-success.newsletter-btn(type="submit")
+                    span Subscribe to Newsletter
+
+            .newsletter-response#newsletter-response.mt-3(style="display:none;")
+              p.response-text
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
@@ -171,8 +195,63 @@ block append scripts
           };
         }
       });
+
+      // Newsletter form submission
+      const newsletterForm = document.getElementById('newsletter-form');
+      const newsletterResponse = document.getElementById('newsletter-response');
+
+      newsletterForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(newsletterForm);
+        const submitButton = newsletterForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        // Show loading state
+        submitButton.innerHTML = '<span>Subscribing...</span>';
+        submitButton.disabled = true;
+
+        try {
+          const response = await fetch('/newsletter-signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: formData.get('name'),
+              company: formData.get('company'),
+              email: formData.get('email'),
+              website: formData.get('website')
+            })
+          });
+
+          const result = await response.json();
+
+          newsletterResponse.style.display = 'block';
+          const responseText = newsletterResponse.querySelector('.response-text');
+
+          if (result.success) {
+            responseText.textContent = result.message;
+            responseText.style.color = '#28a745';
+            newsletterForm.reset();
+          } else {
+            responseText.textContent = result.message;
+            responseText.style.color = '#dc3545';
+          }
+
+        } catch (error) {
+          newsletterResponse.style.display = 'block';
+          const responseText = newsletterResponse.querySelector('.response-text');
+          responseText.textContent = 'Something went wrong. Please try again.';
+          responseText.style.color = '#dc3545';
+        } finally {
+          // Reset button
+          submitButton.innerHTML = originalText;
+          submitButton.disabled = false;
+        }
+      });
     });
-    
+
   script(src="/js/lazy-sizes.js" async="")
   script(type="application/ld+json").
     !{JSON.stringify(jsonLD, null, 2)}
@@ -307,4 +386,102 @@ block append styles
       padding: 15px;
       border-radius: 8px;
       border: 1px solid #ffcdd2;
+    }
+
+    /* Newsletter Section Styles */
+    .newsletter-section {
+      margin: 60px 0;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #0fffad, #00d4aa);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(15, 255, 173, 0.3);
+    }
+
+    .newsletter-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .newsletter-section p {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+
+    .newsletter-input {
+      padding: 15px 20px;
+      border: 2px solid white;
+      border-radius: 10px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .newsletter-input:focus {
+      outline: none;
+      border-color: #333;
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .newsletter-btn {
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .newsletter-btn:hover {
+      background: #555;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .newsletter-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .newsletter-response {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .newsletter-response .response-text {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .newsletter-section {
+        margin: 40px 0;
+        padding: 40px 15px;
+      }
+
+      .newsletter-section h2 {
+        font-size: 2rem;
+      }
+
+      .newsletter-section p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
+
+      .newsletter-input {
+        margin-bottom: 15px;
+      }
     }
