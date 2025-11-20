@@ -35,12 +35,12 @@ html(lang=lang)
             //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
           
           //- Hamburger Menu
-          .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
+          //- .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
             span
             span
             span
           //- Mobile Menu
-          .mobile-menu
+          //- .mobile-menu
             a(href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
             a(href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
             a(href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
@@ -76,7 +76,7 @@ html(lang=lang)
             a(hreflang="es-mx" rel="alternate" href=`/es${currentPath}`)= "Español"
           //- span
             a(hreflang="nl" rel="alternate" href=`/nl${currentPath}`)= "Nederlands"
-      div(style="margin:20px auto 0 auto; max-width:400px;")
+      //- div(style="margin:20px auto 0 auto; max-width:400px;")
         p.q-mb-none.q-mt-lg= t('followUs')
         div(style="display:flex; justify-content:space-around; align-items:center;")
           a(href="https://www.linkedin.com/company/a-pro-solutions-inc/" target="_blank")
@@ -98,5 +98,5 @@ html(lang=lang)
     block scripts
       //- script( src="/js/main.js" )
       //- script( src="/js/transitions.js")
-      script( src="https://www.googletagmanager.com/gtag/js?id=G-GX7SSEZV18" async )
-      script( src="https://analytics.ahrefs.com/analytics.js" data-key="MfUDwaIs7axc5LpBCFNGRw" async)
+      //- script( src="https://www.googletagmanager.com/gtag/js?id=G-GX7SSEZV18" async )
+      //- script( src="https://analytics.ahrefs.com/analytics.js" data-key="MfUDwaIs7axc5LpBCFNGRw" async)

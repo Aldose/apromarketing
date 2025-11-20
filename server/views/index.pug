@@ -27,24 +27,27 @@ block content
           br
           h2.green-underline.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle1')
           h3.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle2')
-        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center
-          h2.mb-5.poppins-bold.q-mb-lg!=t('heroSubTitle3')
+        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center
+          h2.mb-5.poppins-bold!=t('heroSubTitle3')
             
           //- img(src="/images/jade/jade-confident.webp" alt="Jade" style="width:300px;")
           //- a(href=`${appUrl}/demo`) helloasdfasf
-          form#demo-form(method="post" action="/demo" hx-post="/demo" hx-target="#demo-results" hx-swap="innerHTML")
+          form#demo-form(method="get" action=`${appUrl}/demo?lang=${lang}`)
+            input(type="hidden" name="lang" value=lang)
             p!=t('homeInputTitle')
-            .flex
-              input(type="text" name="url" placeholder!=t('homeInputPlaceholder') style="width:70%; margin-right:5%" required)
-              button.btn-primary.cta-btn(type="submit" style="width:25%; background:white;color:black;")
-                img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
-                span(style="text-transform: uppercase;")=t('homeInputButton')
-          h2.mb-0.poppins-bold!=t('heroSubTitle4') 
-          h2.mb-5.poppins-bold!=t('heroSubTitle5') 
+            .row
+              .col-8
+                input(type="text" name="website" placeholder!=t('homeInputPlaceholder') style="width:100%; " required)
+              .col-4
+                button.btn-primary.cta-btn(type="submit" style=" background:white;color:black;")
+                  img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
+                  span(style="text-transform: uppercase;")=t('homeInputButton')
+          h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
+          //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
     .mt-3
-      h2.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
+      h2.mb-5.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
       .row
-        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/brain.webp" alt="Brain Icon" style="width:100px;")
@@ -53,7 +56,7 @@ block content
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
               .text-body1!=t('howItWorksParagraph1')
-        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/campaign.webp" alt="Brain Icon" style="width:100px;")
@@ -62,7 +65,7 @@ block content
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
               .text-body1!=t('howItWorksParagraph2')
-        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/paper.webp" alt="Brain Icon" style="width:100px;")
@@ -71,7 +74,7 @@ block content
               .green-line
               .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
               .text-body1!=t('howItWorksParagraph3')
-        .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
           .articles.card.flex.column.justify-between.blog-article(class='animation-delay-0', style="height: 100%")
             .how-it-works-icon
               img(src="/images/icons/home/jade.webp" alt="Brain Icon" style="width:100px;")
@@ -101,8 +104,9 @@ block content
       .container
         .row.justify-content-center
           .col-lg-8.col-md-10.col-sm-12.text-center
-            h2.poppins-bold.text-white.mb-3 Stay Ahead of the Marketing Game
-            p.text-white.mb-4 Get exclusive news and insights and early access to new features.
+            h2.poppins-bold.mb-3!=t('newsletterTitle')
+            //- Stay Ahead of the Marketing Game
+            p.mb-4!=t('newsletterParagraph2')
 
             form#newsletter-form.newsletter-form(method="post" action="/newsletter-signup")
               .row.justify-content-center
@@ -116,73 +120,13 @@ block content
                   input.form-control.newsletter-input(type="url" name="website" placeholder="Website URL" required)
                 .col-12.text-center
                   button.btn.btn-success.newsletter-btn(type="submit")
-                    span Subscribe to Newsletter
+                    span!=t('newsletterBtn')
 
             .newsletter-response#newsletter-response.mt-3(style="display:none;")
               p.response-text
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
-      const form = document.getElementById('demo-form');
-      const resultsContainer = document.getElementById('demo-results');
-      
-      form.addEventListener('htmx:beforeRequest', function(evt) {
-        // Reset the results container with a fresh DemoUpdate component
-        resultsContainer.innerHTML = `
-          <div class="demo-results">
-            <div class="progress-container">
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 0%"></div>
-              </div>
-              <div class="progress-text">Initializing...</div>
-            </div>
-            <div class="steps-container">
-              <div class="step" data-step="init">
-                <div class="step-icon">🚀</div>
-                <div class="step-text">Starting website analysis...</div>
-              </div>
-            </div>
-            <div class="results-container" style="display: none;"></div>
-          </div>
-        `;
-      });
-      
-      form.addEventListener('htmx:afterRequest', function(evt) {
-        const xhr = evt.detail.xhr;
-        
-        if (xhr.status === 200) {
-          // Start SSE stream using GET endpoint
-          const url = encodeURIComponent(form.url.value);
-          const eventSource = new EventSource(`/demo-stream?url=${url}`);
-          
-          eventSource.onmessage = function(event) {
-            try {
-              const data = JSON.parse(event.data);
-              
-              // Trigger HTMX event for DemoUpdate component
-              htmx.trigger(document.body, 'demoUpdate', { detail: data });
-              
-              if (data.error) {
-                eventSource.close();
-                return;
-              }
-              
-              if (data.complete && data.data) {
-                eventSource.close();
-              }
-            } catch (err) {
-              console.error('Error parsing SSE data:', err);
-            }
-          };
-          
-          eventSource.onerror = function(err) {
-            console.error('SSE error:', err);
-            resultsContainer.innerHTML = `<div class="error">Connection error. Please try again.</div>`;
-            eventSource.close();
-          };
-        }
-      });
-
       // Newsletter form submission
       const newsletterForm = document.getElementById('newsletter-form');
       const newsletterResponse = document.getElementById('newsletter-response');
