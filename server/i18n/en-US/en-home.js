@@ -3,7 +3,7 @@ export default{
   heroTitle2: 'Digital Marketer',
   heroSubTitle1:'Meet Jade ',
   heroSubTitle2:'your personal AI digital marketer',
-  heroSubTitle3:'<span class="green-underline" style="margin-bottom:20px;">Jade</span> helps your business grow automatically, intelligently',
+  heroSubTitle3:'<span class="green-underline" style="margin-bottom:20px;">Jade</span> helps your business grow automatically and intelligently',
   heroSubTitle4:'Analyze → Strategize → Schedule → Post', 
   heroSubTitle5:'<br> <i>A Pro </i> automates your marketing<br>',
   homeInputTitle:'Enter your website to get a free analysis',
