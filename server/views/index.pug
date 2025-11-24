@@ -111,13 +111,13 @@ block content
             form#newsletter-form.newsletter-form(method="post" action="/newsletter-signup")
               .row.justify-content-center
                 .col-md-6.col-sm-12.mb-3
-                  input.form-control.newsletter-input(type="text" name="name" placeholder="Your Name" required)
+                  input.form-control.newsletter-input(type="text" name="name" placeholder="Your Name *" required)
                 .col-md-6.col-sm-12.mb-3
-                  input.form-control.newsletter-input(type="text" name="company" placeholder="Company Name" required)
+                  input.form-control.newsletter-input(type="text" name="company" placeholder="Company Name" )
                 .col-md-6.col-sm-12.mb-3
-                  input.form-control.newsletter-input(type="email" name="email" placeholder="Email Address" required)
+                  input.form-control.newsletter-input(type="email" name="email" placeholder="Email Address *" required)
                 .col-md-6.col-sm-12.mb-3
-                  input.form-control.newsletter-input(type="url" name="website" placeholder="Website URL" required)
+                  input.form-control.newsletter-input(type="text" name="website" placeholder="Website URL")
                 .col-12.text-center
                   button.btn.btn-success.newsletter-btn(type="submit")
                     span!=t('newsletterBtn')

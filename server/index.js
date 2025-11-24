@@ -44,8 +44,8 @@ var schema = joi.object({
 
 var newsletterSchema = joi.object({
   name: joi.string().required().max(100),
-  company: joi.string().required().max(150),
-  website: joi.string().uri().required(),
+  company: joi.string().max(150).allow('').optional(),
+  website: joi.string().allow('', null).optional(),
   email: joi.string().email().required()
 })  
 
@@ -62,8 +62,8 @@ app.use('/videos', express.static(path.join(__dirname, 'public/videos')));
 app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
 
 // Language-specific routes first
-app.get('/:lang(zh)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
-app.get('/articles', i18nMiddleware, (req, res) => {  res.redirect(`/articles/all/1`); });
+// app.get('/:lang(zh)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
+// app.get('/articles', i18nMiddleware, (req, res) => {  res.redirect(`/articles/all/1`); });
 
 // app.get('/:lang(zh)/articles/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
 //   const articles = await getArticles(req.params.lang, req.params.page, req.params.category);
@@ -153,7 +153,7 @@ app.get('/:lang(zh)', i18nMiddleware, async (req, res) => {
   const jsonLD = indexPageJSONLD(articles, res.locals.lang);  
   jsonLD.name = res.locals.t('homePageMeta.title');
   jsonLD.description = res.locals.t('homePageMeta.description');
-  console.log(Bun.env)
+  // console.log(Bun.env)
   res.render('index', {articles:articles, jsonLD:jsonLD, lang:res.locals.lang, appUrl: Bun.env.APP_URL}); 
 });
 app.get('/', i18nMiddleware, async (req, res) => {  
@@ -163,7 +163,7 @@ app.get('/', i18nMiddleware, async (req, res) => {
   const jsonLD = indexPageJSONLD(articles);
   jsonLD.name = res.locals.t('homePageMeta.title');
   jsonLD.description = res.locals.t('homePageMeta.description');
-  console.log(Bun.env)
+  // console.log(Bun.env)
 
   res.render('index', {articles:articles, jsonLD:jsonLD, appUrl: Bun.env.APP_URL});
 });
@@ -380,6 +380,7 @@ app.get('*', i18nMiddleware, (req, res) => {
 
 
 const connectDB = async () => {
+  console.log(Bun.env.MONGO_URI)
   try {
     if (Bun.env.MONGO_URI !== undefined) {
       const conn = await mongoose.connect(Bun.env.MONGO_URI, {

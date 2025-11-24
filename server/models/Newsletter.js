@@ -9,20 +9,20 @@ const newsletterSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
+    // required: true,
     trim: true,
     maxLength: 150
   },
   website: {
     type: String,
-    required: true,
+    // required: true,
     trim: true,
-    validate: {
-      validator: function(v) {
-        return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v);
-      },
-      message: 'Please enter a valid website URL'
-    }
+    // validate: {
+    //   validator: function(v) {
+    //     return /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(v);
+    //   },
+    //   message: 'Please enter a valid website URL'
+    // }
   },
   email: {
     type: String,
