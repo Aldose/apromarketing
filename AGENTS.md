@@ -1,1 +1,29 @@
+# Purpose 
+this project is for creating a marketing website for a-pro ai. The main purpose is to host a form on the top of each page that has a form to be filled out and then the form's content is sent to another api endpoit and then retrieve and display the contents of it's response. That form will be on the top of every page while the rest of the page will contain the UI for a blog website, including search features, and displaying blog content
+
+## CMS 
+For now we'll be self hosting ghost for our CMS and for handling the blog content, see: https://ghost.org/resources/
+and we'll use code injection to render the form and handle displaying the content from that endpoints detailed in the next section
+
+## demo endpoint
+the code for the existing demo endpoint handling is in the directory called server. Feel free to modify the contents to adapt to running alongside ghost but note the api endpoints should only be accessible via the form within the ghost website. The main aim should be to have a user be able to put in their website in the form, and while the api is handling the request the user should still be able to read the articles. 
+
+
+## Integration of demo and ghost
+I will be sending in a set of screenshots with instructions colored in red for how I want the animations on the demo site to go after a user submits a website in the demo form. I'll be updating this document with percise instructions on how the UI will change with each step. 
+
+phase 1: 
+examine the png file called Phase1UIanimations.png. When a user submits a website and clicks the submit button. the graphic to the left of the form will fade away as instructed and the form with the loading animation will move to the left to occupy the same space the graphic used to be with labeled sections fading out per instructions in the screenshot. 
+
+phase 2:
+look at Phase2UIanimations.png while the demo is processing on the left a window with titles and excerpts of blogs from the ghost website will float in from the right. 
+
+
+
+# Rules to follow
 - Use Bun instead of node
+- obey any AI-NOTES comments 
+- be calm and deliberate, check back with the user when tasks seem unclear
+- if you hit roadblocks that conflict with the contents of this file, proactively reach out to the human developer with the issue and seek guidance. 
+- utilize vue and nuxt: https://nuxt.com/docs/4.x/getting-started/introduction for front end animations and interactions
+- do not use mocks unless explicitely told to do so, use real data and announce when you are unable to and check in with human developer

@@ -16,10 +16,14 @@ block append head
 
 block content
   link(rel="stylesheet" href="/css/pages/index.css")
-  .container
+  // Vue.js CDN for animations
+  script(src="https://unpkg.com/vue@3/dist/vue.global.js")
+
+  #demo-app.container
     section.hero-section
       .row
-        .col-lg-6.col-sm-12.text-center
+        // Left Graphic Section - Will fade away on form submit
+        .col-lg-6.col-sm-12.text-center#hero-graphic(v-show="!formSubmitted" :class="{ 'fade-out': isAnimating }")
           h1.mb-0.poppins-bold=t('heroTitle1')
           h1.green-underline=t('heroTitle2')
           br
@@ -27,22 +31,89 @@ block content
           br
           h2.green-underline.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle1')
           h3.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle2')
-        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center
-          h2.mb-5.poppins-bold!=t('heroSubTitle3')
-            
-          //- img(src="/images/jade/jade-confident.webp" alt="Jade" style="width:300px;")
-          //- a(href=`${appUrl}/demo`) helloasdfasf
-          form#demo-form(method="get" action=`${appUrl}/demo?lang=${lang}`)
-            input(type="hidden" name="lang" value=lang)
+
+        // Right Form Section - Will move left and show loading
+        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center#demo-form-section(
+          :class="{ 'move-left': isAnimating, 'form-with-blog': formSubmitted }"
+        )
+          // Top Header Content - Will fade upward
+          .header-content#header-content(v-show="!isAnimating" :class="{ 'fade-up': isAnimating }")
+            h2.mb-5.poppins-bold!=t('heroSubTitle3')
+
+          // Demo Form
+          form#demo-form(@submit.prevent="handleFormSubmit" v-show="!showResults")
+            input(type="hidden" name="lang" :value="selectedLang")
             p!=t('homeInputTitle')
             .row
               .col-8
-                input(type="text" name="website" placeholder!=t('homeInputPlaceholder') style="width:100%; " required)
+                input(
+                  type="text"
+                  name="website"
+                  v-model="websiteUrl"
+                  :placeholder="t('homeInputPlaceholder')"
+                  style="width:100%;"
+                  required
+                  :disabled="isLoading"
+                )
               .col-4
-                button.btn-primary.cta-btn(type="submit" style=" background:white;color:black;")
+                button.btn-primary.cta-btn(
+                  type="submit"
+                  style="background:white;color:black;"
+                  :disabled="isLoading"
+                )
                   img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
-                  span(style="text-transform: uppercase;")=t('homeInputButton')
-          h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
+                  span(style="text-transform: uppercase;") {{ isLoading ? 'ANALYZING...' : t('homeInputButton') }}
+
+          // Loading Animation Section
+          .loading-section(v-show="isLoading")
+            .progress-container
+              .progress-bar
+                .progress-fill(:style="{ width: progress + '%' }")
+              .progress-text {{ progressMessage }}
+
+            .analysis-steps
+              .step(v-for="step in analysisSteps" :key="step.id" :class="{ active: currentStep === step.id, completed: currentStep > step.id }")
+                .step-icon {{ step.icon }}
+                .step-text {{ step.text }}
+
+          // Results Section
+          .results-section(v-show="showResults")
+            h3 Analysis Complete!
+            .results-content(v-html="resultsHtml")
+            button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
+
+        // Phase 2: Blog Panel - Slides in from right
+        .col-lg-6.col-md-12.blog-panel-container#blog-panel(
+          v-show="showBlogPanel"
+          :class="{ 'slide-in-right': showBlogPanel }"
+        )
+          .blog-panel-header
+            h3 Latest Marketing Insights
+            p Read while your analysis processes
+
+          .blog-panel-content
+            // Loading state
+            .blog-loading(v-if="isFetchingPosts")
+              .loading-spinner 🔄
+              p Loading latest posts...
+
+            // Error state
+            .blog-error(v-if="blogLoadingError && !isFetchingPosts")
+              p ⚠️ Unable to load blog posts
+              p Please ensure Ghost server is running
+
+            // Blog posts grid
+            .blog-posts-grid(v-if="!isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
+              .blog-post-card(v-for="post in blogPosts.slice(0, 4)" :key="post.slug")
+                .blog-post-title {{ post.title }}
+                .blog-post-excerpt {{ post.excerpt }}
+
+            // Scroll indicator
+            .blog-scroll-indicator(v-if="blogPosts.length > 4")
+              p Scroll for more blogs ↓
+
+          //- Remove bottom text as per Phase 2 requirements
+          //- h2.mt-5.mb-0.poppins-bold(v-show="!isLoading")!=t('heroSubTitle4')
           //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
     .mt-3
       h2.mb-5.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
@@ -183,6 +254,230 @@ block append scripts
       });
     });
 
+  // Vue.js Application for Demo Form Animations (Phase 1)
+  script.
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          // Animation states
+          isAnimating: false,
+          formSubmitted: false,
+          isLoading: false,
+          showResults: false,
+
+          // Form data
+          websiteUrl: '',
+          selectedLang: '!{lang}',
+
+          // Progress tracking
+          progress: 0,
+          progressMessage: 'Starting analysis...',
+          currentStep: 0,
+
+          // Analysis steps for loading animation
+          analysisSteps: [
+            { id: 1, icon: '🚀', text: 'Starting website analysis...' },
+            { id: 2, icon: '🔍', text: 'Checking for cached data...' },
+            { id: 3, icon: '📊', text: 'Analyzing website content...' },
+            { id: 4, icon: '📱', text: 'Analyzing social media profiles...' },
+            { id: 5, icon: '⚡', text: 'Running performance audit...' },
+            { id: 6, icon: '🧠', text: 'Generating insights...' },
+            { id: 7, icon: '🎉', text: 'Analysis complete!' }
+          ],
+
+          // Results data
+          resultsHtml: '',
+
+          // Phase 2 - Blog Panel State
+          showBlogPanel: false,
+          blogPosts: [],
+          isFetchingPosts: false,
+          blogLoadingError: false
+        }
+      },
+
+      methods: {
+        async handleFormSubmit() {
+          if (!this.websiteUrl.trim()) return;
+
+          console.log('Form submitted - Phase 1 Animation Starting');
+
+          // Phase 1: Start animations
+          this.startPhase1Animation();
+
+          // Start the actual API call
+          this.startAnalysis();
+        },
+
+        startPhase1Animation() {
+          // Step 1: Start animation sequence
+          this.isAnimating = true;
+          this.isLoading = true;
+
+          // Step 2: After 800ms, hide the graphic completely and move form left
+          setTimeout(() => {
+            this.formSubmitted = true;
+
+            // Phase 2: After form moves left, trigger blog panel animation
+            setTimeout(() => {
+              this.startPhase2Animation();
+            }, 1000); // 1 second after form moves left
+          }, 800);
+        },
+
+        async startPhase2Animation() {
+          console.log('Starting Phase 2 Animation - Blog Panel');
+
+          // Start fetching blog posts
+          this.fetchBlogPosts();
+
+          // Show blog panel with animation
+          this.showBlogPanel = true;
+        },
+
+        async fetchBlogPosts() {
+          this.isFetchingPosts = true;
+          this.blogLoadingError = false;
+
+          try {
+            const response = await fetch('/api/ghost-posts');
+            const data = await response.json();
+
+            if (data.success) {
+              this.blogPosts = data.posts;
+              console.log('✅ Loaded', data.posts.length, 'blog posts');
+            } else {
+              this.blogLoadingError = true;
+              console.log('❌ Blog loading failed:', data.message);
+            }
+          } catch (error) {
+            this.blogLoadingError = true;
+            console.log('❌ Blog fetch error:', error);
+          } finally {
+            this.isFetchingPosts = false;
+          }
+        },
+
+        async startAnalysis() {
+          try {
+            console.log('Starting API analysis for:', this.websiteUrl);
+
+            // Create EventSource for SSE
+            const eventSource = new EventSource(`/demo-stream?url=${encodeURIComponent(this.websiteUrl)}`);
+
+            eventSource.onmessage = (event) => {
+              try {
+                const data = JSON.parse(event.data);
+                console.log('SSE Data received:', data);
+
+                if (data.error) {
+                  this.handleError(data.error);
+                  eventSource.close();
+                  return;
+                }
+
+                if (data.step) {
+                  this.updateProgress(data.progress || 0, data.message || '', data.step);
+                }
+
+                if (data.complete && data.data) {
+                  this.showAnalysisResults(data.data);
+                  eventSource.close();
+                }
+              } catch (parseError) {
+                console.error('Error parsing SSE data:', parseError);
+              }
+            };
+
+            eventSource.onerror = (error) => {
+              console.error('SSE error:', error);
+              this.handleError('Connection error. Please try again.');
+              eventSource.close();
+            };
+
+          } catch (error) {
+            console.error('Analysis failed:', error);
+            this.handleError('Analysis failed. Please try again.');
+          }
+        },
+
+        updateProgress(progressValue, message, step) {
+          this.progress = progressValue;
+          this.progressMessage = message;
+
+          // Map step to our analysis steps
+          const stepMapping = {
+            'init': 1,
+            'checking': 2,
+            'scraping': 3,
+            'social': 4,
+            'lighthouse': 5,
+            'analysis': 6,
+            'complete': 7
+          };
+
+          this.currentStep = stepMapping[step] || 1;
+        },
+
+        showAnalysisResults(data) {
+          this.isLoading = false;
+          this.showResults = true;
+
+          // Format results for display
+          let html = '<div class="analysis-summary">';
+
+          if (data.analysis) {
+            html += `<h4>🏢 Business Analysis</h4>`;
+            html += `<p><strong>Company:</strong> ${data.analysis.companyName || 'N/A'}</p>`;
+            html += `<p><strong>Overview:</strong> ${data.analysis.businessOverview || 'N/A'}</p>`;
+          }
+
+          if (data.lighthouse) {
+            html += `<h4>⚡ Performance Scores</h4>`;
+            html += `<p><strong>Performance:</strong> ${data.lighthouse.performance || 'N/A'}/100</p>`;
+            html += `<p><strong>SEO:</strong> ${data.lighthouse.seo || 'N/A'}/100</p>`;
+          }
+
+          html += '</div>';
+          this.resultsHtml = html;
+        },
+
+        handleError(errorMessage) {
+          this.isLoading = false;
+          this.showResults = true;
+          this.resultsHtml = `<div class="error-message"><h4>⚠️ Analysis Error</h4><p>${errorMessage}</p></div>`;
+        },
+
+        resetDemo() {
+          // Reset all states
+          this.isAnimating = false;
+          this.formSubmitted = false;
+          this.isLoading = false;
+          this.showResults = false;
+          this.websiteUrl = '';
+          this.progress = 0;
+          this.currentStep = 0;
+          this.progressMessage = 'Starting analysis...';
+          this.resultsHtml = '';
+        },
+
+        t(key) {
+          // Temporary translation function - replace with actual i18n
+          const translations = {
+            'homeInputPlaceholder': 'Enter your website URL...',
+            'homeInputButton': 'ANALYZE'
+          };
+          return translations[key] || key;
+        }
+      },
+
+      mounted() {
+        console.log('Vue Demo App mounted successfully');
+      }
+    }).mount('#demo-app');
+
   script(src="/js/lazy-sizes.js" async="")
   script(type="application/ld+json").
     !{JSON.stringify(jsonLD, null, 2)}
@@ -235,6 +530,227 @@ block append styles
       border-radius: 10px;
     }
     
+    /* Phase 1 Animation Styles */
+    #hero-graphic {
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+
+    #hero-graphic.fade-out {
+      opacity: 0;
+      transform: translateX(-50px);
+    }
+
+    #demo-form-section {
+      transition: all 0.8s ease-out;
+      position: relative;
+    }
+
+    #demo-form-section.move-left {
+      transform: translateX(-25%);
+    }
+
+    #demo-form-section.form-with-blog {
+      flex: 0 0 48%;
+      max-width: 48%;
+      transform: translateX(0);
+    }
+
+    .header-content {
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .header-content.fade-up {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+
+    /* Phase 2 Animation Styles - Blog Panel */
+    .blog-panel-container {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 45%;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+      padding: 20px;
+      background: #f9f9f9;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      max-height: 500px;
+      overflow-y: auto;
+      z-index: 1000;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    }
+
+    .blog-panel-container.slide-in-right {
+      transform: translateX(4%);
+      opacity: 1;
+    }
+
+    .blog-panel-header h3 {
+      margin-bottom: 10px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .blog-panel-header p {
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .blog-posts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .blog-post-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      transition: box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .blog-post-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .blog-post-title {
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #333;
+      line-height: 1.3;
+    }
+
+    .blog-post-excerpt {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .blog-loading, .blog-error {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+
+    .loading-spinner {
+      font-size: 24px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .blog-scroll-indicator {
+      text-align: center;
+      padding: 10px;
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* Loading Animation Styles */
+    .loading-section {
+      margin-top: 30px;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    .analysis-steps {
+      margin-top: 20px;
+    }
+
+    .step {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      background: #f8f9fa;
+      transition: all 0.3s ease;
+      opacity: 0.5;
+    }
+
+    .step.active {
+      background: #e6f7ff;
+      border-left: 4px solid #0fffad;
+      opacity: 1;
+      transform: translateX(5px);
+    }
+
+    .step.completed {
+      background: #f6ffed;
+      opacity: 0.8;
+    }
+
+    .step-icon {
+      margin-right: 12px;
+      font-size: 1.2em;
+    }
+
+    .step-text {
+      font-size: 0.9em;
+      color: #333;
+    }
+
+    .results-section {
+      animation: slideUpIn 0.5s ease-out;
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+
+    .analysis-summary h4 {
+      color: #333;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .analysis-summary p {
+      margin-bottom: 8px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .error-message {
+      text-align: center;
+      color: #dc3545;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideUpIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive adjustments for Phase 1 */
+    @media (max-width: 991px) {
+      #demo-form-section.move-left {
+        transform: none;
+      }
+
+      #demo-form-section.full-width {
+        transform: none;
+      }
+    }
+
     .progress-text {
       text-align: center;
       font-weight: bold;

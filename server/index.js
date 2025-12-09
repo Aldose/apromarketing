@@ -18,6 +18,7 @@ import { getArticles,getArticlesRaw, getArticle, getArticleRaw } from './routes/
 import { articleListJSONLD, articleJSONLD, indexPageJSONLD } from './middleware/metaBuilder.js';
 import pricingPlans from './data/pricingPlans.json';
 import { generateSitemap } from './sitemapGen.js';
+import demoRoutes from './routes/demoRouteSecure.js';
 
 
 
@@ -60,6 +61,9 @@ app.use('/icons', express.static(path.join(__dirname, 'public/images/icons')));
 app.use('/css', express.static(path.join(__dirname, 'public/css')));
 app.use('/videos', express.static(path.join(__dirname, 'public/videos')));
 app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
+
+// Secure demo routes
+app.use('/', demoRoutes);
 
 // Language-specific routes first
 // app.get('/:lang(zh)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
@@ -171,119 +175,51 @@ app.get('/free-7-day-trial', i18nMiddleware, (req, res) => {
     res.render('freeTrial7Days');
   }
 );
-app.post('/demo', async (req, res) => {
-  try {
-    const { url } = req.body;
-    
-    // Set up SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
-    });
+// AI-NOTES: Demo endpoints moved to /routes/demoRouteSecure.js for enhanced security
+// Includes origin authentication, rate limiting, and input validation
 
-    const response = await fetch('http://localhost:8000/demo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
-    });
+// Ghost Blog API endpoint for Phase 2 animations
+app.get('/api/ghost-posts', async (req, res) => {
+  try {
+    // Set CORS headers for frontend access
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Fetch posts from Ghost Content API - using real Ghost data only
+    const apiKey = process.env.CONTENT_API_KEY || Bun.env.CONTENT_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&limit=6&fields=title,excerpt,slug,published_at`);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`Ghost API error: ${response.status}`);
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    const data = await response.json();
+    console.log('✅ Successfully fetched', data.posts.length, 'real blog posts from Ghost');
 
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data.trim()) {
-              res.write(`data: ${data}\n\n`);
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-      res.end();
-    }
-  } catch (error) {
-    console.error(error);
-    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-    res.end();
-  }
-});
+    // Format posts for frontend
+    const posts = data.posts.map(post => ({
+      title: post.title,
+      excerpt: post.excerpt || 'No excerpt available',
+      slug: post.slug,
+      publishedAt: post.published_at
+    }));
 
-app.get('/demo-stream', async (req, res) => {
-  try {
-    const { url } = req.query;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL parameter is required' });
-    }
-    
-    // Set up SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
+    res.status(200).json({
+      success: true,
+      posts: posts
     });
 
-    const response = await fetch('http://localhost:8000/demo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data.trim()) {
-              res.write(`data: ${data}\n\n`);
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-      res.end();
-    }
   } catch (error) {
-    console.error(error);
-    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-    res.end();
+    console.log('❌ Ghost API Error:', error.message);
+    console.log('🚨 Real blog data unavailable - check Ghost server status');
+
+    // Return error instead of mock data - following AGENTS.md requirement
+    res.status(503).json({
+      success: false,
+      message: 'Blog content temporarily unavailable. Please ensure Ghost server is running on port 2368.',
+      error: error.message
+    });
   }
 });
 
