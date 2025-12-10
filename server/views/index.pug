@@ -20,7 +20,7 @@ block content
   script(src="https://unpkg.com/vue@3/dist/vue.global.js")
 
   #demo-app.container
-    section.hero-section
+    section.hero-section(:class="{ 'with-blog-panel': showBlogPanel }")
       .row
         // Left Graphic Section - Will fade away on form submit
         .col-lg-6.col-sm-12.text-center#hero-graphic(v-show="!formSubmitted" :class="{ 'fade-out': isAnimating }")
@@ -102,15 +102,50 @@ block content
               p ⚠️ Unable to load blog posts
               p Please ensure Ghost server is running
 
-            // Blog posts grid
-            .blog-posts-grid(v-if="!isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
-              .blog-post-card(v-for="post in blogPosts.slice(0, 4)" :key="post.slug")
-                .blog-post-title {{ post.title }}
-                .blog-post-excerpt {{ post.excerpt }}
+            // Phase 3: Expanded Article View
+            .expanded-article-container(v-if="isArticleExpanded" :class="{ 'article-expanded': isArticleExpanded }")
+              .article-close-btn(@click="closeArticle") ✕
 
-            // Scroll indicator
-            .blog-scroll-indicator(v-if="blogPosts.length > 4")
-              p Scroll for more blogs ↓
+              // Article loading state
+              .article-loading(v-if="isFetchingPost")
+                .loading-spinner 🔄
+                p Loading article...
+
+              // Article error state
+              .article-error(v-if="postFetchError && !isFetchingPost")
+                p ⚠️ Unable to load article
+                p Please try again
+
+              // Article content
+              .article-content(v-if="!isFetchingPost && !postFetchError && expandedPostContent")
+                .article-header
+                  h2.article-title {{ expandedPostContent.title }}
+                  .article-meta
+                    span.publish-date {{ new Date(expandedPostContent.publishedAt).toLocaleDateString() }}
+                    span.reading-time(v-if="expandedPostContent.readingTime") • {{ expandedPostContent.readingTime }} min read
+
+                .article-feature-image(v-if="expandedPostContent.featureImage")
+                  img(:src="expandedPostContent.featureImage" :alt="expandedPostContent.title")
+
+                .article-body(v-html="expandedPostContent.content")
+
+            // Phase 3: Blog posts grid with pagination (only show when not expanded)
+            .blog-posts-section(v-if="!isArticleExpanded && !isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
+              .blog-posts-grid
+                .blog-post-card(
+                  v-for="post in paginatedPosts"
+                  :key="post.slug"
+                  @click="expandArticle(post)"
+                )
+                  .blog-post-title {{ post.title }}
+                  .blog-post-excerpt {{ post.excerpt }}
+                  .blog-post-date {{ new Date(post.publishedAt).toLocaleDateString() }}
+
+              // Phase 3: Pagination controls
+              .blog-pagination(v-if="totalPages > 1")
+                button.pagination-btn.prev-btn(@click="prevPage" :disabled="!canGoPrev") ❮
+                span.page-info {{ currentPage + 1 }} of {{ totalPages }}
+                button.pagination-btn.next-btn(@click="nextPage" :disabled="!canGoNext") ❯
 
           //- Remove bottom text as per Phase 2 requirements
           //- h2.mt-5.mb-0.poppins-bold(v-show="!isLoading")!=t('heroSubTitle4')
@@ -294,7 +329,18 @@ block append scripts
           showBlogPanel: false,
           blogPosts: [],
           isFetchingPosts: false,
-          blogLoadingError: false
+          blogLoadingError: false,
+
+          // Phase 3 - Article Expansion State
+          selectedPost: null,
+          expandedPostContent: null,
+          isArticleExpanded: false,
+          isFetchingPost: false,
+          postFetchError: false,
+
+          // Phase 3 - Pagination State
+          currentPage: 0,
+          postsPerPage: 4
         }
       },
 
@@ -470,6 +516,74 @@ block append scripts
             'homeInputButton': 'ANALYZE'
           };
           return translations[key] || key;
+        },
+
+        // Phase 3 - Article expansion methods
+        async expandArticle(post) {
+          this.selectedPost = post;
+          this.isArticleExpanded = true;
+          this.isFetchingPost = true;
+          this.postFetchError = false;
+
+          try {
+            const response = await fetch(`/api/ghost-post/${post.slug}`);
+            const data = await response.json();
+
+            if (data.success) {
+              this.expandedPostContent = data.post;
+              console.log('✅ Loaded article:', post.title);
+            } else {
+              this.postFetchError = true;
+              console.log('❌ Article loading failed:', data.message);
+            }
+          } catch (error) {
+            this.postFetchError = true;
+            console.log('❌ Article fetch error:', error);
+          } finally {
+            this.isFetchingPost = false;
+          }
+        },
+
+        closeArticle() {
+          this.isArticleExpanded = false;
+          this.selectedPost = null;
+          this.expandedPostContent = null;
+          this.isFetchingPost = false;
+          this.postFetchError = false;
+        },
+
+        // Phase 3 - Pagination methods
+        nextPage() {
+          if (this.currentPage < this.totalPages - 1) {
+            this.currentPage++;
+          }
+        },
+
+        prevPage() {
+          if (this.currentPage > 0) {
+            this.currentPage--;
+          }
+        }
+      },
+
+      computed: {
+        // Phase 3 - Computed properties for pagination
+        paginatedPosts() {
+          const start = this.currentPage * this.postsPerPage;
+          const end = start + this.postsPerPage;
+          return this.blogPosts.slice(start, end);
+        },
+
+        totalPages() {
+          return Math.ceil(this.blogPosts.length / this.postsPerPage);
+        },
+
+        canGoNext() {
+          return this.currentPage < this.totalPages - 1;
+        },
+
+        canGoPrev() {
+          return this.currentPage > 0;
         }
       },
 
@@ -572,7 +686,7 @@ block append styles
       width: 45%;
       transform: translateX(100%);
       opacity: 0;
-      transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+      transition: transform 0.8s ease-out, opacity 0.8s ease-out, position 0s 0.8s;
       padding: 20px;
       background: #f9f9f9;
       border: 2px solid #e0e0e0;
@@ -586,6 +700,27 @@ block append styles
     .blog-panel-container.slide-in-right {
       transform: translateX(4%);
       opacity: 1;
+      position: relative;
+      left: auto;
+      top: auto;
+      margin-left: 4%;
+      margin-bottom: 30px;
+    }
+
+    /* Ensure parent row accommodates blog panel height */
+    .hero-section .row {
+      min-height: 400px;
+      position: relative;
+    }
+
+    /* Add space below when blog panel is active */
+    .hero-section.with-blog-panel {
+      margin-bottom: 100px;
+    }
+
+    /* Adjust spacing for content after blog panel */
+    .hero-section.with-blog-panel + .mt-3 {
+      margin-top: 20px !important;
     }
 
     .blog-panel-header h3 {
@@ -654,11 +789,156 @@ block append styles
       to { transform: rotate(360deg); }
     }
 
-    .blog-scroll-indicator {
-      text-align: center;
-      padding: 10px;
-      font-size: 12px;
+    .blog-post-date {
+      font-size: 11px;
       color: #999;
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    /* Phase 3 - Expanded Article Styles */
+    .expanded-article-container {
+      position: absolute;
+      top: 2%;
+      left: 2%;
+      width: 96%;
+      height: 96%;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      z-index: 2000;
+      overflow-y: auto;
+      transform: scale(0.8);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .expanded-article-container.article-expanded {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .article-close-btn {
+      position: fixed;
+      top: calc(2% + 15px);
+      right: calc(2% + 20px);
+      width: 30px;
+      height: 30px;
+      background: rgba(224, 224, 224, 0.95);
+      backdrop-filter: blur(5px);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #666;
+      transition: background-color 0.2s ease;
+      z-index: 2001;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .article-close-btn:hover {
+      background: rgba(208, 208, 208, 0.95);
+      color: #333;
+    }
+
+    .article-content {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+
+    .article-header {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .article-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .article-meta {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .article-feature-image {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .article-feature-image img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .article-body {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .article-body p {
+      margin-bottom: 15px;
+    }
+
+    .article-body h1, .article-body h2, .article-body h3 {
+      margin-top: 25px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .article-loading, .article-error {
+      text-align: center;
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    /* Phase 3 - Pagination Styles */
+    .blog-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      padding: 15px 0;
+    }
+
+    .pagination-btn {
+      background: #0fffad;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 16px;
+      color: #333;
+      transition: background-color 0.2s ease;
+      min-width: 40px;
+    }
+
+    .pagination-btn:hover:not(:disabled) {
+      background: #00e6a0;
+    }
+
+    .pagination-btn:disabled {
+      background: #e0e0e0;
+      color: #999;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 14px;
+      color: #666;
+      font-weight: 500;
     }
 
     /* Loading Animation Styles */
