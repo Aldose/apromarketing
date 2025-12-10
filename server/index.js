@@ -223,6 +223,55 @@ app.get('/api/ghost-posts', async (req, res) => {
   }
 });
 
+// Ghost Individual Post API endpoint for Phase 3 article expansion
+app.get('/api/ghost-post/:slug', async (req, res) => {
+  try {
+    // Set CORS headers for frontend access
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    const { slug } = req.params;
+
+    // Fetch individual post from Ghost Content API with full content
+    const apiKey = process.env.CONTENT_API_KEY || Bun.env.CONTENT_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time`);
+
+    if (!response.ok) {
+      throw new Error(`Ghost API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Successfully fetched individual post:', slug);
+
+    // Format post for frontend
+    const post = {
+      title: data.posts[0].title,
+      excerpt: data.posts[0].excerpt || 'No excerpt available',
+      content: data.posts[0].html,
+      slug: data.posts[0].slug,
+      publishedAt: data.posts[0].published_at,
+      featureImage: data.posts[0].feature_image,
+      readingTime: data.posts[0].reading_time
+    };
+
+    res.status(200).json({
+      success: true,
+      post: post
+    });
+
+  } catch (error) {
+    console.log('❌ Ghost Individual Post API Error:', error.message);
+    console.log('🚨 Individual post data unavailable - check Ghost server status');
+
+    res.status(503).json({
+      success: false,
+      message: 'Article content temporarily unavailable. Please ensure Ghost server is running on port 2368.',
+      error: error.message
+    });
+  }
+});
+
 // Newsletter signup route
 app.post('/newsletter-signup', async (req, res) => {
   try {
