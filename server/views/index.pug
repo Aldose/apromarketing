@@ -20,7 +20,10 @@ block content
   script(src="https://unpkg.com/vue@3/dist/vue.global.js")
 
   #demo-app.container
-    section.hero-section(:class="{ 'with-blog-panel': showBlogPanel }")
+    // White fade overlay for smooth transitions
+    .transition-overlay(:class="{ 'fade-active': isTransitioning }")
+
+    section.hero-section(:class="{ 'with-blog-panel': showBlogPanel }" style="transform: translate3d(0,0,0)")
       .row
         // Left Graphic Section - Will fade away on form submit
         .col-lg-6.col-sm-12.text-center#hero-graphic(v-show="!formSubmitted" :class="{ 'fade-out': isAnimating }")
@@ -133,8 +136,9 @@ block content
             .blog-posts-section(v-if="!isArticleExpanded && !isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
               .blog-posts-grid
                 .blog-post-card(
-                  v-for="post in paginatedPosts"
+                  v-for="(post, index) in paginatedPosts"
                   :key="post.slug"
+                  :style="{ animationDelay: (index * 0.1) + 's' }"
                   @click="expandArticle(post)"
                 )
                   .blog-post-title {{ post.title }}
@@ -301,6 +305,7 @@ block append scripts
           formSubmitted: false,
           isLoading: false,
           showResults: false,
+          isTransitioning: false,
 
           // Form data
           websiteUrl: '',
@@ -358,29 +363,43 @@ block append scripts
         },
 
         startPhase1Animation() {
-          // Step 1: Start animation sequence
+          // Start smooth animation sequence with fade overlay
           this.isAnimating = true;
           this.isLoading = true;
 
-          // Step 2: After 800ms, hide the graphic completely and move form left
-          setTimeout(() => {
-            this.formSubmitted = true;
+          // Activate transition overlay for smooth visual masking
+          this.isTransitioning = true;
 
-            // Phase 2: After form moves left, trigger blog panel animation
+          this.$nextTick(() => {
+            // Start layout changes while overlay masks them
             setTimeout(() => {
-              this.startPhase2Animation();
-            }, 1000); // 1 second after form moves left
-          }, 800);
+              this.formSubmitted = true;
+
+              // Fade out overlay to reveal new layout, then start Phase 2
+              setTimeout(() => {
+                this.isTransitioning = false;
+
+                // Start Phase 2 after overlay fades out
+                setTimeout(() => {
+                  this.startPhase2Animation();
+                }, 200);
+              }, 300);
+            }, 200); // Quick layout change while masked
+          });
         },
 
         async startPhase2Animation() {
           console.log('Starting Phase 2 Animation - Blog Panel');
 
-          // Start fetching blog posts
+          // Start fetching blog posts first
           this.fetchBlogPosts();
 
-          // Show blog panel with animation
-          this.showBlogPanel = true;
+          // Slight delay for smoother sequence
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.showBlogPanel = true;
+            }, 100);
+          });
         },
 
         async fetchBlogPosts() {
@@ -643,39 +662,64 @@ block append styles
       transition: width 0.3s ease;
       border-radius: 10px;
     }
-    
-    /* Phase 1 Animation Styles */
+
+    /* White Fade Overlay for Smooth Transitions */
+    .transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .transition-overlay.fade-active {
+      opacity: 1;
+    }
+
+    /* Phase 1 Animation Styles - Optimized for smoothness */
     #hero-graphic {
-      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+      transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
     }
 
     #hero-graphic.fade-out {
       opacity: 0;
-      transform: translateX(-50px);
+      transform: translate3d(-30px, 0, 0) scale(0.95);
     }
 
     #demo-form-section {
-      transition: all 0.8s ease-out;
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
+      will-change: transform, width;
     }
 
     #demo-form-section.move-left {
-      transform: translateX(-25%);
+      transform: translate3d(-15%, 0, 0);
     }
 
     #demo-form-section.form-with-blog {
       flex: 0 0 48%;
       max-width: 48%;
-      transform: translateX(0);
+      transform: translate3d(0, 0, 0);
     }
 
     .header-content {
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+      transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
     }
 
     .header-content.fade-up {
       opacity: 0;
-      transform: translateY(-30px);
+      transform: translate3d(0, -20px, 0);
     }
 
     /* Phase 2 Animation Styles - Blog Panel */
@@ -684,9 +728,11 @@ block append styles
       top: 0;
       left: 50%;
       width: 45%;
-      transform: translateX(100%);
+      transform: translate3d(100%, 0, 0);
       opacity: 0;
-      transition: transform 0.8s ease-out, opacity 0.8s ease-out, position 0s 0.8s;
+      transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+                  opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+                  position 0s 0.7s;
       padding: 20px;
       background: #f9f9f9;
       border: 2px solid #e0e0e0;
@@ -695,10 +741,11 @@ block append styles
       overflow-y: auto;
       z-index: 1000;
       box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      will-change: transform, opacity;
     }
 
     .blog-panel-container.slide-in-right {
-      transform: translateX(4%);
+      transform: translate3d(4%, 0, 0);
       opacity: 1;
       position: relative;
       left: auto;
@@ -711,6 +758,7 @@ block append styles
     .hero-section .row {
       min-height: 400px;
       position: relative;
+      transform: translate3d(0, 0, 0); /* Enable hardware acceleration */
     }
 
     /* Add space below when blog panel is active */
@@ -747,12 +795,18 @@ block append styles
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 15px;
-      transition: box-shadow 0.3s ease;
       cursor: pointer;
+      opacity: 0;
+      transform: translate3d(0, 20px, 0);
+      animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: transform, box-shadow;
     }
 
     .blog-post-card:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translate3d(0, -2px, 0);
     }
 
     .blog-post-title {
@@ -941,10 +995,11 @@ block append styles
       font-weight: 500;
     }
 
-    /* Loading Animation Styles */
+    /* Loading Animation Styles - Enhanced */
     .loading-section {
       margin-top: 30px;
-      animation: fadeIn 0.5s ease-in;
+      animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
     }
 
     .analysis-steps {
@@ -1011,13 +1066,24 @@ block append styles
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translate3d(0, 20px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
 
     @keyframes slideUpIn {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translate3d(0, 30px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 20px, 0);
+      }
+      to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+      }
     }
 
     /* Responsive adjustments for Phase 1 */
