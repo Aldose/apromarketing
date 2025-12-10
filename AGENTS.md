@@ -18,6 +18,10 @@ examine the png file called Phase1UIanimations.png. When a user submits a websit
 phase 2:
 look at Phase2UIanimations.png while the demo is processing on the left a window with titles and excerpts of blogs from the ghost website will float in from the right. 
 
+phase 3:
+examine the instructions in Phase3UIAnimations.png when a user clicks on one of the blogs. The selected article will expand to take up most of the space of the div with the id "blog panel" with 2% padding surround the article view. There should be a button to close the article on the upper right to return the div back to it's original state for the user to select another article. 
+
+bug fix: change the not working scrolling behavior for paginating the blogs with a simple < > interface that will go forward and backwards in pagination. 
 
 
 # Rules to follow
