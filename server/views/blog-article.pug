@@ -1,0 +1,492 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    // SEO Meta Tags
+    title #{article.metaTitle}
+    meta(name="description" content=article.metaDescription)
+    meta(name="author" content="APro Marketing")
+    meta(name="robots" content="index, follow")
+
+    // Open Graph Meta Tags
+    meta(property="og:type" content="article")
+    meta(property="og:title" content=article.ogTitle)
+    meta(property="og:description" content=article.ogDescription)
+    meta(property="og:url" content=`${appUrl}/blog/${article.slug}`)
+    if article.ogImage
+      meta(property="og:image" content=article.ogImage)
+    meta(property="og:site_name" content="APro Marketing")
+    meta(property="article:published_time" content=article.publishedAt)
+
+    // Twitter Card Meta Tags
+    meta(name="twitter:card" content="summary_large_image")
+    meta(name="twitter:title" content=article.twitterTitle)
+    meta(name="twitter:description" content=article.twitterDescription)
+    if article.twitterImage
+      meta(name="twitter:image" content=article.twitterImage)
+
+    // Canonical URL
+    link(rel="canonical" href=`${appUrl}/blog/${article.slug}`)
+
+    // Favicon
+    link(rel="icon" href="/images/favicon.ico")
+
+    // Stylesheets
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200..900&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@200..900&display=swap" rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet")
+
+    // APro Marketing Fonts
+    style.
+      @font-face {
+        font-family: 'poppins_bold';
+        font-display: swap;
+        src: url('/fonts/Poppins/Poppins-Bold.ttf');
+      }
+      @font-face {
+        font-family: 'poppins_light';
+        src: url('/fonts/Poppins/Poppins-Light.ttf');
+      }
+      @font-face{
+        font-family:'baloo2';
+        font-display: swap;
+        src: url('/fonts/Baloo_Paaji_2/BalooPaaji2-VariableFont_wght.ttf')
+      }
+
+    // Custom Blog Styles - APro Marketing Theme
+    style.
+      :root {
+        --primary-color: #0fffad;
+        --secondary-color: #2b90d9;
+        --text-color: black;
+        --light-gray: #f5f5f5;
+        --border-radius: 4px;
+        --text-primary: black;
+        --text-secondary: #666;
+        --border-light: #e5e7eb;
+        --bg-light: #f8fafc;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.7;
+        color: var(--text-color);
+        background-color: #fff;
+      }
+
+      .feature-image-header {
+        width: 100%;
+        height: 60vh;
+        min-height: 400px;
+        overflow: hidden;
+        margin-bottom: 3rem;
+      }
+
+      .feature-image-large {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      .article-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+        font-family: 'poppins_bold', sans-serif;
+      }
+
+      .blog-nav {
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        padding: 1rem 0;
+        margin-bottom: 0;
+      }
+
+      .blog-nav .navbar-brand {
+        font-weight: 700;
+        color: var(--text-color) !important;
+        text-decoration: none;
+        font-family: 'poppins_bold', sans-serif;
+      }
+
+      .blog-nav .nav-link {
+        color: var(--text-secondary);
+        font-weight: 500;
+        transition: color 0.3s ease;
+        font-family: 'Roboto', sans-serif;
+      }
+
+      .blog-nav .nav-link:hover {
+        color: var(--primary-color);
+      }
+
+      .article-meta {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .article-meta i {
+        margin-right: 0.5rem;
+      }
+
+      .article-tags {
+        margin-bottom: 2rem;
+      }
+
+      .tags-container {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .tags-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+      }
+
+      .tags-label i {
+        margin-right: 0.3rem;
+      }
+
+      .tag-item {
+        background: var(--primary-color);
+        color: black;
+        padding: 0.3rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-family: 'Roboto', sans-serif;
+      }
+
+      .tag-item:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+
+      .article-content {
+        max-width: 750px;
+        margin: 0 auto;
+        font-size: 1.1rem;
+        line-height: 1.8;
+      }
+
+      .article-content h1,
+      .article-content h2,
+      .article-content h3,
+      .article-content h4,
+      .article-content h5,
+      .article-content h6 {
+        font-weight: 600;
+        margin: 2.5rem 0 1rem;
+        color: var(--text-primary);
+      }
+
+      .article-content h2 {
+        font-size: 1.8rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 0.5rem;
+        font-family: 'poppins_bold', sans-serif;
+      }
+
+      .article-content h3 {
+        font-size: 1.5rem;
+        font-family: 'poppins_bold', sans-serif;
+      }
+
+      .article-content p {
+        margin-bottom: 1.5rem;
+      }
+
+      .article-content blockquote {
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem 1.5rem;
+        margin: 2rem 0;
+        background: var(--bg-light);
+        border-radius: 0 8px 8px 0;
+        font-style: italic;
+      }
+
+      .article-content pre {
+        background: #f8f9fa;
+        border: 1px solid var(--border-light);
+        border-radius: 8px;
+        padding: 1.5rem;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+      }
+
+      .article-content code {
+        background: #f1f3f4;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        color: #d73a49;
+      }
+
+      .article-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1.5rem 0;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      }
+
+      .article-content ul,
+      .article-content ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+      }
+
+      .article-content li {
+        margin-bottom: 0.5rem;
+      }
+
+      .article-content a {
+        color: var(--primary-color);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .article-content a:hover {
+        border-bottom-color: var(--primary-color);
+      }
+
+      .article-footer {
+        margin-top: 4rem;
+        padding: 2rem 0;
+        border-top: 1px solid var(--border-light);
+        background: var(--bg-light);
+      }
+
+      .back-to-home {
+        background: var(--primary-color);
+        color: black;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'poppins_bold', sans-serif;
+      }
+
+      .back-to-home:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(15, 255, 173, 0.3);
+      }
+
+      .reading-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 3px;
+        background: var(--primary-color);
+        z-index: 1000;
+        transition: width 0.2s ease;
+      }
+
+      .share-buttons {
+        margin: 2rem 0;
+        text-align: center;
+      }
+
+      .share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        margin: 0 0.5rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .share-btn.twitter {
+        background: var(--primary-color);
+        color: black;
+      }
+
+      .share-btn.linkedin {
+        background: var(--secondary-color);
+        color: white;
+      }
+
+      .share-btn.facebook {
+        background: var(--primary-color);
+        color: black;
+      }
+
+      .share-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        color: white;
+      }
+
+      @media (max-width: 768px) {
+        .feature-image-header {
+          height: 50vh;
+          min-height: 300px;
+        }
+
+        .article-title {
+          font-size: 2.2rem;
+        }
+
+        .article-content {
+          font-size: 1rem;
+        }
+      }
+
+  body
+    // Reading Progress Bar
+    .reading-progress(id="reading-progress")
+
+    // Navigation
+    div(style="box-shadow:none; padding:0 15px;")
+      nav.blog-nav
+        .container
+          .d-flex.justify-content-between.align-items-center
+            a.navbar-brand(href="/")
+              img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
+            .nav-links
+              a.nav-link(href="/") Home
+              a.nav-link(href="/#blog-section") Blog
+
+    // Article Header with Feature Image
+    if article.featureImage
+      .feature-image-header
+        img.feature-image-large(src=article.featureImage alt=article.title)
+
+    // Main Content
+    main.container
+      .row
+        .col-lg-10.mx-auto
+          // Article Title
+          h1.article-title= article.title
+
+          // Article Meta
+          .article-meta.d-flex.flex-wrap.align-items-center.justify-content-between
+            .meta-left.d-flex.align-items-center.gap-3
+              span
+                i.fas.fa-calendar-alt
+                | Published #{new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              span
+                i.fas.fa-clock
+                | #{article.readingTime} min read
+
+          // Article Tags
+          if article.tags && article.tags.length > 0
+            .article-tags.mt-3
+              .tags-container
+                span.tags-label
+                  i.fas.fa-tags
+                  | Tags:
+                each tag in article.tags
+                  a.tag-item(href=`/tag/${tag.slug}`)= tag.name
+
+          // Article Content
+          .article-content
+            != article.content
+
+          // Share Buttons
+          .share-buttons
+            h5 Share this article
+            a.share-btn.twitter(href=`https://twitter.com/intent/tweet?text=${encodeURIComponent(article.title)}&url=${encodeURIComponent(appUrl + '/blog/' + article.slug)}` target="_blank" rel="noopener")
+              i.fab.fa-twitter
+              span Tweet
+            a.share-btn.linkedin(href=`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(appUrl + '/blog/' + article.slug)}` target="_blank" rel="noopener")
+              i.fab.fa-linkedin-in
+              span Share
+            a.share-btn.facebook(href=`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(appUrl + '/blog/' + article.slug)}` target="_blank" rel="noopener")
+              i.fab.fa-facebook-f
+              span Share
+
+    // Footer
+    footer.article-footer
+      .container
+        .row
+          .col-lg-10.mx-auto.text-center
+            a.back-to-home(href="/")
+              i.fas.fa-arrow-left
+              span Back to Home
+
+    // JavaScript
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js")
+
+    // Reading Progress Script
+    script.
+      // Reading progress indicator
+      window.addEventListener('scroll', function() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById('reading-progress').style.width = scrolled + '%';
+      });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+
+      // Table of contents generation (if headings exist)
+      document.addEventListener('DOMContentLoaded', function() {
+        const headings = document.querySelectorAll('.article-content h2, .article-content h3');
+        if (headings.length > 2) {
+          // Generate TOC if there are multiple headings
+          const toc = document.createElement('div');
+          toc.className = 'table-of-contents';
+          toc.innerHTML = '<h4>Table of Contents</h4>';
+          const tocList = document.createElement('ul');
+
+          headings.forEach((heading, index) => {
+            const id = `heading-${index}`;
+            heading.id = id;
+
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `#${id}`;
+            link.textContent = heading.textContent;
+            link.className = heading.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+
+            listItem.appendChild(link);
+            tocList.appendChild(listItem);
+          });
+
+          toc.appendChild(tocList);
+
+          // Insert TOC after the first paragraph
+          const firstParagraph = document.querySelector('.article-content p');
+          if (firstParagraph) {
+            firstParagraph.parentNode.insertBefore(toc, firstParagraph.nextSibling);
+          }
+        }
+      });

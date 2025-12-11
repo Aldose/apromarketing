@@ -175,6 +175,114 @@ app.get('/free-7-day-trial', i18nMiddleware, (req, res) => {
     res.render('freeTrial7Days');
   }
 );
+
+// Blog article page route
+app.get('/blog/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Fetch the article from Ghost API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&include=tags`);
+
+    if (!response.ok) {
+      return res.status(404).render('404');
+    }
+
+    const data = await response.json();
+
+    if (!data.posts || data.posts.length === 0) {
+      return res.status(404).render('404');
+    }
+
+    const article = data.posts[0];
+
+    // Format the article data
+    const formattedArticle = {
+      title: article.title,
+      excerpt: article.excerpt || '',
+      content: article.html,
+      slug: article.slug,
+      publishedAt: article.published_at,
+      featureImage: article.feature_image,
+      readingTime: article.reading_time || 5,
+      tags: article.tags || [],
+      metaTitle: article.meta_title || article.title,
+      metaDescription: article.meta_description || article.excerpt,
+      ogTitle: article.og_title || article.title,
+      ogDescription: article.og_description || article.excerpt,
+      ogImage: article.og_image || article.feature_image,
+      twitterTitle: article.twitter_title || article.title,
+      twitterDescription: article.twitter_description || article.excerpt,
+      twitterImage: article.twitter_image || article.feature_image
+    };
+
+    res.render('blog-article', { article: formattedArticle, appUrl: Bun.env.APP_URL });
+
+  } catch (error) {
+    console.error('Error fetching blog article:', error);
+    res.status(500).render('500');
+  }
+});
+
+// Tag page route
+app.get('/tag/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Fetch articles by tag from Ghost API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&filter=tag:${slug}&include=tags`);
+
+    if (!response.ok) {
+      return res.status(404).render('404');
+    }
+
+    const data = await response.json();
+
+    // Also fetch tag information
+    const tagResponse = await fetch(`http://localhost:2368/ghost/api/content/tags/slug/${slug}/?key=${apiKey}`);
+    let tagInfo = null;
+    if (tagResponse.ok) {
+      const tagData = await tagResponse.json();
+      tagInfo = tagData.tags && tagData.tags.length > 0 ? tagData.tags[0] : null;
+    }
+
+    // Format articles for display
+    const articles = data.posts.map(article => {
+      let excerpt = article.excerpt || '';
+      // Truncate long excerpts to about 150 characters
+      if (excerpt.length > 150) {
+        excerpt = excerpt.substring(0, 150).trim() + '...';
+      }
+      // If no meaningful excerpt, don't include one
+      if (!excerpt || excerpt.trim() === article.title) {
+        excerpt = '';
+      }
+
+      return {
+        title: article.title,
+        excerpt,
+        slug: article.slug,
+        publishedAt: article.published_at,
+        featureImage: article.feature_image,
+        readingTime: article.reading_time || 5,
+        tags: article.tags || []
+      };
+    });
+
+    res.render('tag', {
+      articles,
+      tagInfo: tagInfo || { name: slug, slug },
+      appUrl: Bun.env.APP_URL || 'http://localhost:8888'
+    });
+
+  } catch (error) {
+    console.error('Error fetching tag articles:', error);
+    res.status(500).render('500');
+  }
+});
+
 // AI-NOTES: Demo endpoints moved to /routes/demoRouteSecure.js for enhanced security
 // Includes origin authentication, rate limiting, and input validation
 
@@ -187,7 +295,7 @@ app.get('/api/ghost-posts', async (req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     // Fetch posts from Ghost Content API - using real Ghost data only
-    const apiKey = process.env.CONTENT_API_KEY || Bun.env.CONTENT_API_KEY;
+    const apiKey = Bun.env.GHOST_API_KEY;
     const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&limit=6&fields=title,excerpt,slug,published_at`);
 
     if (!response.ok) {
@@ -234,8 +342,8 @@ app.get('/api/ghost-post/:slug', async (req, res) => {
     const { slug } = req.params;
 
     // Fetch individual post from Ghost Content API with full content
-    const apiKey = process.env.CONTENT_API_KEY || Bun.env.CONTENT_API_KEY;
-    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time`);
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time&include=tags`);
 
     if (!response.ok) {
       throw new Error(`Ghost API error: ${response.status}`);
@@ -252,7 +360,8 @@ app.get('/api/ghost-post/:slug', async (req, res) => {
       slug: data.posts[0].slug,
       publishedAt: data.posts[0].published_at,
       featureImage: data.posts[0].feature_image,
-      readingTime: data.posts[0].reading_time
+      readingTime: data.posts[0].reading_time,
+      tags: data.posts[0].tags || []
     };
 
     res.status(200).json({

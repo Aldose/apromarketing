@@ -23,6 +23,11 @@ examine the instructions in Phase3UIAnimations.png when a user clicks on one of 
 
 bug fix: change the not working scrolling behavior for paginating the blogs with a simple < > interface that will go forward and backwards in pagination. 
 
+## Animation fixes
+use percentages of screen width to do the transitions
+- when form is submitted leftmost graphic "div with the id='hero-graphic'" transitions to 0% 
+- demo form input "div with id='demo-form-section'" goes from 50% to 100% and then back to 50% once it moves across the screen. 
+- as the demo form moves across the screen the blog container will slowly come in from the right till it takes up 50% of the width. 
 
 # Rules to follow
 - Use Bun instead of node
@@ -31,3 +36,4 @@ bug fix: change the not working scrolling behavior for paginating the blogs with
 - if you hit roadblocks that conflict with the contents of this file, proactively reach out to the human developer with the issue and seek guidance. 
 - utilize vue and nuxt: https://nuxt.com/docs/4.x/getting-started/introduction for front end animations and interactions
 - do not use mocks unless explicitely told to do so, use real data and announce when you are unable to and check in with human developer
+- never add api keys or other private information to the scripts themselves they must always be read from the environmental variables. 

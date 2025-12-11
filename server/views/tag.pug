@@ -1,0 +1,317 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+
+    // SEO Meta Tags
+    title #{tagInfo.name} Tag | APro Marketing
+    meta(name="description" content=`Articles tagged with ${tagInfo.name} - APro Marketing Blog`)
+    meta(name="author" content="APro Marketing")
+    meta(name="robots" content="index, follow")
+
+    // Open Graph Meta Tags
+    meta(property="og:type" content="website")
+    meta(property="og:title" content=`${tagInfo.name} Tag - APro Marketing`)
+    meta(property="og:description" content=`Articles tagged with ${tagInfo.name}`)
+    meta(property="og:url" content=`${appUrl}/tag/${tagInfo.slug}`)
+    meta(property="og:site_name" content="APro Marketing")
+
+    // Twitter Card Meta Tags
+    meta(name="twitter:card" content="summary")
+    meta(name="twitter:title" content=`${tagInfo.name} Tag - APro Marketing`)
+    meta(name="twitter:description" content=`Articles tagged with ${tagInfo.name}`)
+
+    // Canonical URL
+    link(rel="canonical" href=`${appUrl}/tag/${tagInfo.slug}`)
+
+    // Favicon
+    link(rel="icon" href="/images/favicon.ico")
+
+    // Stylesheets
+    link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@200..900&display=swap" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@200..900&display=swap" rel="stylesheet")
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet")
+
+    // APro Marketing Fonts
+    style.
+      @font-face {
+        font-family: 'poppins_bold';
+        font-display: swap;
+        src: url('/fonts/Poppins/Poppins-Bold.ttf');
+      }
+      @font-face {
+        font-family: 'poppins_light';
+        font-display: swap;
+        src: url('/fonts/Poppins/Poppins-Light.ttf');
+      }
+
+      // APro Marketing color variables
+      :root {
+        --primary-color: #0fffad;
+        --secondary-color: #2b90d9;
+        --dark-bg: #1a1a1a;
+        --text-dark: #333;
+        --text-light: #666;
+      }
+
+      body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.7;
+        color: var(--text-dark);
+        background-color: #ffffff;
+        margin: 0;
+        padding: 0;
+      }
+
+      // Navigation styles
+      .blog-nav {
+        background: white;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+      }
+
+      .navbar-brand .logo {
+        height: 40px;
+        width: auto;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .nav-link {
+        color: var(--text-dark);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-link:hover {
+        color: var(--secondary-color);
+      }
+
+      //icons
+      .fas {
+        padding-right:1%
+      }
+
+      // Tag page specific styles
+      .tag-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        color: white;
+        padding: 4rem 0 3rem;
+        text-align: center;
+      }
+
+      .tag-header h1 {
+        font-family: 'poppins_bold', sans-serif;
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .tag-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+
+      .articles-section {
+        padding: 3rem 0;
+      }
+
+      .article-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .article-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .article-image {
+        height: 200px;
+        width: 100%;
+        object-fit: cover;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      }
+
+      .article-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 200px;
+      }
+
+      .article-title {
+        font-family: 'poppins_bold', sans-serif;
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-dark);
+        line-height: 1.4;
+      }
+
+      .article-excerpt {
+        color: var(--text-light);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        flex-grow: 1;
+        margin-bottom: 1rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+      }
+
+      .article-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: auto;
+      }
+
+      .article-tags {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+      }
+
+      .tag-item {
+        background: var(--primary-color);
+        color: black;
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .tag-item:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      .no-articles {
+        text-align: center;
+        padding: 4rem 2rem;
+      }
+
+      .no-articles h3 {
+        font-family: 'poppins_bold', sans-serif;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+      }
+
+      .back-to-blog {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary-color);
+        color: black;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+      }
+
+      .back-to-blog:hover {
+        background: var(--secondary-color);
+        color: white;
+        transform: translateY(-2px);
+        text-decoration: none;
+      }
+
+      // Responsive design
+      @media (max-width: 768px) {
+        .tag-header h1 {
+          font-size: 2rem;
+        }
+
+        .article-content {
+          padding: 1rem;
+        }
+
+        .nav-links {
+          gap: 1rem;
+        }
+      }
+
+  body
+    // Navigation
+    nav.blog-nav
+      .container
+        .d-flex.justify-content-between.align-items-center
+          a.navbar-brand(href="/")
+            img.logo(src="/images/logo/apro-logo1.png" alt="APro Logo")
+          .nav-links
+            a.nav-link(href="/") Home
+            a.nav-link(href="/#blog-section") Blog
+
+    // Tag Header
+    .tag-header
+      .container
+        h1
+          i.fas.fa-tag
+          | #{tagInfo.name}
+        p #{articles.length} article#{articles.length !== 1 ? 's' : ''} found
+
+    // Articles Section
+    .articles-section
+      .container
+        if articles && articles.length > 0
+          .row.g-4
+            each article in articles
+              .col-md-6.col-lg-4
+                a.article-card(href=`/blog/${article.slug}`)
+                  .article-content
+                    h3.article-title= article.title
+                    if article.excerpt && article.excerpt.trim() && article.excerpt !== article.title
+                      p.article-excerpt= article.excerpt
+                    .article-meta
+                      span
+                        i.fas.fa-calendar-alt
+                        | #{new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      span
+                        i.fas.fa-clock
+                        | #{article.readingTime} min
+                    if article.tags && article.tags.length > 0
+                      .article-tags.mt-2
+                        each tag in article.tags
+                          a.tag-item(href=`/tag/${tag.slug}`)= tag.name
+        else
+          .no-articles
+            h3 No articles found for this tag
+            p We couldn't find any articles tagged with "#{tagInfo.name}".
+            a.back-to-blog(href="/#blog-section")
+              i.fas.fa-arrow-left
+              | Back to Blog
+
+    // Footer
+    footer.text-center.py-4
+      .container
+        a.back-to-blog(href="/")
+          i.fas.fa-arrow-left
+          | Back to Home
+
+    // JavaScript
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js")

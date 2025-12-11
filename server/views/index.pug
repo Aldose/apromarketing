@@ -250,6 +250,52 @@ block content
 
             .newsletter-response#newsletter-response.mt-3(style="display:none;")
               p.response-text
+
+    // Blog Articles Section
+    section.blog-articles-section.mt-5.py-5
+      .container
+        .row.text-center
+          .col-12
+            h2.poppins-bold.mb-3 Latest Marketing Insights
+            p.mb-5 Explore our collection of marketing articles and tips
+
+        .row#blog-articles-grid
+          // Loading skeleton cards
+          .col-lg-4.col-md-6.col-sm-12.mb-4(
+            v-if="isLoadingHomeArticles"
+            v-for="i in 6"
+            :key="'home-skeleton-' + i"
+          )
+            .article-preview-card.skeleton
+              .article-skeleton-title
+                .skeleton-shimmer
+              .article-skeleton-excerpt
+                .skeleton-shimmer
+              .article-skeleton-excerpt(style="width: 85%")
+                .skeleton-shimmer
+              .article-skeleton-meta
+                .skeleton-shimmer
+
+          // Article preview cards
+          .col-lg-4.col-md-6.col-sm-12.mb-4(
+            v-if="!isLoadingHomeArticles && homeArticles.length > 0"
+            v-for="(article, index) in homeArticles"
+            :key="article.slug"
+            :style="{ animationDelay: (index * 0.2) + 's' }"
+          )
+            .article-preview-card(@click="navigateToArticle(article.slug)")
+              .article-preview-title {{ article.title }}
+              .article-preview-excerpt {{ article.excerpt }}
+              .article-preview-meta
+                span.article-preview-date {{ formatDate(article.publishedAt) }}
+                span.article-read-more Read More →
+
+          // Error state
+          .col-12.text-center(v-if="!isLoadingHomeArticles && homeArticles.length === 0")
+            .article-error-state
+              p 📄 No articles available at the moment
+              p Please check back later for new content
+
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
@@ -361,7 +407,11 @@ block append scripts
 
           // Phase 3 - Pagination State
           currentPage: 0,
-          postsPerPage: 4
+          postsPerPage: 4,
+
+          // Home Articles Section State
+          homeArticles: [],
+          isLoadingHomeArticles: false
         }
       },
 
@@ -587,6 +637,36 @@ block append scripts
           this.postFetchError = false;
         },
 
+        // Home Articles Section methods
+        async fetchHomeArticles() {
+          this.isLoadingHomeArticles = true;
+          try {
+            console.log('🔄 Fetching home articles...');
+            const response = await fetch('/api/ghost-posts');
+            const data = await response.json();
+
+            if (data.success) {
+              this.homeArticles = data.posts.slice(0, 6); // Get first 6 articles
+              console.log('✅ Loaded', this.homeArticles.length, 'home articles');
+            } else {
+              console.log('❌ Home articles loading failed:', data.message);
+            }
+          } catch (error) {
+            console.log('❌ Home articles fetch error:', error);
+          } finally {
+            this.isLoadingHomeArticles = false;
+          }
+        },
+
+        navigateToArticle(slug) {
+          // Navigate to the dedicated blog article page
+          window.location.href = `/blog/${slug}`;
+        },
+
+        formatDate(dateString) {
+          return new Date(dateString).toLocaleDateString();
+        },
+
         // Phase 3 - Pagination methods
         nextPage() {
           if (this.currentPage < this.totalPages - 1) {
@@ -624,6 +704,8 @@ block append scripts
 
       mounted() {
         console.log('Vue Demo App mounted successfully');
+        // Fetch home articles on page load
+        this.fetchHomeArticles();
       }
     }).mount('#demo-app');
 
@@ -1351,5 +1433,159 @@ block append styles
 
       .newsletter-input {
         margin-bottom: 15px;
+      }
+    }
+
+    /* Blog Articles Section Styles */
+    .blog-articles-section {
+      background: #f8f9fa;
+      border-radius: 15px;
+      margin: 80px 0;
+    }
+
+    .blog-articles-section h2 {
+      color: #333;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .blog-articles-section p {
+      color: #666;
+      font-size: 1.2rem;
+      margin-bottom: 50px;
+    }
+
+    .article-preview-card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 250px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+    }
+
+    .article-preview-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .article-preview-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.3;
+    }
+
+    .article-preview-excerpt {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .article-preview-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .article-preview-date {
+      font-size: 12px;
+      color: #999;
+      font-style: italic;
+    }
+
+    .article-read-more {
+      font-size: 12px;
+      color: #0fffad;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .article-error-state {
+      padding: 60px 20px;
+      color: #666;
+    }
+
+    /* Home Article Skeleton Styles */
+    .article-preview-card.skeleton {
+      cursor: default;
+      opacity: 1 !important;
+      background: #f8f9fa !important;
+    }
+
+    .article-preview-card.skeleton:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .article-skeleton-title,
+    .article-skeleton-excerpt,
+    .article-skeleton-meta {
+      background: #e9ecef;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .article-skeleton-title {
+      height: 20px;
+      width: 90%;
+    }
+
+    .article-skeleton-excerpt {
+      height: 16px;
+      width: 100%;
+      margin-bottom: 6px;
+    }
+
+    .article-skeleton-meta {
+      height: 12px;
+      width: 70%;
+      margin-top: 15px;
+    }
+
+    /* Responsive adjustments for blog articles */
+    @media (max-width: 768px) {
+      .blog-articles-section {
+        margin: 40px 0;
+        padding: 40px 15px;
+      }
+
+      .blog-articles-section h2 {
+        font-size: 2rem;
+      }
+
+      .blog-articles-section p {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+      }
+
+      .article-preview-card {
+        min-height: 200px;
+        padding: 15px;
+      }
+
+      .article-preview-title {
+        font-size: 16px;
+      }
+
+      .article-preview-excerpt {
+        font-size: 13px;
       }
     }
