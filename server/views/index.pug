@@ -20,9 +20,6 @@ block content
   script(src="https://unpkg.com/vue@3/dist/vue.global.js")
 
   #demo-app.container
-    // White fade overlay for smooth transitions
-    .transition-overlay(:class="{ 'fade-active': isTransitioning }")
-
     section.hero-section(:class="{ 'with-blog-panel': showBlogPanel }" style="transform: translate3d(0,0,0)")
       .row
         // Left Graphic Section - Will fade away on form submit
@@ -39,8 +36,8 @@ block content
         .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center#demo-form-section(
           :class="{ 'move-left': isAnimating, 'form-with-blog': formSubmitted }"
         )
-          // Top Header Content - Will fade upward
-          .header-content#header-content(v-show="!isAnimating" :class="{ 'fade-up': isAnimating }")
+          // Top Header Content - Static during animation
+          .header-content#header-content(v-show="!isAnimating")
             h2.mb-5.poppins-bold!=t('heroSubTitle3')
 
           // Demo Form
@@ -132,21 +129,40 @@ block content
 
                 .article-body(v-html="expandedPostContent.content")
 
-            // Phase 3: Blog posts grid with pagination (only show when not expanded)
-            .blog-posts-section(v-if="!isArticleExpanded && !isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
+            // Phase 3: Blog posts section (show skeleton while loading, real content when loaded)
+            .blog-posts-section(v-if="!isArticleExpanded")
               .blog-posts-grid
+
+                // Skeleton loading cards (show while fetching)
+                .blog-post-card.skeleton-card(
+                  v-if="isFetchingPosts"
+                  v-for="index in 4"
+                  :key="'skeleton-' + index"
+                  :style="{ animationDelay: (index * 0.1) + 's' }"
+                )
+                  .skeleton-title
+                    .skeleton-shimmer
+                  .skeleton-excerpt
+                    .skeleton-shimmer
+                  .skeleton-date
+                    .skeleton-shimmer
+                  .skeleton-spinner
+                    .loading-spinner ⏳
+
+                // Real blog posts (show when loaded)
                 .blog-post-card(
+                  v-if="!isFetchingPosts && !blogLoadingError && blogPosts.length > 0"
                   v-for="(post, index) in paginatedPosts"
                   :key="post.slug"
-                  :style="{ animationDelay: (index * 0.1) + 's' }"
+                  :style="{ animationDelay: (index * 0.3) + 's' }"
                   @click="expandArticle(post)"
                 )
                   .blog-post-title {{ post.title }}
                   .blog-post-excerpt {{ post.excerpt }}
                   .blog-post-date {{ new Date(post.publishedAt).toLocaleDateString() }}
 
-              // Phase 3: Pagination controls
-              .blog-pagination(v-if="totalPages > 1")
+              // Phase 3: Pagination controls (only show when posts loaded)
+              .blog-pagination(v-if="!isFetchingPosts && !blogLoadingError && totalPages > 1")
                 button.pagination-btn.prev-btn(@click="prevPage" :disabled="!canGoPrev") ❮
                 span.page-info {{ currentPage + 1 }} of {{ totalPages }}
                 button.pagination-btn.next-btn(@click="nextPage" :disabled="!canGoNext") ❯
@@ -363,43 +379,43 @@ block append scripts
         },
 
         startPhase1Animation() {
-          // Start smooth animation sequence with fade overlay
+          // Start percentage-based width animation sequence (slower timing)
           this.isAnimating = true;
           this.isLoading = true;
 
-          // Activate transition overlay for smooth visual masking
-          this.isTransitioning = true;
-
           this.$nextTick(() => {
-            // Start layout changes while overlay masks them
+            // Step 1: Hero graphic fades to 0% width (3.5s)
             setTimeout(() => {
-              this.formSubmitted = true;
+              this.formSubmitted = true; // Triggers hero-graphic fade-out
 
-              // Fade out overlay to reveal new layout, then start Phase 2
+              // Step 2: Demo form expands to 100% width (starts immediately with hero fade)
+              const demoFormElement = document.getElementById('demo-form-section');
+              if (demoFormElement) {
+                demoFormElement.classList.add('expand-full');
+              }
+
+              // Step 3: After demo form reaches 100%, start the transition back to 50% and show blog panel
               setTimeout(() => {
-                this.isTransitioning = false;
+                this.showBlogPanel = true; // Show blog panel (starts sliding in from right)
 
-                // Start Phase 2 after overlay fades out
-                setTimeout(() => {
-                  this.startPhase2Animation();
-                }, 200);
-              }, 300);
-            }, 200); // Quick layout change while masked
+                // Step 4: Demo form transitions from 100% back to 50%
+                if (demoFormElement) {
+                  demoFormElement.classList.remove('expand-full');
+                  demoFormElement.classList.add('form-with-blog');
+                }
+
+                // Start Phase 2 (blog loading)
+                this.startPhase2Animation();
+              }, 2000); // Allow more time for demo form to reach 100% (was 900ms)
+            }, 200); // Slightly longer initial delay for visibility
           });
         },
 
         async startPhase2Animation() {
-          console.log('Starting Phase 2 Animation - Blog Panel');
+          console.log('Starting Phase 2 Animation - Analysis & Blog Loading');
 
-          // Start fetching blog posts first
+          // Start fetching blog posts since panel is already visible
           this.fetchBlogPosts();
-
-          // Slight delay for smoother sequence
-          this.$nextTick(() => {
-            setTimeout(() => {
-              this.showBlogPanel = true;
-            }, 100);
-          });
         },
 
         async fetchBlogPosts() {
@@ -663,107 +679,90 @@ block append styles
       border-radius: 10px;
     }
 
-    /* White Fade Overlay for Smooth Transitions */
-    .transition-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(2px);
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
 
-    .transition-overlay.fade-active {
-      opacity: 1;
-    }
-
-    /* Phase 1 Animation Styles - Optimized for smoothness */
+    /* Phase 1 Animation Styles - Percentage-based width transitions (slower) */
     #hero-graphic {
-      transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      will-change: opacity, transform;
+      transition: width 3.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  opacity 3.0s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: width, opacity;
+      overflow: hidden;
     }
 
     #hero-graphic.fade-out {
+      width: 0% !important;
       opacity: 0;
-      transform: translate3d(-30px, 0, 0) scale(0.95);
+      padding-left: 0;
+      padding-right: 0;
     }
 
     #demo-form-section {
-      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transition: width 3.0s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       position: relative;
-      will-change: transform, width;
+      will-change: width;
     }
 
-    #demo-form-section.move-left {
-      transform: translate3d(-15%, 0, 0);
+    #demo-form-section.expand-full {
+      width: 100% !important;
+      max-width: 100% !important;
+      flex: 0 0 100%;
     }
 
     #demo-form-section.form-with-blog {
-      flex: 0 0 48%;
-      max-width: 48%;
-      transform: translate3d(0, 0, 0);
+      width: 50% !important;
+      max-width: 50% !important;
+      flex: 0 0 50%;
     }
 
     .header-content {
-      transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      will-change: opacity, transform;
+      transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity;
     }
 
-    .header-content.fade-up {
-      opacity: 0;
-      transform: translate3d(0, -20px, 0);
-    }
-
-    /* Phase 2 Animation Styles - Blog Panel */
+    /* Phase 2 Animation Styles - Blog Panel with percentage-based width (slower) */
     .blog-panel-container {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 45%;
-      transform: translate3d(100%, 0, 0);
+      position: relative;
+      width: 0%;
       opacity: 0;
-      transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1),
-                  opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
-                  position 0s 0.7s;
-      padding: 20px;
-      background: #f9f9f9;
-      border: 2px solid #e0e0e0;
+      transition: width 3.5s cubic-bezier(0.23, 1, 0.32, 1) 1.5s,
+                  opacity 2.5s cubic-bezier(0.23, 1, 0.32, 1) 2.0s;
+      padding: 25px;
+      background: #fff;
+      border: none;
       border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       max-height: 500px;
       overflow-y: auto;
+      overflow-x: hidden;
       z-index: 1000;
-      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
-      will-change: transform, opacity;
+      will-change: width, opacity;
     }
 
     .blog-panel-container.slide-in-right {
-      transform: translate3d(4%, 0, 0);
+      width: 50%;
       opacity: 1;
-      position: relative;
-      left: auto;
-      top: auto;
-      margin-left: 4%;
-      margin-bottom: 30px;
+      flex: 0 0 50%;
+      max-width: 50%;
     }
 
-    /* Ensure parent row accommodates blog panel height */
+    /* Ensure parent row accommodates blog panel height and prevents overflow */
     .hero-section .row {
       min-height: 400px;
       position: relative;
       transform: translate3d(0, 0, 0); /* Enable hardware acceleration */
+      overflow-x: hidden; /* Prevent horizontal scrolling */
+      max-width: 100vw;
     }
 
     /* Add space below when blog panel is active */
     .hero-section.with-blog-panel {
       margin-bottom: 100px;
+      overflow-x: hidden; /* Prevent horizontal overflow */
+    }
+
+    /* Ensure main container doesn't allow horizontal overflow */
+    .container {
+      max-width: 100vw;
+      overflow-x: hidden;
     }
 
     /* Adjust spacing for content after blog panel */
@@ -797,10 +796,10 @@ block append styles
       padding: 15px;
       cursor: pointer;
       opacity: 0;
-      transform: translate3d(0, 20px, 0);
-      animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-      transition: box-shadow 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: translate3d(0, 30px, 0);
+      animation: slideInUp 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      transition: box-shadow 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+                  transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
       will-change: transform, box-shadow;
     }
 
@@ -843,6 +842,80 @@ block append styles
       to { transform: rotate(360deg); }
     }
 
+    /* Skeleton Loading Cards */
+    .skeleton-card {
+      position: relative;
+      cursor: default !important;
+      opacity: 1 !important;
+      background: #f8f9fa !important;
+      border: 1px solid #e9ecef !important;
+    }
+
+    .skeleton-card:hover {
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .skeleton-title, .skeleton-excerpt, .skeleton-date {
+      background: #e9ecef;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-title {
+      height: 18px;
+      margin-bottom: 8px;
+      width: 85%;
+    }
+
+    .skeleton-excerpt {
+      height: 14px;
+      margin-bottom: 6px;
+      width: 100%;
+    }
+
+    .skeleton-excerpt:nth-child(2) {
+      width: 90%;
+    }
+
+    .skeleton-excerpt:nth-child(3) {
+      width: 75%;
+    }
+
+    .skeleton-date {
+      height: 12px;
+      width: 60%;
+      margin-top: 8px;
+    }
+
+    .skeleton-shimmer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.4) 50%,
+        rgba(255,255,255,0) 100%);
+      transform: translateX(-100%);
+      animation: shimmer 1.5s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .skeleton-spinner {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 16px;
+      opacity: 0.6;
+    }
+
     .blog-post-date {
       font-size: 11px;
       color: #999;
@@ -874,9 +947,9 @@ block append styles
     }
 
     .article-close-btn {
-      position: fixed;
-      top: calc(2% + 15px);
-      right: calc(2% + 20px);
+      position: sticky;
+      top: 10px;
+      left: calc(100% - 40px);
       width: 30px;
       height: 30px;
       background: rgba(224, 224, 224, 0.95);
@@ -892,6 +965,8 @@ block append styles
       transition: background-color 0.2s ease;
       z-index: 2001;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      margin-bottom: 15px;
+      float: right;
     }
 
     .article-close-btn:hover {
@@ -995,10 +1070,10 @@ block append styles
       font-weight: 500;
     }
 
-    /* Loading Animation Styles - Enhanced */
+    /* Loading Animation Styles - Slow and cinematic */
     .loading-section {
       margin-top: 30px;
-      animation: fadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      animation: fadeIn 1.5s cubic-bezier(0.23, 1, 0.32, 1);
       will-change: opacity, transform;
     }
 
@@ -1078,7 +1153,7 @@ block append styles
     @keyframes slideInUp {
       from {
         opacity: 0;
-        transform: translate3d(0, 20px, 0);
+        transform: translate3d(0, 40px, 0);
       }
       to {
         opacity: 1;
