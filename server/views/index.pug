@@ -82,6 +82,15 @@ block content
             .results-content(v-html="resultsHtml")
             button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
 
+        // Phase 2: Blog Panel Loading Placeholder - Shows immediately
+        .col-lg-6.col-md-12.blog-placeholder(
+          v-show="showBlogPlaceholder && !showBlogPanel"
+        )
+          .blog-placeholder-content
+            .loading-spinner-placeholder 📖
+            h4 Blog Articles Loading...
+            p Please wait while we fetch the latest marketing insights
+
         // Phase 2: Blog Panel - Slides in from right
         .col-lg-6.col-md-12.blog-panel-container#blog-panel(
           v-show="showBlogPanel"
@@ -394,6 +403,7 @@ block append scripts
 
           // Phase 2 - Blog Panel State
           showBlogPanel: false,
+          showBlogPlaceholder: false,
           blogPosts: [],
           isFetchingPosts: false,
           blogLoadingError: false,
@@ -433,6 +443,9 @@ block append scripts
           this.isAnimating = true;
           this.isLoading = true;
 
+          // Show blog loading placeholder immediately
+          this.showBlogPlaceholder = true;
+
           this.$nextTick(() => {
             // Step 1: Hero graphic fades to 0% width (3.5s)
             setTimeout(() => {
@@ -447,6 +460,9 @@ block append scripts
               // Step 3: After demo form reaches 100%, start the transition back to 50% and show blog panel
               setTimeout(() => {
                 this.showBlogPanel = true; // Show blog panel (starts sliding in from right)
+
+                // Hide the loading placeholder when blog panel starts appearing
+                this.showBlogPlaceholder = false;
 
                 // Step 4: Demo form transitions from 100% back to 50%
                 if (demoFormElement) {
@@ -807,7 +823,7 @@ block append styles
       opacity: 0;
       transition: width 3.5s cubic-bezier(0.23, 1, 0.32, 1) 1.5s,
                   opacity 2.5s cubic-bezier(0.23, 1, 0.32, 1) 2.0s;
-      padding: 25px;
+      padding: 15px;
       background: #fff;
       border: none;
       border-radius: 12px;
@@ -817,13 +833,73 @@ block append styles
       overflow-x: hidden;
       z-index: 1000;
       will-change: width, opacity;
+      margin: 0.75rem 0;
+      box-sizing: border-box;
     }
 
     .blog-panel-container.slide-in-right {
-      width: 50%;
+      width: 48%;
       opacity: 1;
-      flex: 0 0 50%;
-      max-width: 50%;
+      flex: 0 0 48%;
+      max-width: 48%;
+    }
+
+    /* Blog Loading Placeholder - appears immediately in same position as blog panel */
+    .blog-placeholder {
+      position: relative;
+      width: 48%;
+      opacity: 1;
+      flex: 0 0 48%;
+      max-width: 48%;
+      padding: 15px;
+      background: #fff;
+      border: 2px dashed #0fffad;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 999;
+      animation: pulse-placeholder 1.5s ease-in-out infinite;
+      margin: 0.75rem 0;
+      box-sizing: border-box;
+    }
+
+    .blog-placeholder-content h4 {
+      color: #0fffad;
+      font-family: 'poppins_bold', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .blog-placeholder-content p {
+      color: #666;
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .loading-spinner-placeholder {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      animation: spin-placeholder 2s linear infinite;
+    }
+
+    @keyframes pulse-placeholder {
+      0%, 100% {
+        border-color: #0fffad;
+        background-color: #fff;
+      }
+      50% {
+        border-color: #2b90d9;
+        background-color: rgba(15, 255, 173, 0.05);
+      }
+    }
+
+    @keyframes spin-placeholder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     /* Ensure parent row accommodates blog panel height and prevents overflow */
