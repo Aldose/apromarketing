@@ -103,7 +103,7 @@ html(lang="en")
       .tag-header {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         color: white;
-        padding: 4rem 0 3rem;
+        padding: 4rem 2rem 3rem;
         text-align: center;
       }
 
@@ -120,13 +120,14 @@ html(lang="en")
       }
 
       .articles-section {
-        padding: 3rem 0;
+        padding: 3rem 0.5rem;
       }
 
       .article-card {
         background: white;
         border-radius: 12px;
         overflow: hidden;
+        border: 2px solid var(--primary-color);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         height: 100%;
@@ -149,7 +150,7 @@ html(lang="en")
       }
 
       .article-content {
-        padding: 2rem;
+        padding: 2.5rem;
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -160,8 +161,13 @@ html(lang="en")
         font-family: 'poppins_bold', sans-serif;
         font-size: 1.25rem;
         margin-bottom: 0.75rem;
+        padding: 0.5rem 0.5rem;
         color: var(--text-dark);
         line-height: 1.4;
+      }
+
+      .fas {
+        padding:0.5rem 0.5rem
       }
 
       .article-excerpt {
@@ -170,6 +176,7 @@ html(lang="en")
         line-height: 1.6;
         flex-grow: 1;
         margin-bottom: 1rem;
+        padding: 0.5rem 0.5rem;
         overflow: hidden;
         display: -webkit-box;
         -webkit-line-clamp: 3;
@@ -183,6 +190,7 @@ html(lang="en")
         font-size: 0.85rem;
         color: var(--text-light);
         margin-top: auto;
+        padding: 0 0.5rem;
       }
 
       .article-tags {
