@@ -47,7 +47,7 @@ html(lang="en")
         src: url('/fonts/Poppins/Poppins-Light.ttf');
       }
 
-      // APro Marketing color variables
+      /* APro Marketing color variables */
       :root {
         --primary-color: #0fffad;
         --secondary-color: #2b90d9;
@@ -65,7 +65,7 @@ html(lang="en")
         padding: 0;
       }
 
-      // Navigation styles
+      /* Navigation styles */
       .blog-nav {
         background: white;
         padding: 1rem 0;
@@ -94,12 +94,12 @@ html(lang="en")
         color: var(--secondary-color);
       }
 
-      //icons
+      /* icons */
       .fas {
         padding-right:1%
       }
 
-      // Tag page specific styles
+      /* Tag page specific styles */
       .tag-header {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
         color: white;
@@ -131,13 +131,20 @@ html(lang="en")
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         transition: all 0.3s ease;
         height: 100%;
-        text-decoration: none;
-        color: inherit;
       }
 
       .article-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .article-title-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .article-title-link:hover {
         text-decoration: none;
         color: inherit;
       }
@@ -249,7 +256,7 @@ html(lang="en")
         text-decoration: none;
       }
 
-      // Responsive design
+      /* Responsive design */
       @media (max-width: 768px) {
         .tag-header h1 {
           font-size: 2rem;
@@ -290,11 +297,12 @@ html(lang="en")
           .row.g-4
             each article in articles
               .col-md-6.col-lg-4
-                a.article-card(href=`/blog/${article.slug}`)
+                .article-card
                   .article-content
-                    h3.article-title= article.title
-                    if article.excerpt && article.excerpt.trim() && article.excerpt !== article.title
-                      p.article-excerpt= article.excerpt
+                    a.article-title-link(href=`/blog/${article.slug}`)
+                      h3.article-title= article.title
+                      if article.excerpt && article.excerpt.trim() && article.excerpt !== article.title
+                        p.article-excerpt= article.excerpt
                     .article-meta
                       span
                         i.fas.fa-calendar-alt
