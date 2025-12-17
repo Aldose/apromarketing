@@ -1,17 +1,17 @@
-import enBilling from "./en-billing"
-import homepageMeta from "./en-meta/en-homepage-meta";
-import contactMeta from "./en-meta/en-contact";
-import pricingMeta from "./en-meta/en-pricing";
-import articlesMeta from "./en-meta/en-articleList";
-import enTos from "./en-tos";
-import enPP from "./en-pp";
-import enUserDeletion from "./en-user-deletion";
-import enFeatures from "./en-features";
-import enAbout from "./en-about";
-import enTeam from "./en-team";
-import enAboutMeta from "./en-meta/en-aboutpage-meta";
-import enFaq from "./en-faq";
-import enHome from "./en-home";
+import enBilling from "./en-billing.js";
+import homepageMeta from "./en-meta/en-homepage-meta.js";
+import contactMeta from "./en-meta/en-contact.js";
+import pricingMeta from "./en-meta/en-pricing.js";
+import articlesMeta from "./en-meta/en-articleList.js";
+import enTos from "./en-tos.js";
+import enPP from "./en-pp.js";
+import enUserDeletion from "./en-user-deletion.js";
+import enFeatures from "./en-features.js";
+import enAbout from "./en-about.js";
+import enTeam from "./en-team.js";
+import enAboutMeta from "./en-meta/en-aboutpage-meta.js";
+import enFaq from "./en-faq.js";
+import enHome from "./en-home.js";
 
 export default{
   ...enHome,
