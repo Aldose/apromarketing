@@ -154,4 +154,4 @@ claudedocs/
 # Backup files
 *.bak
 *.backup
-*.old
+*.oldcookies.txt
