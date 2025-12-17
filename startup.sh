@@ -67,7 +67,7 @@ start_demo() {
     if [[ ! -f "$DEMO_DIR/package.json" ]]; then
         error "package.json not found. Installing dependencies..."
         cd "$DEMO_DIR"
-        npm install
+        bun install
     fi
 
     log "Starting demo application on port $DEMO_PORT..."
@@ -77,8 +77,8 @@ start_demo() {
     export PORT="$DEMO_PORT"
     export NODE_ENV="${NODE_ENV:-development}"
 
-    # Start in background and save PID
-    nohup node server/index.js > /tmp/demo-app.log 2>&1 &
+    # Start in background and save PID using Bun
+    nohup bun server/index.js > /tmp/demo-app.log 2>&1 &
     echo $! > "$DEMO_PID_FILE"
 
     sleep 2
