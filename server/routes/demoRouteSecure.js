@@ -143,7 +143,7 @@ router.post('/demo', securityMiddleware, validateDemoInput, async (req, res) => 
     })}\n\n`);
 
     // Make request to the AI analysis service
-    const response = await fetch('http://localhost:8000/demo', {
+    const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ router.get('/demo-stream', securityMiddleware, validateDemoInput, async (req, re
     })}\n\n`);
 
     // Make request to the AI analysis service
-    const response = await fetch('http://localhost:8000/demo', {
+    const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

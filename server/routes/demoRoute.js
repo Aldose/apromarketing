@@ -16,7 +16,7 @@ router.post('/demo', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    const response = await fetch('http://localhost:8000/demo', {
+    const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
