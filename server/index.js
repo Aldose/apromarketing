@@ -499,8 +499,8 @@ app.use(
 );
 // Start server
 
-const port = process.env.PORT || 8888;
+const port = Bun.env.PORT || 8888;
 app.listen(port, () => {
-  console.log('Development environment:', process.env.NODE_ENV);
+  console.log('Development environment:', Bun.env.NODE_ENV);
   console.log(`Server running on port ${port}`);
 });

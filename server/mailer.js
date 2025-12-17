@@ -1,6 +1,6 @@
-const MAILER_EMAIL = process.env.MAILER_EMAIL;
-const MAILER_PASSWORD = process.env.MAILER_PASSWORD;
-const MAILER_RECIPIENT = process.env.MAILER_RECIPIENT;
+const MAILER_EMAIL = Bun.env.MAILER_EMAIL;
+const MAILER_PASSWORD = Bun.env.MAILER_PASSWORD;
+const MAILER_RECIPIENT = Bun.env.MAILER_RECIPIENT;
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
