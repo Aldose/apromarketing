@@ -6,7 +6,7 @@ const router = express.Router();
 // Configuration for allowed origins
 const ALLOWED_ORIGINS = [
   'http://localhost:2368',    // Local Ghost development
-  'https://blog.a-pro.ai',    // Production Ghost domain
+  'https://blog.apromarketing.com',    // Production Ghost domain
   'https://a-pro.ai',         // Main site domain
   'http://localhost:8888',    // Development server (for testing)
 ];
