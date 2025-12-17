@@ -34,6 +34,7 @@ block content
 
         // Right Form Section - Will move left and show loading
         .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center#demo-form-section(
+          v-show="!isLoading"
           :class="{ 'move-left': isAnimating, 'form-with-blog': formSubmitted }"
         )
           // Top Header Content - Static during animation
@@ -41,7 +42,7 @@ block content
             h2.mb-5.poppins-bold!=t('heroSubTitle3')
 
           // Demo Form
-          form#demo-form(@submit.prevent="handleFormSubmit" v-show="!showResults")
+          form#demo-form(@submit.prevent="handleFormSubmit" v-show="!showResults" :class="{ 'fade-out': isLoading }")
             input(type="hidden" name="lang" :value="selectedLang")
             p!=t('homeInputTitle')
             .row
@@ -58,14 +59,31 @@ block content
               .col-4
                 button.btn-primary.cta-btn(
                   type="submit"
+                  id='demo-button'
                   style="background:white;color:black;"
                   :disabled="isLoading"
                 )
                   img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
                   span(style="text-transform: uppercase;") {{ isLoading ? 'ANALYZING...' : t('homeInputButton') }}
 
+
+          // Results Section
+          .results-section(v-show="showResults")
+            h3 Analysis Complete!
+            .results-content(v-html="resultsHtml")
+            button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
+
+        // Loading Progress Panel - Replaces demo form section when loading
+        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center.loading-panel-container#loading-panel(
+          v-show="isLoading"
+          :class="{ 'slide-in-left': isLoading }"
+        )
+          .loading-panel-header
+            h3 Analysis in Progress
+            p Your website is being analyzed
+
           // Loading Animation Section
-          .loading-section(v-show="isLoading")
+          .loading-section
             .progress-container
               .progress-bar
                 .progress-fill(:style="{ width: progress + '%' }")
@@ -75,12 +93,6 @@ block content
               .step(v-for="step in analysisSteps" :key="step.id" :class="{ active: currentStep === step.id, completed: currentStep > step.id }")
                 .step-icon {{ step.icon }}
                 .step-text {{ step.text }}
-
-          // Results Section
-          .results-section(v-show="showResults")
-            h3 Analysis Complete!
-            .results-content(v-html="resultsHtml")
-            button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
 
         // Phase 2: Blog Panel Loading Placeholder - Shows immediately
         .col-lg-6.col-md-12.blog-placeholder(
@@ -436,6 +448,12 @@ block append scripts
 
           // Start the actual API call
           this.startAnalysis();
+
+          // Show both loading and blog panels together
+          setTimeout(() => {
+            this.showBlogPanel = true;
+            this.showBlogPlaceholder = false;
+          }, 1000);
         },
 
         startPhase1Animation() {
@@ -457,20 +475,15 @@ block append scripts
                 demoFormElement.classList.add('expand-full');
               }
 
-              // Step 3: After demo form reaches 100%, start the transition back to 50% and show blog panel
+              // Step 3: After demo form reaches 100%, transition back to 50%
               setTimeout(() => {
-                this.showBlogPanel = true; // Show blog panel (starts sliding in from right)
-
-                // Hide the loading placeholder when blog panel starts appearing
-                this.showBlogPlaceholder = false;
-
                 // Step 4: Demo form transitions from 100% back to 50%
                 if (demoFormElement) {
                   demoFormElement.classList.remove('expand-full');
                   demoFormElement.classList.add('form-with-blog');
                 }
 
-                // Start Phase 2 (blog loading)
+                // Start Phase 2 (blog loading) - panels are already shown
                 this.startPhase2Animation();
               }, 2000); // Allow more time for demo form to reach 100% (was 900ms)
             }, 200); // Slightly longer initial delay for visibility
@@ -735,6 +748,17 @@ block append styles
       padding:15px 20px;
       border:solid black 2px;
     }
+
+    /* Demo form fade-out animation */
+    #demo-form {
+      transition: opacity 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity;
+    }
+
+    #demo-form.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
     .how-it-works-icon{
       width:150px; 
       height:150px; 
@@ -814,6 +838,45 @@ block append styles
     .header-content {
       transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       will-change: opacity;
+    }
+
+    /* Loading Panel Styles - Replaces demo form section when loading */
+    .loading-panel-container {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.5s cubic-bezier(0.23, 1, 0.32, 1),
+                  transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+      padding: 15px;
+      background: #fff;
+      border: 2px solid #0fffad;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 1000;
+      will-change: opacity, transform;
+      margin: 0.75rem 0;
+      box-sizing: border-box;
+    }
+
+    .loading-panel-container.slide-in-left {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .loading-panel-header h3 {
+      margin-bottom: 10px;
+      color: #0fffad;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .loading-panel-header p {
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 14px;
+      text-align: center;
     }
 
     /* Phase 2 Animation Styles - Blog Panel with percentage-based width (slower) */
