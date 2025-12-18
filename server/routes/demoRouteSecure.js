@@ -7,8 +7,11 @@ const router = express.Router();
 const ALLOWED_ORIGINS = [
   'http://localhost:2368',    // Local Ghost development
   'https://blog.apromarketing.com',    // Production Ghost domain
-  'https://a-pro.ai',         // Main site domain
-  'http://localhost:8888',    // Development server (for testing)
+  'https://apromarketing.com',         // Main site domain
+  'https://app.apromarketing.com',     // Main application site
+  'http://localhost:8888',    // Development Marketing server (for testing)
+  'http://localhost:8000',    // Development App API server (for testing)
+  'http://localhost:8080',    // Development App Frontend server (for testing)
 ];
 
 // Rate limiting configuration (in-memory store for demo)
