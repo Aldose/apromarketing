@@ -62,6 +62,7 @@ router.post('/demo', async (req, res) => {
 router.get('/demo-stream', async (req, res) => {
   try {
     const { url } = req.query;
+    const demoHostUrl = Bun.env.PRODUCTION ? 'http://localhost:8000' : 'https://app.apromarketing.com';
     
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
@@ -76,7 +77,7 @@ router.get('/demo-stream', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    const response = await fetch('https://api.apromarketing.com/demo', {
+    const response = await fetch(`${demoHostUrl}/api/demo`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
