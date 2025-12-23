@@ -74,7 +74,7 @@ block content
             button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
 
         // Loading Progress Panel - Replaces demo form section when loading
-        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center.loading-panel-container#loading-panel(
+        .col-lg-6.col-md-12.loading-panel-container#loading-panel(
           v-show="isLoading"
           :class="{ 'slide-in-left': isLoading }"
         )
@@ -846,11 +846,12 @@ block append styles
       transform: translateY(20px);
       transition: opacity 1.5s cubic-bezier(0.23, 1, 0.32, 1),
                   transform 1.5s cubic-bezier(0.23, 1, 0.32, 1);
-      padding: 15px;
+      padding: 20px 15px;
       background: #fff;
-      border: 2px solid #0fffad;
+      border: none;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-height: 400px;
       max-height: 500px;
       overflow-y: auto;
       overflow-x: hidden;
@@ -886,11 +887,12 @@ block append styles
       opacity: 0;
       transition: width 3.5s cubic-bezier(0.23, 1, 0.32, 1) 1.5s,
                   opacity 2.5s cubic-bezier(0.23, 1, 0.32, 1) 2.0s;
-      padding: 15px;
+      padding: 20px 15px;
       background: #fff;
       border: none;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-height: 400px;
       max-height: 500px;
       overflow-y: auto;
       overflow-x: hidden;
@@ -914,11 +916,12 @@ block append styles
       opacity: 1;
       flex: 0 0 48%;
       max-width: 48%;
-      padding: 15px;
+      padding: 20px 15px;
       background: #fff;
       border: 2px dashed #0fffad;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-height: 400px;
       max-height: 500px;
       display: flex;
       align-items: center;
