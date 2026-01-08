@@ -17,36 +17,7 @@ html(lang=lang)
 
     block head
   body(style="width:100%;")
-    div(style="box-shadow:none; padding:0 15px;" )
-      nav
-        .row.d-flex.justify-content-between.align-items-center
-          a.col-8.col-md-6.col-lg-2(href=lang != 'en' ? `/${lang}` : '/')
-            img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
-          //- Desktop Menu
-          .col-4.col-md-6.nav-links.gt-md.flex.justify-content-end.align-items-center.roboto
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/team` : '/team')= t('team')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/features` : '/features')= t('features')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
-          
-          //- Hamburger Menu
-          //- .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
-            span
-            span
-            span
-          //- Mobile Menu
-          //- .mobile-menu
-            a(href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
-            a(href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
-            a(href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
-            a(href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
-            a(href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
-            a(href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
+    include components/navbar
     main
       block content
     

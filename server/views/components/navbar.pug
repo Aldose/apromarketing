@@ -1,0 +1,85 @@
+nav.apro-navbar
+  .container-fluid
+    .row.d-flex.justify-content-start.align-items-center.py-3
+      // Logo section
+      .col-auto
+        a.logo-link(href=lang != 'en' ? `/${lang}` : '/')
+          img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
+
+      // Navigation links
+      .col-auto.d-none.d-lg-block.ms-4
+        ul.nav-links.list-unstyled.d-flex.mb-0
+          li.nav-item
+            a.nav-link(href=lang != 'en' ? `/${lang}/about` : '/about') about
+          li.nav-item
+            a.nav-link(href="#how-it-works") how it works
+          li.nav-item
+            a.nav-link(href=lang != 'en' ? `/${lang}/pricing` : '/pricing') pricing
+          li.nav-item
+            a.nav-link(href="#blog") blog
+          li.nav-item
+            a.nav-link(href=lang != 'en' ? `/${lang}/socials` : '/socials') socials
+
+style.
+  .apro-navbar {
+    background-color: #ffffff;
+    border-bottom: 3px solid #00d4a3;
+    position: relative;
+    z-index: 1000;
+  }
+
+
+  .nav-links {
+    gap: 2rem;
+  }
+
+  .nav-item {
+    margin: 0;
+  }
+
+  .nav-link {
+    color: #000000;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 2px;
+  }
+
+  .nav-link:hover {
+    color: #000000;
+    text-decoration: underline;
+    border-bottom-color: #000000;
+  }
+
+  .logo-link {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .logo-link:hover {
+    text-decoration: none;
+    color: inherit;
+  }
+
+script.
+  document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
+    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+
+    anchorLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+
+        if (targetSection) {
+          targetSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      });
+    });
+  });
