@@ -171,6 +171,35 @@ app.get('/free-7-day-trial', i18nMiddleware, (req, res) => {
     res.render('freeTrial7Days');
   }
 );
+
+// Static page routes
+app.get('/:lang(zh)/about', i18nMiddleware, (req, res) => {
+  res.render('about');
+});
+app.get('/about', i18nMiddleware, (req, res) => {
+  res.render('about');
+});
+
+app.get('/:lang(zh)/how-it-works', i18nMiddleware, (req, res) => {
+  res.render('how-it-works');
+});
+app.get('/how-it-works', i18nMiddleware, (req, res) => {
+  res.render('how-it-works');
+});
+
+app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {
+  res.render('pricing', {pricingPlans:pricingPlans, currency:'ntd'});
+});
+app.get('/pricing', i18nMiddleware, (req, res) => {
+  res.render('pricing', {pricingPlans:pricingPlans, currency:'usd'});
+});
+
+app.get('/:lang(zh)/socials', i18nMiddleware, (req, res) => {
+  res.render('socials');
+});
+app.get('/socials', i18nMiddleware, (req, res) => {
+  res.render('socials');
+});
 app.post('/demo', async (req, res) => {
   try {
     const { url } = req.body;

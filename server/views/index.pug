@@ -44,7 +44,7 @@ block content
                   span(style="text-transform: uppercase;")=t('homeInputButton')
           h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
           //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
-    .mt-3
+    section#how-it-works.mt-3
       h2.mb-5.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
       .row
         .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
@@ -100,7 +100,7 @@ block content
         img(src="/icons/apro-star1.png" alt="star")
         span= t('homeHeroBtn')
 
-    section.newsletter-section.mt-5.py-5(style="background: linear-gradient(135deg, #0fffad, #00d4aa); border-radius: 15px;")
+    section#newsletter.newsletter-section.mt-5.py-5(style="background: linear-gradient(135deg, #0fffad, #00d4aa); border-radius: 15px;")
       .container
         .row.justify-content-center
           .col-lg-8.col-md-10.col-sm-12.text-center
@@ -124,6 +124,33 @@ block content
 
             .newsletter-response#newsletter-response.mt-3(style="display:none;")
               p.response-text
+
+    // Blog Articles Section
+    section#blog.blog-articles-section.mt-5.py-5
+      .container
+        .row.justify-content-center
+          .col-12.text-center.mb-5
+            h2.mb-5.poppins-bold.text-center(style="font-size:60px") Latest Blog Articles
+            if articles && articles.length > 0
+              .row
+                each article in articles
+                  .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-3.mb-3.px-2
+                    .card.dash-card.h-100.p-4.text-center
+                      if article.featuredImage
+                        .article-image.mb-3
+                          img.img-fluid(src=article.featuredImage alt=article.title style="border-radius: 8px; max-height: 200px; width: 100%; object-fit: cover;")
+                      .article-content
+                        h4.poppins-bold.mb-3!=article.title
+                        p.text-muted.mb-3 #{article.publishedDate} • #{article.author}
+                        p.article-excerpt!=article.summary
+                        a.btn.btn-primary.mt-3(href=`https://blog.apromarketing.com/${article.slug}` target="_blank" rel="noopener noreferrer") Read More
+              .row.mt-4
+                .col-12.text-center
+                  a.btn.btn-outline-primary.btn-lg(href="https://blog.apromarketing.com" target="_blank" rel="noopener noreferrer") View All Articles
+            else
+              .col-12.text-center
+                p.text-muted Visit our blog for the latest insights and updates
+                a.btn.btn-primary.btn-lg(href="https://blog.apromarketing.com" target="_blank" rel="noopener noreferrer") Visit Blog
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
