@@ -13,41 +13,42 @@ async function categoryMatcher(category){
 
 export const getArticles = async (lang, page, category) => {
   try{
-    // const categoriesResponse = await axios.get('https://blog.a-pro.ai/wp-json/wp/v2/categories?per_page=100');
-    const cat = await categoryMatcher(category);
-    let articles;
-    
-    const {data, headers} = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?lang=${lang}&page=${page}&_fields=id,title,excerpt,modified,slug,date_gmt,author,featured_media,_links,_embedded&_embed${cat}`);
+    const ghostApiKey = process.env.GHOST_API_KEY;
+    if (!ghostApiKey) {
+      console.log('Ghost CMS API key not found in environment variables');
+      return [];
+    }
 
-    return articles = data.map(post => ({
-      totalPages : headers['x-wp-totalpages'],
+    // For homepage display, get the 4 most recent posts
+    const limit = 4;
+    const {data} = await axios.get(`https://blog.apromarketing.com/ghost/api/v3/content/posts/?key=${ghostApiKey}&limit=${limit}&include=authors`);
+
+    if (!data || !data.posts) {
+      console.log('No posts returned from Ghost API');
+      return [];
+    }
+
+    return data.posts.map(post => ({
       id: post.id,
-      title: post.title.rendered || '',
-      author: post._embedded?.author?.[0]?.name || 'Unknown',
-      publishedDate: new Date(post.date_gmt).toLocaleDateString(),
-      date: new Date(post.modified).toLocaleDateString(),
-      summary: post.excerpt.rendered || '',
+      title: post.title || '',
+      author: post.authors?.[0]?.name || 'Unknown',
+      publishedDate: new Date(post.published_at).toLocaleDateString(),
+      date: new Date(post.published_at).toLocaleDateString(),
+      summary: post.excerpt || '',
       slug: post.slug || '',
-      img: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-      // medImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details.sizes?.medium?.source_url || '',
-      // smImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details.sizes?.thumbnail.source_url || '',
-      medImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url || '',
-      smImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.thumbnail?.source_url || '',
-      imgAlt: post._embedded?.['wp:featuredmedia']?.[0]?.alt_text || '',
-      author: post._embedded?.['author']?.[0]?.name || '',
-      authorImg: post._embedded?.['author']?.[0]?.avatar_urls?.['96'] || '',
-      authorDescription: post._embedded?.['author']?.[0]?.description || '',
-      authorId: post.author || '',
-      terms: post._embedded?.['wp:term']?.[0] || [],
-    }))
+      featuredImage: post.feature_image || '',
+      img: post.feature_image || ''
+    }));
+
   }catch(error){
-    console.log(error)
+    console.log('Error fetching articles from Ghost:', error.message);
+    return [];
   }
 };
 export const getArticlesRaw = async (lang, page, category) => {
   try{
     const cat = await categoryMatcher(category);
-    const {data, headers} = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?lang=${lang}&page=${page}&_fields=id,title,excerpt,modified,slug,date_gmt,author,featured_media,_links,_embedded&_embed${cat}`);
+    const {data, headers} = await axios.get(`https://blog.apromarketing.com/wp-json/wp/v2/posts?lang=${lang}&page=${page}&_fields=id,title,excerpt,modified,slug,date_gmt,author,featured_media,_links,_embedded&_embed${cat}`);
 
     return data
   }catch(error){
@@ -58,7 +59,7 @@ export const getArticlesRaw = async (lang, page, category) => {
 export const getArticle = async (slug) => {
   try {
     let article;
-    const { data } = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
+    const { data } = await axios.get(`https://blog.apromarketing.com/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
     if (!data.length) return null;
     return article = {
       id: data[0].id,
@@ -97,7 +98,7 @@ export const getArticle = async (slug) => {
 };
 export const getArticleRaw = async (slug) => {
   try {
-    const { data } = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
+    const { data } = await axios.get(`https://blog.apromarketing.com/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
     return data;
     
   } catch (error) {
