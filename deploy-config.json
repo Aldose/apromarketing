@@ -1,0 +1,80 @@
+{
+  "environments": {
+    "development": {
+      "domain": "localhost",
+      "ghost_port": 2368,
+      "demo_port": 3000,
+      "ssl_enabled": false,
+      "nginx_enabled": false,
+      "firewall_strict": false
+    },
+    "staging": {
+      "domain": "staging.a-pro.ai",
+      "ghost_port": 2368,
+      "demo_port": 3000,
+      "ssl_enabled": true,
+      "nginx_enabled": true,
+      "firewall_strict": true
+    },
+    "production": {
+      "domain": "a-pro.ai",
+      "ghost_port": 2368,
+      "demo_port": 3000,
+      "ssl_enabled": true,
+      "nginx_enabled": true,
+      "firewall_strict": true
+    }
+  },
+  "services": {
+    "demo_app": {
+      "name": "apromarketing-demo",
+      "description": "A-Pro Marketing Demo Application",
+      "main_file": "server/index.js",
+      "environment_vars": {
+        "NODE_ENV": "production",
+        "PORT": "${demo_port}"
+      }
+    },
+    "ghost_cms": {
+      "name": "ghost_production",
+      "description": "Ghost CMS for A-Pro Marketing",
+      "cli_install": true,
+      "database": "sqlite3"
+    }
+  },
+  "nginx": {
+    "security_headers": {
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-XSS-Protection": "1; mode=block",
+      "X-Content-Type-Options": "nosniff",
+      "Referrer-Policy": "no-referrer-when-downgrade"
+    },
+    "ssl_protocols": ["TLSv1.2", "TLSv1.3"],
+    "proxy_timeout": 86400
+  },
+  "paths": {
+    "install_dir": "/opt/apromarketing",
+    "ghost_dir": "/opt/apromarketing/ghost",
+    "demo_dir": "/opt/apromarketing/demo",
+    "nginx_sites": "/etc/nginx/sites-available",
+    "nginx_enabled": "/etc/nginx/sites-enabled"
+  },
+  "requirements": {
+    "min_nodejs_version": "18.0.0",
+    "min_memory_mb": 1024,
+    "min_disk_gb": 10,
+    "required_packages": [
+      "curl",
+      "wget",
+      "gnupg2",
+      "software-properties-common",
+      "apt-transport-https",
+      "ca-certificates",
+      "nginx",
+      "certbot",
+      "python3-certbot-nginx",
+      "sqlite3",
+      "git"
+    ]
+  }
+}

@@ -1,15 +1,15 @@
-import zhBilling from './zh-billing'
-import zhHomepageMeta from './zh-meta/zh-homepage-meta'
-import zhContactMeta from './zh-meta/zh-contact'
-import zhPricingMeta from './zh-meta/zh-pricing'
-import zhArticlesMeta from './zh-meta/zh-articleList';
-import zhTos from './zh-tos'
-import zhPP from './zh-pp'
-import zhUserDeletion from './zh-user-deletion'
-import zhAbout from './zh-about'
-import zhAboutpageMeta from './zh-meta/zh-aboutpage-meta'
-import zhFaq from './zh-faq'
-import zhHome from './zh-home'
+import zhBilling from './zh-billing.js';
+import zhHomepageMeta from './zh-meta/zh-homepage-meta.js';
+import zhContactMeta from './zh-meta/zh-contact.js';
+import zhPricingMeta from './zh-meta/zh-pricing.js';
+import zhArticlesMeta from './zh-meta/zh-articleList.js';
+import zhTos from './zh-tos.js';
+import zhPP from './zh-pp.js';
+import zhUserDeletion from './zh-user-deletion.js';
+import zhAbout from './zh-about.js';
+import zhAboutpageMeta from './zh-meta/zh-aboutpage-meta.js';
+import zhFaq from './zh-faq.js';
+import zhHome from './zh-home.js';
 export default{
   ...zhBilling,
   ...zhTos,

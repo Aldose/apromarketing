@@ -1,5 +1,5 @@
-import esBilling from './es-billing';
-import esHomepageMeta from './es-meta/es-homepage-meta';
+import esBilling from './es-billing.js';
+import esHomepageMeta from './es-meta/es-homepage-meta.js';
 export default{
 ...esBilling,
 optmiseYourSEO: '¡Optimiza tu SEO!',

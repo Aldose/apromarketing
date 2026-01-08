@@ -18,6 +18,7 @@ import { getArticles,getArticlesRaw, getArticle, getArticleRaw } from './routes/
 import { articleListJSONLD, articleJSONLD, indexPageJSONLD } from './middleware/metaBuilder.js';
 import pricingPlans from './data/pricingPlans.json';
 import { generateSitemap } from './sitemapGen.js';
+import demoRoutes from './routes/demoRouteSecure.js';
 
 
 
@@ -60,6 +61,9 @@ app.use('/icons', express.static(path.join(__dirname, 'public/images/icons')));
 app.use('/css', express.static(path.join(__dirname, 'public/css')));
 app.use('/videos', express.static(path.join(__dirname, 'public/videos')));
 app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
+
+// Secure demo routes
+app.use('/', demoRoutes);
 
 // Language-specific routes first
 // app.get('/:lang(zh)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
@@ -171,7 +175,6 @@ app.get('/free-7-day-trial', i18nMiddleware, (req, res) => {
     res.render('freeTrial7Days');
   }
 );
-
 // Static page routes
 app.get('/:lang(zh)/about', i18nMiddleware, (req, res) => {
   res.render('about');
@@ -200,119 +203,209 @@ app.get('/:lang(zh)/socials', i18nMiddleware, (req, res) => {
 app.get('/socials', i18nMiddleware, (req, res) => {
   res.render('socials');
 });
-app.post('/demo', async (req, res) => {
-  try {
-    const { url } = req.body;
-    
-    // Set up SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
-    });
 
-    const response = await fetch('http://localhost:8000/demo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
-    });
+// Blog article page route
+app.get('/blog/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Fetch the article from Ghost API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&include=tags`);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      return res.status(404).render('404');
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    const data = await response.json();
 
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data.trim()) {
-              res.write(`data: ${data}\n\n`);
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-      res.end();
+    if (!data.posts || data.posts.length === 0) {
+      return res.status(404).render('404');
     }
+
+    const article = data.posts[0];
+
+    // Format the article data
+    const formattedArticle = {
+      title: article.title,
+      excerpt: article.excerpt || '',
+      content: article.html,
+      slug: article.slug,
+      publishedAt: article.published_at,
+      featureImage: article.feature_image,
+      readingTime: article.reading_time || 5,
+      tags: article.tags || [],
+      metaTitle: article.meta_title || article.title,
+      metaDescription: article.meta_description || article.excerpt,
+      ogTitle: article.og_title || article.title,
+      ogDescription: article.og_description || article.excerpt,
+      ogImage: article.og_image || article.feature_image,
+      twitterTitle: article.twitter_title || article.title,
+      twitterDescription: article.twitter_description || article.excerpt,
+      twitterImage: article.twitter_image || article.feature_image
+    };
+
+    res.render('blog-article', { article: formattedArticle, appUrl: Bun.env.APP_URL });
+
   } catch (error) {
-    console.error(error);
-    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-    res.end();
+    console.error('Error fetching blog article:', error);
+    res.status(500).render('500');
   }
 });
 
-app.get('/demo-stream', async (req, res) => {
+// Tag page route
+app.get('/tag/:slug', async (req, res) => {
   try {
-    const { url } = req.query;
-    
-    if (!url) {
-      return res.status(400).json({ error: 'URL parameter is required' });
-    }
-    
-    // Set up SSE headers
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Cache-Control'
-    });
+    const { slug } = req.params;
 
-    const response = await fetch('http://localhost:8000/demo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
-    });
+    // Fetch articles by tag from Ghost API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&filter=tag:${slug}&include=tags`);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      return res.status(404).render('404');
     }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
+    const data = await response.json();
 
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n');
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6);
-            if (data.trim()) {
-              res.write(`data: ${data}\n\n`);
-            }
-          }
-        }
+    // Also fetch tag information
+    const tagResponse = await fetch(`http://localhost:2368/ghost/api/content/tags/slug/${slug}/?key=${apiKey}`);
+    let tagInfo = null;
+    if (tagResponse.ok) {
+      const tagData = await tagResponse.json();
+      tagInfo = tagData.tags && tagData.tags.length > 0 ? tagData.tags[0] : null;
+    }
+
+    // Format articles for display
+    const articles = data.posts.map(article => {
+      let excerpt = article.excerpt || '';
+      // Truncate long excerpts to about 150 characters
+      if (excerpt.length > 150) {
+        excerpt = excerpt.substring(0, 150).trim() + '...';
       }
-    } finally {
-      reader.releaseLock();
-      res.end();
-    }
+      // If no meaningful excerpt, don't include one
+      if (!excerpt || excerpt.trim() === article.title) {
+        excerpt = '';
+      }
+
+      return {
+        title: article.title,
+        excerpt,
+        slug: article.slug,
+        publishedAt: article.published_at,
+        featureImage: article.feature_image,
+        readingTime: article.reading_time || 5,
+        tags: article.tags || []
+      };
+    });
+
+    res.render('tag', {
+      articles,
+      tagInfo: tagInfo || { name: slug, slug },
+      appUrl: Bun.env.APP_URL || 'http://localhost:8888'
+    });
+
   } catch (error) {
-    console.error(error);
-    res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
-    res.end();
+    console.error('Error fetching tag articles:', error);
+    res.status(500).render('500');
+  }
+});
+
+// AI-NOTES: Demo endpoints moved to /routes/demoRouteSecure.js for enhanced security
+// Includes origin authentication, rate limiting, and input validation
+
+// Ghost Blog API endpoint for Phase 2 animations
+app.get('/api/ghost-posts', async (req, res) => {
+  try {
+    // Set CORS headers for frontend access
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Fetch posts from Ghost Content API - using real Ghost data only
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&limit=6&fields=title,excerpt,slug,published_at`);
+
+    if (!response.ok) {
+      throw new Error(`Ghost API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Successfully fetched', data.posts.length, 'real blog posts from Ghost');
+
+    // Format posts for frontend
+    const posts = data.posts.map(post => ({
+      title: post.title,
+      excerpt: post.excerpt || 'No excerpt available',
+      slug: post.slug,
+      publishedAt: post.published_at
+    }));
+
+    res.status(200).json({
+      success: true,
+      posts: posts
+    });
+
+  } catch (error) {
+    console.log('❌ Ghost API Error:', error.message);
+    console.log('🚨 Real blog data unavailable - check Ghost server status');
+
+    // Return error instead of mock data - following AGENTS.md requirement
+    res.status(503).json({
+      success: false,
+      message: 'Blog content temporarily unavailable. Please ensure Ghost server is running on port 2368.',
+      error: error.message
+    });
+  }
+});
+
+// Ghost Individual Post API endpoint for Phase 3 article expansion
+app.get('/api/ghost-post/:slug', async (req, res) => {
+  try {
+    // Set CORS headers for frontend access
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    const { slug } = req.params;
+
+    // Fetch individual post from Ghost Content API with full content
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time&include=tags`);
+
+    if (!response.ok) {
+      throw new Error(`Ghost API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Successfully fetched individual post:', slug);
+
+    // Format post for frontend
+    const post = {
+      title: data.posts[0].title,
+      excerpt: data.posts[0].excerpt || 'No excerpt available',
+      content: data.posts[0].html,
+      slug: data.posts[0].slug,
+      publishedAt: data.posts[0].published_at,
+      featureImage: data.posts[0].feature_image,
+      readingTime: data.posts[0].reading_time,
+      tags: data.posts[0].tags || []
+    };
+
+    res.status(200).json({
+      success: true,
+      post: post
+    });
+
+  } catch (error) {
+    console.log('❌ Ghost Individual Post API Error:', error.message);
+    console.log('🚨 Individual post data unavailable - check Ghost server status');
+
+    res.status(503).json({
+      success: false,
+      message: 'Article content temporarily unavailable. Please ensure Ghost server is running on port 2368.',
+      error: error.message
+    });
   }
 });
 
@@ -434,8 +527,8 @@ app.use(
 );
 // Start server
 
-const port = process.env.PORT || 8888;
+const port = Bun.env.PORT || 8888;
 app.listen(port, () => {
-  console.log('Development environment:', process.env.NODE_ENV);
+  console.log('Development environment:', Bun.env.NODE_ENV);
   console.log(`Server running on port ${port}`);
 });

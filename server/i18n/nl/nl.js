@@ -1,5 +1,5 @@
 import nlBilling from './nl-billing.js';
-import nlHomepageMeta from './nl-meta/nl-homepage-meta';
+import nlHomepageMeta from './nl-meta/nl-homepage-meta.js';
 export default {
   ...nlBilling,
   optimizeYourSEO: 'Optimaliseer uw SEO!',
