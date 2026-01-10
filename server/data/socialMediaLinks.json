@@ -1,0 +1,65 @@
+{
+  "platforms": [
+    {
+      "name": "LinkedIn",
+      "description": "Connect with us professionally and get industry insights, company updates, and networking opportunities.",
+      "url": "https://www.linkedin.com/company/a-pro-solutions-inc/",
+      "iconClass": "fab fa-linkedin",
+      "buttonText": "Follow Us",
+      "buttonClass": "btn btn-info",
+      "cardColor": "",
+      "textColor": ""
+    },
+    {
+      "name": "Facebook",
+      "description": "Join our community for marketing tips, success stories, and engaging discussions about digital growth.",
+      "url": "https://www.facebook.com/apro.aiseo/",
+      "iconClass": "fab fa-facebook",
+      "buttonText": "Like Our Page",
+      "buttonClass": "btn btn-info",
+      "cardColor": "",
+      "textColor": ""
+    },
+    {
+      "name": "Instagram",
+      "description": "Follow us for behind-the-scenes content, quick tips, and visual insights into AI marketing automation.",
+      "url": "https://www.instagram.com/apro.ai",
+      "iconClass": "fab fa-instagram",
+      "buttonText": "Follow Us",
+      "buttonClass": "btn btn-info",
+      "cardColor": "",
+      "textColor": ""
+    },
+    {
+      "name": "YouTube",
+      "description": "Subscribe for in-depth tutorials, product demos, and educational content about AI marketing.",
+      "url": "https://www.youtube.com/@apro-solutions",
+      "iconClass": "fab fa-youtube",
+      "buttonText": "Subscribe",
+      "buttonClass": "btn btn-info",
+      "cardColor": "",
+      "textColor": ""
+    },
+    {
+      "name": "Bluesky",
+      "description": "Join us on Bluesky for real-time updates, industry discussions, and direct engagement with our team.",
+      "url": "https://bsky.app/profile/apro-solutions.bsky.social",
+      "iconClass": "fas fa-cloud",
+      "buttonText": "Follow Us",
+      "buttonClass": "btn btn-info",
+      "cardColor": "",
+      "textColor": ""
+    }
+  ],
+  "pageSettings": {
+    "title": "Social Media | A-Pro AI - Connect With Us",
+    "metaDescription": "Connect with A-Pro AI on social media. Follow us for digital marketing tips, AI insights, and company updates on LinkedIn, Facebook, Instagram, and more.",
+    "ogTitle": "Social Media | A-Pro AI - Connect With Us",
+    "ogDescription": "Connect with A-Pro AI on social media for digital marketing insights and company updates.",
+    "ogImage": "https://a-pro.ai/images/social-media-hero.webp",
+    "heroTitle": "Connect With Us",
+    "heroSubtitle": "Join Our Community",
+    "heroDescription": "Follow A-Pro AI for digital marketing automation and AI insights",
+    "sectionTitle": "Follow Us on Social Media"
+  }
+}

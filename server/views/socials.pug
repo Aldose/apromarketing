@@ -1,13 +1,13 @@
 extends layout
 block append head
-  title Social Media | A-Pro AI - Connect With Us
-  meta(name='description', content='Connect with A-Pro AI on social media. Follow us for digital marketing tips, AI insights, and company updates on LinkedIn, Facebook, Instagram, and more.')
+  title= socialMediaLinks.pageSettings.title
+  meta(name='description', content=socialMediaLinks.pageSettings.metaDescription)
   link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/socials`)
   meta(name='robots', content='index, follow')
-  meta(property='og:title', content='Social Media | A-Pro AI - Connect With Us')
-  meta(property='og:description', content='Connect with A-Pro AI on social media for digital marketing insights and company updates.')
+  meta(property='og:title', content=socialMediaLinks.pageSettings.ogTitle)
+  meta(property='og:description', content=socialMediaLinks.pageSettings.ogDescription)
   meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/socials`)
-  meta(property='og:image', content=`https://a-pro.ai/images/social-media-hero.webp`)
+  meta(property='og:image', content=socialMediaLinks.pageSettings.ogImage)
   meta(property='og:image:width', content='1200')
   meta(property='og:image:height', content='630')
   meta(property='og:locale', content=lang)
@@ -18,63 +18,26 @@ block content
     section.hero-section
       .row
         .col-12.text-center
-          h1.mb-0.poppins-bold Connect With Us
-          h1.green-underline Join Our Community
-          h3.text-center.poppins-bold.q-mb-lg Follow A-Pro AI for digital marketing automation and AI insights
+          h1.mb-0.poppins-bold= socialMediaLinks.pageSettings.heroTitle
+          h1.green-underline= socialMediaLinks.pageSettings.heroSubtitle
+          h3.text-center.poppins-bold.q-mb-lg= socialMediaLinks.pageSettings.heroDescription
 
     .mt-3
-      h2.mb-5.poppins-bold.text-center(style="font-size:60px") Follow Us on Social Media
+      h2.mb-5.poppins-bold.text-center(style="font-size:60px")= socialMediaLinks.pageSettings.sectionTitle
       .row
-        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
-          .card.dash-card.h-100.p-4.text-center
-            .icon.mx-auto.mb-3
-              i.fab.fa-linkedin.fa-3x.text-primary
-            h4.poppins-bold LinkedIn
-            p Connect with us professionally and get industry insights, company updates, and networking opportunities.
-            a.btn.btn-primary.mt-3(href="https://www.linkedin.com/company/a-pro-solutions-inc/" target="_blank" rel="noopener noreferrer")
-              i.fab.fa-linkedin.me-2
-              | Follow Us
+        // Dynamic social media platforms from config file
+        each platform in socialMediaLinks.platforms
+          .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
+            .card.dash-card.h-100.p-4.text-center(style=platform.cardColor ? `background-color: ${platform.cardColor};` : '')
+              .icon.mx-auto.mb-3
+                i(class=`${platform.iconClass} fa-3x${platform.name === 'YouTube' ? ' text-danger' : platform.name === 'Bluesky' ? ' text-info' : platform.name === 'LinkedIn' || platform.name === 'Facebook' || platform.name === 'Instagram' ? ' text-primary' : ''}`, style=platform.textColor ? `color: ${platform.textColor};` : '')
+              h4.poppins-bold(style=platform.textColor ? `color: ${platform.textColor};` : '')= platform.name
+              p(style=platform.textColor ? `color: ${platform.textColor};` : '')= platform.description
+              a(class=platform.buttonClass, href=platform.url, target=platform.url.startsWith('http') ? '_blank' : '', rel=platform.url.startsWith('http') ? 'noopener noreferrer' : '').mt-3
+                i(class=platform.iconClass).me-2
+                | #{platform.buttonText}
 
-        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
-          .card.dash-card.h-100.p-4.text-center
-            .icon.mx-auto.mb-3
-              i.fab.fa-facebook.fa-3x.text-primary
-            h4.poppins-bold Facebook
-            p Join our community for marketing tips, success stories, and engaging discussions about digital growth.
-            a.btn.btn-primary.mt-3(href="https://www.facebook.com/apro.aiseo/" target="_blank" rel="noopener noreferrer")
-              i.fab.fa-facebook.me-2
-              | Like Our Page
-
-        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
-          .card.dash-card.h-100.p-4.text-center
-            .icon.mx-auto.mb-3
-              i.fab.fa-instagram.fa-3x.text-primary
-            h4.poppins-bold Instagram
-            p Follow us for behind-the-scenes content, quick tips, and visual insights into AI marketing automation.
-            a.btn.btn-primary.mt-3(href="https://www.instagram.com/apro.ai" target="_blank" rel="noopener noreferrer")
-              i.fab.fa-instagram.me-2
-              | Follow Us
-
-        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
-          .card.dash-card.h-100.p-4.text-center
-            .icon.mx-auto.mb-3
-              i.fab.fa-youtube.fa-3x.text-danger
-            h4.poppins-bold YouTube
-            p Subscribe for in-depth tutorials, product demos, and educational content about AI marketing.
-            a.btn.btn-danger.mt-3(href="https://www.youtube.com/@apro-solutions" target="_blank" rel="noopener noreferrer")
-              i.fab.fa-youtube.me-2
-              | Subscribe
-
-        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
-          .card.dash-card.h-100.p-4.text-center
-            .icon.mx-auto.mb-3
-              i.fas.fa-cloud.fa-3x.text-info
-            h4.poppins-bold Bluesky
-            p Join us on Bluesky for real-time updates, industry discussions, and direct engagement with our team.
-            a.btn.btn-info.mt-3(href="https://bsky.app/profile/apro-solutions.bsky.social" target="_blank" rel="noopener noreferrer")
-              i.fas.fa-cloud.me-2
-              | Follow Us
-
+        // Static Newsletter card (hardcoded)
         .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
           .card.dash-card.h-100.p-4.text-center(style="background-color: var(--primary-color);")
             .icon.mx-auto.mb-3
