@@ -1,0 +1,70 @@
+extends layout
+block append head
+  title How It Works | A-Pro AI - Digital Marketing Automation
+  meta(name='description', content='Discover how A-Pro AI automates your digital marketing with intelligent analysis, optimization, and growth strategies. See our simple 3-step process.')
+  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/how-it-works`)
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content='How It Works | A-Pro AI - Digital Marketing Automation')
+  meta(property='og:description', content='Discover how A-Pro AI automates your digital marketing with intelligent analysis, optimization, and growth strategies.')
+  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/how-it-works`)
+  meta(property='og:image', content=`https://a-pro.ai/images/how-it-works-hero.webp`)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:locale', content=lang)
+
+block content
+  link(rel="stylesheet" href="/css/pages/index.css")
+  .container
+    section.hero-section
+      .row
+        .col-12.text-center
+          h1.mb-0.poppins-bold.green-underline How A-Pro AI Works
+          h3.mt-5.text-center.poppins-bold.q-mb-lg Transform your digital presence with our AI-powered marketing system
+
+    .mt-3
+      h2.mb-5.poppins-bold.text-center(style="font-size:60px") Our Simple 3-Step Process
+
+      .row
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
+          .card.dash-card.h-100.p-4.text-center
+            .icon.mx-auto.mb-3
+              span.badge.bg-primary.fs-1.p-3 1
+            h4.poppins-bold Website Analysis & Audit
+            p A-Pro AI conducts comprehensive analysis of your website, examining SEO performance and user experience metrics.
+            ul.list-unstyled.text-start.mt-3
+              li.mb-2 ✓ Technical SEO audit
+              li.mb-2 ✓ Content performance analysis
+              li.mb-2 ✓ User behavior tracking
+              li.mb-2 ✓ Competitive benchmarking
+
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
+          .card.dash-card.h-100.p-4.text-center
+            .icon.mx-auto.mb-3
+              span.badge.fs-1.p-3(style="background-color: var(--primary-color); color: black;") 2
+            h4.poppins-bold AI-Powered Optimization
+            p Our intelligent algorithms identify opportunities and automatically implement optimizations to boost performance.
+            ul.list-unstyled.text-start.mt-3
+              li.mb-2 ✓ Content optimization for SEO
+              li.mb-2 ✓ Automated keyword targeting
+              li.mb-2 ✓ Performance monitoring
+              li.mb-2 ✓ Real-time adjustments
+
+        .col-12.col-sm-6.col-md-6.col-lg-6.col-xl-4.mb-3.px-2
+          .card.dash-card.h-100.p-4.text-center
+            .icon.mx-auto.mb-3
+              span.badge.bg-secondary.fs-1.p-3 3
+            h4.poppins-bold Growth & Scaling
+            p Watch your digital presence grow through intelligent automation and data-driven optimization strategies.
+            ul.list-unstyled.text-start.mt-3
+              li.mb-2 ✓ Traffic growth tracking
+              li.mb-2 ✓ Conversion optimization
+              li.mb-2 ✓ ROI maximization
+              li.mb-2 ✓ Scalable marketing strategies
+
+    // CTA Section
+    section.text-center.mt-5.mb-5.p-5(style="background-color: var(--primary-color); border-radius: 10px;")
+      h2.poppins-bold.mb-4(style="color: black;") Ready to Transform Your Marketing?
+      p.lead(style="color: black;") See how A-Pro AI can revolutionize your digital presence
+      .mt-4
+        a.btn.btn-dark.btn-lg.me-3(href="/pricing") View Pricing
+        a.btn.btn-outline-dark.btn-lg(href="/#contact") Get Started

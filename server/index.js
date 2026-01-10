@@ -17,6 +17,7 @@ const { sendMail } = require('./mailer')
 import { getArticles,getArticlesRaw, getArticle, getArticleRaw } from './routes/articleListRoute.js';
 import { articleListJSONLD, articleJSONLD, indexPageJSONLD } from './middleware/metaBuilder.js';
 import pricingPlans from './data/pricingPlans.json';
+import socialMediaLinks from './data/socialMediaLinks.json';
 import { generateSitemap } from './sitemapGen.js';
 import demoRoutes from './routes/demoRouteSecure.js';
 
@@ -113,27 +114,45 @@ app.use('/', demoRoutes);
 // });
 
 
-// app.get('/:lang(zh)/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
-// app.get('/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
-// app.post('/:lang(zh|en)/contact', i18nMiddleware, (req, res) => {
-//   try {
-//     const { name, email, message } = req.body;
-//     const { error, value } = schema.validate({...req.body  });
-    
-//     if(error) throw error;
-//     const contact = new Contact({
-//       name,
-//       email,
-//       message
-//     })
-//     contact.save()
-//     sendMail('contact form', `name: ${name}, email: ${email}, message: ${message}`);
-//     res.send(res.locals.t('contactSuccess'))
-//   }catch(err){
-//     console.log(err.message)
-//     res.status(401).send(res.locals.t('contactError'))
-//   }
-// });
+app.get('/:lang(zh)/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
+app.get('/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
+// Contact form handler function
+const handleContactForm = async (req, res) => {
+  try {
+    const { name, email, message } = req.body;
+    const { error, value } = schema.validate({...req.body  });
+
+    if(error) throw error;
+
+    // Save to database if MongoDB is connected
+    if (mongoose.connection.readyState === 1) {
+      const contact = new Contact({
+        name,
+        email,
+        message
+      })
+      await contact.save()
+    } else {
+      console.log('📝 Contact form submission (Demo Mode):', { name, email, message });
+    }
+
+    // Send email if mailer is configured
+    if (Bun.env.MAILER_EMAIL && Bun.env.MAILER_PASSWORD && Bun.env.MAILER_RECIPIENT) {
+      await sendMail('Contact Form Submission', `New contact form submission:\n\nName: ${name}\nEmail: ${email}\nMessage: ${message}`);
+    } else {
+      console.log('📧 Email would be sent to:', Bun.env.MAILER_RECIPIENT || 'contact@a-pro.ai');
+      console.log('📧 Email content:', { name, email, message });
+    }
+
+    res.send(res.locals.t ? res.locals.t('contactSuccess') : 'Thank you for your message! We\'ll get back to you soon.')
+  }catch(err){
+    console.log('Contact form error:', err.message)
+    res.status(401).send(res.locals.t ? res.locals.t('contactError') : 'Sorry, there was an error sending your message. Please try again.')
+  }
+};
+
+app.post('/:lang(zh|en)/contact', i18nMiddleware, handleContactForm);
+app.post('/contact', i18nMiddleware, handleContactForm);
 
 // app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {
 //   res.render('pricing',{pricingPlans:pricingPlans, currency:'ntd'}); 
@@ -198,10 +217,10 @@ app.get('/pricing', i18nMiddleware, (req, res) => {
 });
 
 app.get('/:lang(zh)/socials', i18nMiddleware, (req, res) => {
-  res.render('socials');
+  res.render('socials', { socialMediaLinks: socialMediaLinks });
 });
 app.get('/socials', i18nMiddleware, (req, res) => {
-  res.render('socials');
+  res.render('socials', { socialMediaLinks: socialMediaLinks });
 });
 
 // Blog article page route
