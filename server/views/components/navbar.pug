@@ -12,11 +12,11 @@ nav.apro-navbar
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/about` : '/about') about
           li.nav-item
-            a.nav-link(href="#how-it-works") how it works
+            a.nav-link(href=lang != 'en' ? `/${lang}/how-it-works` : '/how-it-works') how it works
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/pricing` : '/pricing') pricing
           li.nav-item
-            a.nav-link(href="#blog") blog
+            a.nav-link(href='https://blog.apromarketing.com' target='_blank' rel='noopener noreferrer') blog
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/socials` : '/socials') socials
 
@@ -65,21 +65,6 @@ style.
 
 script.
   document.addEventListener('DOMContentLoaded', function() {
-    // Smooth scrolling for anchor links
-    const anchorLinks = document.querySelectorAll('a[href^="#"]');
-
-    anchorLinks.forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href').substring(1);
-        const targetSection = document.getElementById(targetId);
-
-        if (targetSection) {
-          targetSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
+    // Simple navigation handling - all navbar links now go to separate pages
+    // No special handling needed since all links are standard page navigation
   });
