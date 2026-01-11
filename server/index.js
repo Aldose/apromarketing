@@ -230,7 +230,7 @@ app.get('/blog/:slug', async (req, res) => {
 
     // Fetch the article from Ghost API
     const apiKey = Bun.env.GHOST_API_KEY;
-    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&include=tags`);
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/slug/${slug}/?key=${apiKey}&include=tags`);
 
     if (!response.ok) {
       return res.status(404).render('404');
@@ -279,7 +279,7 @@ app.get('/tag/:slug', async (req, res) => {
 
     // Fetch articles by tag from Ghost API
     const apiKey = Bun.env.GHOST_API_KEY;
-    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&filter=tag:${slug}&include=tags`);
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/?key=${apiKey}&filter=tag:${slug}&include=tags`);
 
     if (!response.ok) {
       return res.status(404).render('404');
@@ -288,7 +288,7 @@ app.get('/tag/:slug', async (req, res) => {
     const data = await response.json();
 
     // Also fetch tag information
-    const tagResponse = await fetch(`http://localhost:2368/ghost/api/content/tags/slug/${slug}/?key=${apiKey}`);
+    const tagResponse = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/tags/slug/${slug}/?key=${apiKey}`);
     let tagInfo = null;
     if (tagResponse.ok) {
       const tagData = await tagResponse.json();
@@ -343,7 +343,7 @@ app.get('/api/ghost-posts', async (req, res) => {
 
     // Fetch posts from Ghost Content API - using real Ghost data only
     const apiKey = Bun.env.GHOST_API_KEY;
-    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/?key=${apiKey}&limit=6&fields=title,excerpt,slug,published_at`);
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/?key=${apiKey}&limit=6&fields=title,excerpt,slug,published_at`);
 
     if (!response.ok) {
       throw new Error(`Ghost API error: ${response.status}`);
@@ -390,7 +390,7 @@ app.get('/api/ghost-post/:slug', async (req, res) => {
 
     // Fetch individual post from Ghost Content API with full content
     const apiKey = Bun.env.GHOST_API_KEY;
-    const response = await fetch(`http://localhost:2368/ghost/api/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time&include=tags`);
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/slug/${slug}/?key=${apiKey}&fields=title,excerpt,html,slug,published_at,feature_image,reading_time&include=tags`);
 
     if (!response.ok) {
       throw new Error(`Ghost API error: ${response.status}`);
