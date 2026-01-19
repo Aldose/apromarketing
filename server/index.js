@@ -17,7 +17,6 @@ const { sendMail } = require('./mailer')
 import { getArticles,getArticlesRaw, getArticle, getArticleRaw } from './routes/articleListRoute.js';
 import { articleListJSONLD, articleJSONLD, indexPageJSONLD } from './middleware/metaBuilder.js';
 import pricingPlans from './data/pricingPlans.json';
-import socialMediaLinks from './data/socialMediaLinks.json';
 import { generateSitemap } from './sitemapGen.js';
 import demoRoutes from './routes/demoRouteSecure.js';
 
