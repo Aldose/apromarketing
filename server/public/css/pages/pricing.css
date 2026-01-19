@@ -63,6 +63,6 @@
   
 }
 .currency-btn:hover{
-  transform: translateY(-3px);
-  box-shadow: 0px 3px 7px rgba(0, 0, 0, 0.3);
+  transform: translateY(0px);
+  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.4);
 }

@@ -2,13 +2,13 @@ extends layout
 block append head
   title= t('pricingMeta.title')
   meta(name='description', content=t('pricingMeta.description'))
-  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/pricing`)
+  link(rel='canonical', href=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/pricing`)
   meta(name="keywords", content=t('pricingMeta.keywords'))
   meta(name='robots', content='index, follow')
   meta(property='og:title', content=t('pricingMeta.title'))
   meta(property='og:description', content=t('pricingMeta.description'))
-  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/pricing`)
-  meta(property='og:image', content=`https://a-pro.ai/images/backgrounds/pricing-hero.jpg`)
+  meta(property='og:url', content=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/pricing`)
+  meta(property='og:image', content=`https://apromarketing.com/images/backgrounds/pricing-hero.jpg`)
   meta(property='og:image:width', content='1200')
   meta(property='og:image:height', content='630')
   meta(property='og:type', content='website')
@@ -74,7 +74,7 @@ block content
                               img(src="/icons/apro-star1.png", alt="icon")
                               span.q-ml-sm #{t('homeHeroBtn')}
                           else
-                            a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://a-pro.ai/" + lang + "/contact" : "https://a-pro.ai/contact"))
+                            a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://apromarketing.com/" + lang + "/contact" : "https://apromarketing.com/contact"))
                               img(src="/icons/apro-star1.png", alt="icon")
                               span #{t('contactUs')}
                               if pricingPlans
@@ -109,7 +109,7 @@ block content
                               img(src="/icons/apro-star1.png", alt="icon")
                               span.q-ml-sm #{t('homeHeroBtn')}
                           else
-                            a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://a-pro.ai/" + lang + "/contact" : "https://a-pro.ai/contact"))
+                            a.q-mt-lg.btn-primary.cta-btn(href=(lang != 'en' ? "https://apromarketing.com/" + lang + "/contact" : "https://apromarketing.com/contact"))
                               img(src="/icons/apro-star1.png", alt="icon")
                               span #{t('contactUs')}
 
@@ -121,7 +121,7 @@ block append scripts
       "@type": "Product",
       "name": "#{t('pricingMeta.title')}",
       "description": "#{t('pricingMeta.description')}",
-      "url": "https://a-pro.ai#{lang != 'en' ? '/' + lang : ''}/pricing",
+      "url": "https://apromarketing.com#{lang != 'en' ? '/' + lang : ''}/pricing",
       "offers": !{JSON.stringify(hasPart)}
     }
 

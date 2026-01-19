@@ -57,8 +57,8 @@
 }
 .team-card:hover{
   border-color: rgb(203, 213, 225) 0px 7px 17px;
-  transform:translateY(-4px);
-  box-shadow: rgb(203, 213, 225) 0px 7px 17px;
+  transform:translateY(0px);
+  box-shadow: rgb(203, 213, 225) 0px 10px 20px;
 
   
 

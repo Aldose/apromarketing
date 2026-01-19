@@ -167,8 +167,8 @@ h6{
 
 .cta-btn:hover {
   background: var(--secondary-color);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(0px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .cta-btn img {
