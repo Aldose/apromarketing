@@ -201,11 +201,11 @@ app.get('/about', i18nMiddleware, (req, res) => {
   res.render('about');
 });
 
-app.get('/:lang(zh)/how-it-works', i18nMiddleware, (req, res) => {
-  res.render('how-it-works');
+app.get('/:lang(zh)/demo', i18nMiddleware, (req, res) => {
+  res.render('demo');
 });
-app.get('/how-it-works', i18nMiddleware, (req, res) => {
-  res.render('how-it-works');
+app.get('/demo', i18nMiddleware, (req, res) => {
+  res.render('demo');
 });
 
 app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {

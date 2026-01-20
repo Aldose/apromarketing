@@ -1,18 +1,18 @@
 nav.apro-navbar
   .container-fluid
-    .row.d-flex.justify-content-start.align-items-center.py-3
+    .row.d-flex.justify-content-between.align-items-center.py-3
       // Logo section
       .col-auto
         a.logo-link(href=lang != 'en' ? `/${lang}` : '/')
           img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
 
       // Navigation links
-      .col-auto.d-none.d-lg-block.ms-4
+      .col-auto.d-none.d-lg-block
         ul.nav-links.list-unstyled.d-flex.mb-0
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/about` : '/about') about
           li.nav-item
-            a.nav-link(href=lang != 'en' ? `/${lang}/how-it-works` : '/how-it-works') how it works
+            a.nav-link(href=lang != 'en' ? `/${lang}/demo` : '/demo') demos
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/blog` : '/blog') blog
           li.nav-item
