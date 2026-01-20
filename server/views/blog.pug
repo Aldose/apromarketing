@@ -1,0 +1,296 @@
+extends layout
+block append head
+  title= `Marketing Insights Blog | ${t('siteTitle') || 'A-Pro Marketing'}`
+  meta(name='description', content='Explore our collection of marketing articles, tips, and insights to help grow your business.')
+  link(rel='canonical', href=`https://apromarketing.com/blog`)
+  meta(name="keywords", content="marketing blog, digital marketing tips, business growth, SEO insights, marketing strategies")
+  meta(name='robots', content='index, follow')
+  meta(property='og:title', content='Marketing Insights Blog')
+  meta(property='og:description', content='Explore our collection of marketing articles, tips, and insights to help grow your business.')
+  meta(property='og:url', content=`https://apromarketing.com/blog`)
+  meta(property='og:image', content=`https://apromarketing.com/images/blog-hero.jpg`)
+  meta(property='og:image:width', content='1200')
+  meta(property='og:image:height', content='630')
+  meta(property='og:type', content='website')
+
+block content
+  link(rel="stylesheet" href="/css/pages/blog.css")
+
+  .container.mt-5
+    // Hero Section
+    section.blog-hero-section.text-center.mb-5
+      h1.poppins-bold.mb-3 Marketing Insights
+      p.lead Explore our collection of marketing articles, tips, and insights to help grow your business
+
+    // Blog Articles Grid
+    section.blog-articles-section
+      .row#blog-articles-grid
+        if articles && articles.length > 0
+          each article, index in articles
+            .col-lg-4.col-md-6.col-sm-12.mb-4(style=`animation-delay: ${index * 0.1}s`)
+              .article-preview-card(onclick=`window.location.href='/blog/${article.slug}'`)
+                if article.feature_image
+                  .article-preview-image
+                    img(src=article.feature_image alt=article.title loading="lazy")
+                .article-preview-content
+                  .article-preview-title= article.title
+                  .article-preview-excerpt= article.excerpt
+                  .article-preview-meta
+                    span.article-preview-date= new Date(article.published_at).toLocaleDateString()
+                    if article.reading_time
+                      span.article-reading-time #{article.reading_time} min read
+                    span.article-read-more Read More →
+        else
+          .col-12.text-center
+            .article-error-state
+              p 📄 No articles available at the moment
+              p Please check back later for new content
+
+    // Pagination Section
+    if pagination && pagination.pages > 1
+      section.pagination-section.mt-5.text-center
+        .pagination-container
+          if pagination.prev
+            a.pagination-btn.prev-btn(href=`/blog?page=${pagination.prev}`) ❮ Previous
+
+          .pagination-info
+            span Page #{pagination.page} of #{pagination.pages}
+            span.total-articles (#{pagination.total} total articles)
+
+          if pagination.next
+            a.pagination-btn.next-btn(href=`/blog?page=${pagination.next}`) Next ❯
+
+block append styles
+  style.
+    .blog-hero-section {
+      padding: 60px 0;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+      margin-bottom: 60px;
+    }
+
+    .blog-hero-section h1 {
+      font-size: 3rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .blog-hero-section p {
+      font-size: 1.3rem;
+      color: #666;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .blog-articles-section {
+      padding: 20px 0;
+    }
+
+    .article-preview-card {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 350px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideInUp 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-preview-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .article-preview-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+
+    .article-preview-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .article-preview-card:hover .article-preview-image img {
+      transform: scale(1.05);
+    }
+
+    .article-preview-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .article-preview-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+      min-height: 2.8em;
+    }
+
+    .article-preview-excerpt {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 15px;
+      flex: 1;
+    }
+
+    .article-preview-meta {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .article-preview-date {
+      font-size: 12px;
+      color: #999;
+      font-style: italic;
+    }
+
+    .article-reading-time {
+      font-size: 12px;
+      color: #666;
+      background: #f8f9fa;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .article-read-more {
+      font-size: 12px;
+      color: #00d4aa;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .article-error-state {
+      padding: 80px 20px;
+      color: #666;
+    }
+
+    .article-error-state p {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    /* Pagination Styles */
+    .pagination-section {
+      padding: 40px 0;
+    }
+
+    .pagination-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-btn {
+      background: #00d4aa;
+      color: white;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .pagination-btn:hover {
+      background: #00b89a;
+      transform: translateY(0px);
+      box-shadow: 0 4px 12px rgba(0, 212, 170, 0.3);
+      color: white;
+      text-decoration: none;
+    }
+
+    .pagination-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .total-articles {
+      font-size: 12px;
+      color: #999;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+      .blog-hero-section {
+        padding: 40px 20px;
+        margin-bottom: 40px;
+      }
+
+      .blog-hero-section h1 {
+        font-size: 2rem;
+      }
+
+      .blog-hero-section p {
+        font-size: 1.1rem;
+      }
+
+      .article-preview-card {
+        min-height: 300px;
+      }
+
+      .article-preview-image {
+        height: 150px;
+      }
+
+      .article-preview-content {
+        padding: 15px;
+      }
+
+      .article-preview-title {
+        font-size: 16px;
+      }
+
+      .pagination-container {
+        gap: 20px;
+      }
+
+      .pagination-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+    }

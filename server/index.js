@@ -222,8 +222,125 @@ app.get('/socials', i18nMiddleware, (req, res) => {
   res.render('socials', { socialMediaLinks: socialMediaLinks });
 });
 
+// Internationalized blog listing page route
+app.get('/:lang(zh)/blog', i18nMiddleware, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+
+    // Fetch posts from Ghost Content API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/?key=${apiKey}&limit=${limit}&page=${page}&fields=title,excerpt,slug,published_at,feature_image,reading_time&include=tags`);
+
+    if (!response.ok) {
+      throw new Error(`Ghost API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const pagination = {
+      page: page,
+      pages: data.meta.pagination.pages,
+      total: data.meta.pagination.total,
+      next: data.meta.pagination.next,
+      prev: data.meta.pagination.prev
+    };
+
+    res.render('blog', {
+      articles: data.posts,
+      pagination: pagination,
+      currentPath: req.path
+    });
+
+  } catch (error) {
+    console.error('Error fetching blog articles:', error);
+    res.status(500).render('500', {
+      error: 'Unable to fetch blog articles'
+    });
+  }
+});
+
+// Blog listing page route
+app.get('/blog', i18nMiddleware, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+
+    // Fetch posts from Ghost Content API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/?key=${apiKey}&limit=${limit}&page=${page}&fields=title,excerpt,slug,published_at,feature_image,reading_time&include=tags`);
+
+    if (!response.ok) {
+      throw new Error(`Ghost API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    const pagination = {
+      page: page,
+      pages: data.meta.pagination.pages,
+      total: data.meta.pagination.total,
+      next: data.meta.pagination.next,
+      prev: data.meta.pagination.prev
+    };
+
+    res.render('blog', {
+      articles: data.posts,
+      pagination: pagination,
+      currentPath: req.path
+    });
+
+  } catch (error) {
+    console.error('Error fetching blog articles:', error);
+    res.status(500).render('500', {
+      error: 'Unable to fetch blog articles'
+    });
+  }
+});
+
+// Internationalized blog article page route
+app.get('/:lang(zh)/blog/:slug', i18nMiddleware, async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // Fetch the article from Ghost API
+    const apiKey = Bun.env.GHOST_API_KEY;
+    const response = await fetch(`https://blog.apromarketing.com/ghost/api/v3/content/posts/slug/${slug}/?key=${apiKey}&include=tags`);
+
+    if (!response.ok) {
+      return res.status(404).render('404');
+    }
+
+    const data = await response.json();
+    const article = data.posts[0];
+
+    if (!article) {
+      return res.status(404).render('404');
+    }
+
+    const formattedArticle = {
+      title: article.title,
+      excerpt: article.excerpt,
+      html: article.html,
+      slug: article.slug,
+      published_at: article.published_at,
+      feature_image: article.feature_image,
+      reading_time: article.reading_time,
+      tags: article.tags || []
+    };
+
+    res.render('blog-article', { article: formattedArticle, appUrl: Bun.env.APP_URL });
+
+  } catch (error) {
+    console.error('Error fetching blog article:', error);
+    res.status(500).render('500', {
+      error: 'Unable to fetch blog article'
+    });
+  }
+});
+
 // Blog article page route
-app.get('/blog/:slug', async (req, res) => {
+app.get('/blog/:slug', i18nMiddleware, async (req, res) => {
   try {
     const { slug } = req.params;
 

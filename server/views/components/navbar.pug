@@ -14,9 +14,9 @@ nav.apro-navbar
           li.nav-item
             a.nav-link(href=lang != 'en' ? `/${lang}/how-it-works` : '/how-it-works') how it works
           li.nav-item
-            a.nav-link(href='https://blog.apromarketing.com' target='_blank' rel='noopener noreferrer') blog
+            a.nav-link(href=lang != 'en' ? `/${lang}/blog` : '/blog') blog
           li.nav-item
-           a.nav-link(href=lang != 'en' ? `/${lang}/pricing` : '/pricing') pricing
+            a.nav-link(href=lang != 'en' ? `/${lang}/pricing` : '/pricing') pricing
 style.
   .apro-navbar {
     background-color: #ffffff;
@@ -39,15 +39,8 @@ style.
     text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
-    transition: all 0.3s ease;
     border-bottom: 2px solid transparent;
     padding-bottom: 2px;
-  }
-
-  .nav-link:hover {
-    color: #000000;
-    text-decoration: underline;
-    border-bottom-color: #000000;
   }
 
   .logo-link {
