@@ -37,7 +37,7 @@ footer {
 
 .language-selector a {
   margin: 0 0.5rem;
-  color: var(--secondary-color);
+  color: black;
 }
 
 .social-links {
@@ -45,7 +45,7 @@ footer {
 }
 
 .social-links a {
-  color: var(--secondary-color);
+  color: black;
   margin: 0 0.5rem;
 }
 

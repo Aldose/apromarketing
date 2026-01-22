@@ -14,6 +14,7 @@
 
 body {
   font-family: 'roboto', sans-serif;
+  color: var(--text-color);
   /* line-height: 1.6; */
 }
 
@@ -63,7 +64,7 @@ input:focus {
 }
 
 input::placeholder {
-  color: #9e9e9e;
+  color: black;
 }
 /* Create a custom animation */ 
 /* @keyframes move-out {
