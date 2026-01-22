@@ -2,12 +2,12 @@ extends layout
 block append head  
   title!=t('aboutPageMeta.title')
   meta(name='description', content=t('aboutPageMeta.description'))
-  link(rel='canonical', href=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/about`)
+  link(rel='canonical', href=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/about`)
   meta(name='robots', content='index, follow')
   meta(property='og:title', content=`${t('aboutPageMeta.title')} | A-Pro`)
   meta(property='og:description', content!=`${t('aboutPageMeta.description')}`)
-  meta(property='og:url', content=`https://a-pro.ai`+(lang != 'en' ? '/' + lang : '') + `/about`)
-  meta(property='og:image', content=`https://a-pro.ai/images/about-woman.webp`)
+  meta(property='og:url', content=`https://apromarketing.com`+(lang != 'en' ? '/' + lang : '') + `/about`)
+  meta(property='og:image', content=`https://apromarketing.com/images/about-woman.webp`)
   meta(property='og:image:width', content='400')
   meta(property='og:image:height', content='400')
   meta(property='og:locale', content=lang)
@@ -29,7 +29,7 @@ block content
                 .col-md-6
                   p!=t('aboutSection1')
                 .col-md-6.text-center
-                  img( style="width:450px;margin:0 auto;" src="/images/about-woman.webp", alt="about1", class="img-fluid" loading="lazy")
+                  img( style="width:450px;margin:0 auto;" src="/images/jade/jade-smile.webp", alt="jade-smiling", class="img-fluid" loading="lazy")
           //- hr
         section.mb-5
           //- h2=t('messageFromTheFounder')
@@ -37,7 +37,7 @@ block content
             .col-10
               .row.align-items-center.justify-content-center
                 .col-md-4.col-sm-6.col-xs-6.text-center
-                  img(src="/images/robot-handshake2.webp", alt="Robot handshake" loading="lazy")
+                  img(src="/images/features/editor2.png", alt="Utilizing AI" loading="lazy")
                 .col-md-8
                   p!= t('founderMessage')
                   //- b!= t('founderName')
@@ -175,15 +175,15 @@ block append scripts
       "@type": "AboutPage",
       "headline": "#{t('aboutPageMeta.title')}",
       "description": "#{t('aboutPageMeta.description')}",
-      "image": "https://a-pro.ai/images/about-woman.webp",
-      "url": "https://a-pro.ai#{lang != 'en' ? '/' + lang : ''}/about",
+      "image": "https://apromarketing.com/images/about-woman.webp",
+      "url": "https://apromarketing.com#{lang != 'en' ? '/' + lang : ''}/about",
       "inLanguage": "#{lang}",
       "publisher": {
         "@type": "Organization",
         "name": "A-Pro",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://a-pro.ai/images/logo.png"
+          "url": "https://apromarketing.com/images/logo.png"
         }
       }
     };

@@ -7,12 +7,23 @@ export default {
   aboutDesc: "A-Pro is a digital marketing platform that helps businesses and individuals grow their online presence through cutting-edge SEO strategies, expert marketing insights, and AI-driven tools.",
   aboutH2: "Revolutionizing Digital Marketing with AI",
   aboutSection1:`
-    <h3>In today’s digital landscape </h3> Businesses need be <b><u>smart</u></b> and utilize every strategy to stand out. 
-    <br><br>
-    At A-Pro, we leverage the latest <b>AI technologies</b> to supercharge digital marketing efforts—from SEO, 
-    content marketing, social media growth and AI-powered influencer marketing.
-    <br><br>
-    Whether you're a small business owner, a marketing professional, or an aspiring entrepreneur, A-Pro has tools to help you succeed online.
+  <h3>Our Vision</h3>
+    A-Pro was established to bring the latest in <b>artificial intelligence</b> 
+    to the digital marketing space. We come with a collective 40+ years experience helping organizations and individuals get their message out via effective marketing strategies, 
+    as well as streamline their processes via automation. 
+    <br></br>
+    With the proliferation of AI technology touching nearly every aspect of our lives. 
+    We wanted to deliver tools that enables businesses, organizations, creators,
+    solo entrepreneurs, and innovators to use AI in a way that amplifies what they do.
+    At an affordable price point for small to medium sized enterprises.
+    Unlike other tools we believe in leaving creative control and oversight in the hands of the user. 
+    In all of our design and architecture decisions we always strive to include the user in what the system 
+    is doing. 
+    <br></br>
+    <h3>Democratizing Digital Marketing</h3>
+    It's our hope and goal that with the appropriate application of LLMs and other forms of Generative AI. 
+    We lower the barriers to entry for good ideas and products to have a fair shot at becoming known to the right audience. 
+    Our goal with A-Pro is to empower with AI-driven tools that simplify content creation, enhance SEO, and unlock new opportunities in social media and other forms of marketing. 
   `,
   messageFromTheFounder:"Message from the Founder",
   founderMessage:`
