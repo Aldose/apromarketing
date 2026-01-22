@@ -9,6 +9,7 @@ const cron = require('node-cron');
 const joi = require('joi');
 const { Contact } = require('./models/contactModel')
 import Newsletter from './models/Newsletter.js';
+import ghostService from './services/ghostService.js';
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const { sendMail } = require('./mailer')
@@ -552,43 +553,101 @@ app.post('/newsletter-signup', async (req, res) => {
 
     if(error) throw error;
 
-    // Check if MongoDB is connected
-    if (mongoose.connection.readyState === 1) {
-      // MongoDB is connected - save to database
-      const newsletter = new Newsletter({
-        name,
-        company,
-        website,
-        email,
-        subscriptionStatus: 'pending'
-      });
+    console.log(`📧 Newsletter signup request: ${email}`);
 
-      await newsletter.save();
-      sendMail('newsletter signup', `New newsletter signup - Name: ${name}, Company: ${company}, Email: ${email}, Website: ${website}`);
-    } else {
-      // MongoDB not connected - just log for demo purposes
-      console.log('📧 Newsletter signup (Demo Mode):', { name, company, website, email });
+    let ghostSuccess = false;
+    let mongoBackup = false;
+
+    // Primary: Try to create member in Ghost
+    try {
+      const result = await ghostService.createMember({ name, company, website, email });
+
+      if (result.exists) {
+        // Member already exists in Ghost
+        return res.status(200).json({
+          success: true,
+          message: 'You\'re already subscribed to our newsletter! Thank you for your interest.'
+        });
+      } else {
+        console.log(`✅ Ghost member created successfully for: ${email}`);
+        ghostSuccess = true;
+      }
+    } catch (ghostError) {
+      console.warn(`⚠️ Ghost integration failed for ${email}:`, ghostError.message);
+      console.log('📝 Proceeding with MongoDB fallback...');
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Thank you for subscribing! We\'ll be in touch soon.'
-    });
+    // Fallback or backup: Save to MongoDB
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const newsletter = new Newsletter({
+          name,
+          company,
+          website,
+          email,
+          subscriptionStatus: ghostSuccess ? 'active' : 'pending',
+          ghostSync: ghostSuccess ? 'synced' : 'failed',
+          source: 'website'
+        });
+
+        await newsletter.save();
+        mongoBackup = true;
+        console.log(`💾 MongoDB backup saved for: ${email}`);
+      } catch (mongoError) {
+        if (mongoError.code === 11000) {
+          // Duplicate email in MongoDB
+          if (!ghostSuccess) {
+            return res.status(400).json({
+              success: false,
+              message: 'This email is already subscribed to our newsletter.'
+            });
+          }
+          // If Ghost succeeded but MongoDB has duplicate, that's okay
+          console.log(`📝 Duplicate in MongoDB (Ghost succeeded): ${email}`);
+        } else {
+          console.error(`❌ MongoDB backup failed for ${email}:`, mongoError.message);
+          if (!ghostSuccess) {
+            throw mongoError; // If both Ghost and MongoDB failed, throw error
+          }
+        }
+      }
+    } else {
+      console.log(`⚠️ MongoDB not connected - no backup for: ${email}`);
+    }
+
+    // Send notification email
+    try {
+      const syncStatus = ghostSuccess ? 'Ghost' : 'MongoDB only';
+      sendMail('newsletter signup',
+        `New newsletter signup - Name: ${name}, Company: ${company}, Email: ${email}, Website: ${website}, Synced to: ${syncStatus}`
+      );
+    } catch (emailError) {
+      console.warn('⚠️ Notification email failed:', emailError.message);
+      // Don't fail the whole process for notification email issues
+    }
+
+    // Success response
+    if (ghostSuccess) {
+      res.status(200).json({
+        success: true,
+        message: 'Thank you for subscribing! Welcome to our newsletter.'
+      });
+    } else if (mongoBackup) {
+      res.status(200).json({
+        success: true,
+        message: 'Thank you for subscribing! We\'re processing your request and will be in touch soon.'
+      });
+    } else {
+      throw new Error('Both Ghost and MongoDB signup failed');
+    }
 
   } catch(err) {
-    console.log(err.message);
-    if (err.code === 11000) {
-      // Duplicate email error
-      res.status(400).json({
-        success: false,
-        message: 'This email is already subscribed to our newsletter.'
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'Please check your information and try again.'
-      });
-    }
+    console.error('❌ Newsletter signup failed:', err.message);
+
+    res.status(400).json({
+      success: false,
+      message: 'Unable to process your subscription. Please try again later or contact support.'
+    });
   }
 });
 

@@ -45,6 +45,15 @@ const newsletterSchema = new mongoose.Schema({
   source: {
     type: String,
     default: 'website'
+  },
+  ghostSync: {
+    type: String,
+    enum: ['synced', 'failed', 'pending'],
+    default: 'pending'
+  },
+  ghostMemberId: {
+    type: String,
+    default: null
   }
 },{
   timestamps:true
