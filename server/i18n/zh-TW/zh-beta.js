@@ -31,7 +31,7 @@ export default {
   formFullName: "姓名",
   formEmail: "電子郵件",
   formCompany: "公司網站",
-  formCompanyPlaceholder: "https://yourcompany.com",
+  formCompanyPlaceholder: "yourcompany.com",
   formMessage: "告訴我們您的業務情況（可選）",
   formMessagePlaceholder: "您希望解決哪些行銷挑戰？",
   formSubmitButton: "申請 Beta 測試",

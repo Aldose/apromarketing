@@ -31,7 +31,7 @@ export default {
   formFullName: "Full Name",
   formEmail: "Email Address",
   formCompany: "Company Website",
-  formCompanyPlaceholder: "https://yourcompany.com",
+  formCompanyPlaceholder: "yourcompany.com",
   formMessage: "Tell us about your business (optional)",
   formMessagePlaceholder: "What kind of marketing challenges are you looking to solve?",
   formSubmitButton: "Apply for Beta Access",
