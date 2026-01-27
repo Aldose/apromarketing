@@ -13,18 +13,37 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendMail = async ( subject, text) => {
+export const sendMail = async (emailData) => {
   return new Promise(async(resolve, reject) => {
     try {
-      const info = await transporter.sendMail({
-        from: MAILER_EMAIL,
-        to: MAILER_RECIPIENT,
-        subject,
-        text,
-      });
+      // Handle both old format (subject, text) and new format (object)
+      let mailOptions;
+
+      if (typeof emailData === 'string') {
+        // Legacy format: sendMail(subject, text)
+        const subject = emailData;
+        const text = arguments[1];
+        mailOptions = {
+          from: MAILER_EMAIL,
+          to: MAILER_RECIPIENT,
+          subject,
+          text,
+        };
+      } else {
+        // New format: sendMail({to, subject, text, replyTo})
+        mailOptions = {
+          from: MAILER_EMAIL,
+          to: emailData.to || MAILER_RECIPIENT,
+          subject: emailData.subject,
+          text: emailData.text,
+          replyTo: emailData.replyTo || MAILER_EMAIL
+        };
+      }
+
+      const info = await transporter.sendMail(mailOptions);
       resolve(info);
     } catch (error) {
       reject(error);
     }
-  })   
+  })
 }

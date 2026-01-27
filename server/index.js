@@ -9,6 +9,7 @@ const cron = require('node-cron');
 const joi = require('joi');
 const { Contact } = require('./models/contactModel')
 import Newsletter from './models/Newsletter.js';
+import { BetaSignup } from './models/BetaSignup.js';
 import ghostService from './services/ghostService.js';
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -154,6 +155,104 @@ const handleContactForm = async (req, res) => {
 app.post('/:lang(zh|en)/contact', i18nMiddleware, handleContactForm);
 app.post('/contact', i18nMiddleware, handleContactForm);
 
+// Beta signup form handler function
+const handleBetaSignup = async (req, res) => {
+  try {
+    const { name, email, company, message } = req.body;
+
+    // Validation schema for beta signup (company URL not strictly required)
+    const betaSchema = joi.object({
+      name: joi.string().required().trim().max(100),
+      email: joi.string().email().required(),
+      company: joi.string().required().trim().max(200), // Accept any company name/URL
+      message: joi.string().max(500).allow('').optional()
+    });
+
+    const { error, value } = betaSchema.validate({ name, email, company, message });
+
+    if (error) {
+      console.error('Beta signup validation error:', error.details);
+      return res.status(400).json({
+        error: 'Invalid form data',
+        details: error.details.map(d => d.message)
+      });
+    }
+
+    // Store in MongoDB first (beta-signups collection)
+    let dbSaved = false;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const betaApplication = new BetaSignup({
+          name: value.name,
+          email: value.email,
+          company: value.company,
+          message: value.message || ''
+        });
+        await betaApplication.save();
+        dbSaved = true;
+        console.log(`✅ Beta application saved to database: ${value.email}`);
+      } catch (dbError) {
+        console.error('Database save error for beta application:', dbError);
+      }
+    }
+
+    // Prepare email content
+    const emailSubject = 'New Beta Program Application - A-Pro AI';
+    const emailBody = `
+New Beta Program Application Received:
+
+Name: ${value.name}
+Email: ${value.email}
+Company: ${value.company}
+Message: ${value.message || 'No additional message provided'}
+
+Application Date: ${new Date().toISOString()}
+
+Please follow up with this potential beta user.
+
+Database Status: ${dbSaved ? 'Saved successfully' : 'Not saved (check MongoDB connection)'}
+    `;
+
+    // Send email notification
+    try {
+      await sendMail({
+        to: 'contact@a-pro.ai',
+        subject: emailSubject,
+        text: emailBody,
+        replyTo: value.email
+      });
+      console.log(`📧 Beta application email sent to contact@a-pro.ai for ${value.email}`);
+    } catch (emailError) {
+      // Log the beta application even if email fails (for development)
+      console.log('📧 Beta Application Received (Email failed - likely missing credentials):');
+      console.log(`Name: ${value.name}`);
+      console.log(`Email: ${value.email}`);
+      console.log(`Company: ${value.company}`);
+      console.log(`Message: ${value.message || 'No message'}`);
+      console.log(`Date: ${new Date().toISOString()}`);
+      console.log(`DB Saved: ${dbSaved}`);
+      console.log('Email Error:', emailError.message);
+      console.log('---');
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Beta application submitted successfully',
+      stored: dbSaved
+    });
+
+  } catch (error) {
+    console.error('Error handling beta signup:', error);
+    res.status(500).json({
+      error: 'Failed to submit beta application',
+      details: error.message
+    });
+  }
+};
+
+app.post('/:lang(zh|en)/beta-signup', i18nMiddleware, handleBetaSignup);
+app.post('/beta-signup', i18nMiddleware, handleBetaSignup);
+
 // app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {
 //   res.render('pricing',{pricingPlans:pricingPlans, currency:'ntd'}); 
 // });
@@ -209,11 +308,12 @@ app.get('/demo', i18nMiddleware, (req, res) => {
   res.render('demo');
 });
 
-app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {
-  res.render('pricing', {pricingPlans:pricingPlans, currency:'ntd'});
+// Beta routes
+app.get('/:lang(zh)/beta', i18nMiddleware, (req, res) => {
+  res.render('beta');
 });
-app.get('/pricing', i18nMiddleware, (req, res) => {
-  res.render('pricing', {pricingPlans:pricingPlans, currency:'usd'});
+app.get('/beta', i18nMiddleware, (req, res) => {
+  res.render('beta');
 });
 
 app.get('/:lang(zh)/socials', i18nMiddleware, (req, res) => {

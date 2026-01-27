@@ -10,6 +10,7 @@ import zhAbout from './zh-about.js';
 import zhAboutpageMeta from './zh-meta/zh-aboutpage-meta.js';
 import zhFaq from './zh-faq.js';
 import zhHome from './zh-home.js';
+import zhBeta from './zh-beta.js';
 export default{
   ...zhBilling,
   ...zhTos,
@@ -18,6 +19,7 @@ export default{
   ...zhAbout,
   ...zhFaq,
   ...zhHome,
+  ...zhBeta,
   pricingMeta: zhPricingMeta,
   articlesMeta: zhArticlesMeta,
   homePageMeta:zhHomepageMeta,

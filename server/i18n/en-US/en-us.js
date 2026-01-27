@@ -12,6 +12,7 @@ import enTeam from "./en-team.js";
 import enAboutMeta from "./en-meta/en-aboutpage-meta.js";
 import enFaq from "./en-faq.js";
 import enHome from "./en-home.js";
+import enBeta from "./en-beta.js";
 
 export default{
   ...enHome,
@@ -22,6 +23,7 @@ export default{
   ...enAbout,
   ...enTeam,
   ...enFaq,
+  ...enBeta,
   homePageMeta:homepageMeta,
   contactMeta: contactMeta,
   pricingMeta: pricingMeta,
