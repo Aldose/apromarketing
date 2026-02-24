@@ -184,7 +184,7 @@ app.post('/demo', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    const response = await fetch('http://localhost:8000/demo', {
+    const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -203,10 +203,10 @@ app.post('/demo', async (req, res) => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        
+
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
-        
+
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
@@ -230,11 +230,11 @@ app.post('/demo', async (req, res) => {
 app.get('/demo-stream', async (req, res) => {
   try {
     const { url } = req.query;
-    
+
     if (!url) {
       return res.status(400).json({ error: 'URL parameter is required' });
     }
-    
+
     // Set up SSE headers
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -244,7 +244,7 @@ app.get('/demo-stream', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
-    const response = await fetch('http://localhost:8000/demo', {
+    const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

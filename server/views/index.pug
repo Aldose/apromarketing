@@ -32,16 +32,16 @@ block content
             
           //- img(src="/images/jade/jade-confident.webp" alt="Jade" style="width:300px;")
           //- a(href=`${appUrl}/demo`) helloasdfasf
-          form#demo-form(method="get" action=`${appUrl}/demo?lang=${lang}`)
-            input(type="hidden" name="lang" value=lang)
+          form#demo-form
             p!=t('homeInputTitle')
             .row
               .col-8
-                input(type="text" name="website" placeholder!=t('homeInputPlaceholder') style="width:100%; " required)
+                input#demo-website-input(type="text" name="website" placeholder!=t('homeInputPlaceholder') style="width:100%; " required)
               .col-4
                 button.btn-primary.cta-btn(type="submit" style=" background:white;color:black;")
                   img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
                   span(style="text-transform: uppercase;")=t('homeInputButton')
+          #demo-status(style="margin-top:10px; font-size:14px; color:#333; display:none;")
           h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
           //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
     .mt-3
@@ -127,6 +127,67 @@ block content
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
+      // Demo form submission
+      const demoForm = document.getElementById('demo-form');
+      const demoStatus = document.getElementById('demo-status');
+
+      demoForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const websiteUrl = document.getElementById('demo-website-input').value.trim();
+        if (!websiteUrl) return;
+
+        demoStatus.style.display = 'block';
+        demoStatus.textContent = 'Starting analysis...';
+
+        const submitBtn = demoForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        const eventSource = new EventSource('/demo-stream?url=' + encodeURIComponent(websiteUrl));
+
+        const timeout = setTimeout(function() {
+          eventSource.close();
+          submitBtn.disabled = false;
+          demoStatus.textContent = 'Analysis timed out. Please try again.';
+        }, 90000);
+
+        eventSource.onmessage = function(event) {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.message) demoStatus.textContent = data.message;
+            if (data.complete && data.data) {
+              clearTimeout(timeout);
+              eventSource.close();
+              submitBtn.disabled = false;
+              showDemoResults(data.data);
+            }
+          } catch(err) {}
+        };
+
+        eventSource.onerror = function() {
+          clearTimeout(timeout);
+          eventSource.close();
+          submitBtn.disabled = false;
+          demoStatus.textContent = 'Analysis encountered an error. Please try again.';
+        };
+
+        function showDemoResults(d) {
+          var html = '<div style="margin-top:15px;text-align:left;background:#f9f9f9;padding:15px;border-radius:8px;font-size:14px;line-height:1.6;">';
+          if (d.analysis) {
+            html += '<p><strong>🏢 ' + (d.analysis.companyName || '') + '</strong><br>' + (d.analysis.businessOverview || '') + '</p>';
+            html += '<p><strong>🎯 Target Audience:</strong> ' + ((d.analysis.targetAudience && d.analysis.targetAudience.primary) || 'N/A') + '</p>';
+          }
+          if (d.lighthouse) {
+            html += '<p><strong>⚡ Performance:</strong> ' + (d.lighthouse.performance || 'N/A') + '/100 &nbsp; <strong>Accessibility:</strong> ' + (d.lighthouse.accessibility || 'N/A') + '/100 &nbsp; <strong>SEO:</strong> ' + (d.lighthouse.seo || 'N/A') + '/100</p>';
+          }
+          var keywords = d.keywords && d.keywords.msg ? d.keywords.msg : (Array.isArray(d.keywords) ? d.keywords : []);
+          if (keywords.length > 0) {
+            html += '<p><strong>🔑 Top Keywords:</strong> ' + keywords.slice(0, 5).map(function(k){ return k.keyword; }).join(', ') + '</p>';
+          }
+          html += '</div>';
+          demoStatus.innerHTML = html;
+        }
+      });
+
       // Newsletter form submission
       const newsletterForm = document.getElementById('newsletter-form');
       const newsletterResponse = document.getElementById('newsletter-response');
