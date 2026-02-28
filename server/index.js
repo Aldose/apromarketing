@@ -9,6 +9,7 @@ const cron = require('node-cron');
 const joi = require('joi');
 const { Contact } = require('./models/contactModel')
 import Newsletter from './models/Newsletter.js';
+const { BetaSignup } = require('./models/betaSignup.js');
 const bodyParser = require('body-parser');
 const mongoSanitize = require('express-mongo-sanitize');
 const { sendMail } = require('./mailer')
@@ -47,6 +48,14 @@ var newsletterSchema = joi.object({
   company: joi.string().max(150).allow('').optional(),
   website: joi.string().allow('', null).optional(),
   email: joi.string().email().required()
+})
+
+var betaSignupSchema = joi.object({
+  name: joi.string().required().max(100),
+  company: joi.string().max(150).allow('').optional(),
+  website: joi.string().allow('', null).optional(),
+  email: joi.string().email().required(),
+  lang: joi.string().optional()
 })  
 
 
@@ -315,7 +324,7 @@ app.post('/newsletter-signup', async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: 'Thank you for subscribing! We\'ll be in touch soon.'
+      message: 'Thank you for your interest! We\'ll be in touch soon.'
     });
 
   } catch(err) {
@@ -334,7 +343,52 @@ app.post('/newsletter-signup', async (req, res) => {
     }
   }
 });
+app.post('/beta-signup', async (req, res) => {
+  try {
+    const { name, company, website, email, lang } = req.body;
+    const { error, value } = betaSignupSchema.validate({...req.body});
 
+    if(error) throw error;
+
+    // Check if MongoDB is connected
+    if (mongoose.connection.readyState === 1) {
+      // MongoDB is connected - save to database
+      const betaSignup = new BetaSignup({
+        name,
+        company,
+        website,
+        email,
+        lang
+      });
+
+      await betaSignup.save();
+      sendMail('beta signup', `New beta signup - Name: ${name}, Company: ${company}, Email: ${email}, Website: ${website}`);
+    } else {
+      // MongoDB not connected - just log for demo purposes
+      console.log('📧 Beta signup (Demo Mode):', { name, company, website, email });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Thank you for signing up! We\'ll be in touch soon.'
+    });
+
+  } catch(err) {
+    console.log(err.message);
+    if (err.code === 11000) {
+      // Duplicate email error
+      res.status(400).json({
+        success: false,
+        message: 'This email is already signed up for our beta.'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'Please check your information and try again.'
+      });
+    }
+  }
+});
 // Set up sitemap generation
 const setupSitemapGeneration = () => {
   // Run every Sunday at 2 AM

@@ -44,6 +44,29 @@ block content
           #demo-status(style="margin-top:10px; font-size:14px; color:#333; display:none;")
           h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
           //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
+    section.beta-signup-section.mt-5.py-5(style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); border-radius: 15px;")
+      .container
+        .row.justify-content-center
+          .col-lg-8.col-md-10.col-sm-12.text-center
+            h2.poppins-bold.mb-3(style="color: white;") 🚀 Join Our Closed Beta!
+            p.mb-4(style="color: white; font-size: 1.1rem;") Be the first to experience the future of AI-powered marketing automation. Get exclusive access to our cutting-edge features and help shape the future of A-Pro Marketing.
+
+            form#beta-signup-form.beta-signup-form(method="post" action="/beta-signup")
+              .row.justify-content-center
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.beta-input(type="text" name="name" placeholder="Your Name *" required)
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.beta-input(type="email" name="email" placeholder="Email Address *" required)
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.beta-input(type="text" name="company" placeholder="Company Name")
+                .col-md-6.col-sm-12.mb-3
+                  input.form-control.beta-input(type="text" name="website" placeholder="Website URL")
+                .col-12.text-center
+                  button.btn.btn-warning.beta-btn(type="submit")
+                    span 🎯 Request Beta Access
+
+            .beta-response#beta-response.mt-3(style="display:none;")
+              p.response-text
     .mt-3
       h2.mb-5.poppins-bold.text-center(style="font-size:60px")=t('howItWorksTitle')
       .row
@@ -124,6 +147,8 @@ block content
 
             .newsletter-response#newsletter-response.mt-3(style="display:none;")
               p.response-text
+
+    
 block append scripts
   script.
     document.addEventListener('DOMContentLoaded', function() {
@@ -242,6 +267,69 @@ block append scripts
           submitButton.disabled = false;
         }
       });
+
+      // Beta signup form submission - ensure this runs immediately after newsletter
+      const betaSignupForm = document.getElementById('beta-signup-form');
+      const betaResponse = document.getElementById('beta-response');
+
+      if (betaSignupForm) {
+        betaSignupForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          console.log('Beta signup form submitted'); // Debug log
+
+          const formData = new FormData(betaSignupForm);
+          const submitButton = betaSignupForm.querySelector('button[type="submit"]');
+          const originalText = submitButton.innerHTML;
+
+          // Show loading state
+          submitButton.innerHTML = '<span>🚀 Processing...</span>';
+          submitButton.disabled = true;
+
+          try {
+            const response = await fetch('/beta-signup', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                name: formData.get('name'),
+                company: formData.get('company'),
+                email: formData.get('email'),
+                website: formData.get('website'),
+                lang: 'en-US'
+              })
+            });
+
+            const result = await response.json();
+            console.log('Beta signup result:', result); // Debug log
+
+            betaResponse.style.display = 'block';
+            const responseText = betaResponse.querySelector('.response-text');
+
+            if (result.success) {
+              responseText.textContent = result.message;
+              responseText.style.color = '#28a745';
+              betaSignupForm.reset();
+            } else {
+              responseText.textContent = result.message;
+              responseText.style.color = '#dc3545';
+            }
+
+          } catch (error) {
+            console.error('Beta signup error:', error); // Debug log
+            betaResponse.style.display = 'block';
+            const responseText = betaResponse.querySelector('.response-text');
+            responseText.textContent = 'Something went wrong. Please try again.';
+            responseText.style.color = '#dc3545';
+          } finally {
+            // Reset button
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+          }
+        });
+      } else {
+        console.log('Beta signup form not found'); // Debug log
+      }
     });
 
   script(src="/js/lazy-sizes.js" async="")
@@ -458,6 +546,84 @@ block append styles
       margin: 0;
     }
 
+    /* Beta Signup Section Styles */
+    .beta-signup-section {
+      margin: 60px 0;
+      padding: 60px 20px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    }
+
+    .beta-signup-section h2 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .beta-signup-section p {
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+      opacity: 0.95;
+    }
+
+    .beta-input {
+      padding: 15px 20px;
+      border: 2px solid white;
+      border-radius: 10px;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .beta-input:focus {
+      outline: none;
+      border-color: #333;
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .beta-btn {
+      padding: 15px 40px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      background: #333;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .beta-btn:hover {
+      background: #555;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .beta-btn:disabled {
+      background: #999;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .beta-response {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .beta-response .response-text {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0;
+    }
+
     @media (max-width: 768px) {
       .newsletter-section {
         margin: 40px 0;
@@ -474,6 +640,24 @@ block append styles
       }
 
       .newsletter-input {
+        margin-bottom: 15px;
+      }
+
+      .beta-signup-section {
+        margin: 40px 0;
+        padding: 40px 15px;
+      }
+
+      .beta-signup-section h2 {
+        font-size: 2rem;
+      }
+
+      .beta-signup-section p {
+        font-size: 1rem;
+        margin-bottom: 30px;
+      }
+
+      .beta-input {
         margin-bottom: 15px;
       }
     }
