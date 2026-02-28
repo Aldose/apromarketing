@@ -15,6 +15,7 @@ const __dirname = path.dirname(__filename);
 // yearly
 // never
 export const urls = [
+  // English URLs
   {
     url: '/',
     priority: 1, // optional
@@ -52,7 +53,7 @@ export const urls = [
     changeFreq: 'weekly'
   },
 
-
+  // Chinese URLs
   {
     url: '/zh',
     priority: 1,
@@ -63,7 +64,7 @@ export const urls = [
     url: '/zh/about',
     priority: 0.8,
     lastMod: new Date('2025-02-22'),
-    changeFreq: 'never'
+    changeFreq: 'monthly'
   },
   {
     url: '/zh/pricing',
@@ -86,7 +87,83 @@ export const urls = [
   {
     url: '/zh/articles/all/1',
     priority: 0.9,
-    lastMod: true,
+    lastMod: new Date(),
+    changeFreq: 'weekly'
+  },
+
+  // Japanese URLs
+  {
+    url: '/ja',
+    priority: 1,
+    lastMod: new Date(),
+    changeFreq: 'weekly'
+  },
+  {
+    url: '/ja/about',
+    priority: 0.8,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/ja/pricing',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/ja/faq',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/ja/contact',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'never'
+  },
+  {
+    url: '/ja/articles/all/1',
+    priority: 0.9,
+    lastMod: new Date(),
+    changeFreq: 'weekly'
+  },
+
+  // Spanish URLs
+  {
+    url: '/es',
+    priority: 1,
+    lastMod: new Date(),
+    changeFreq: 'weekly'
+  },
+  {
+    url: '/es/about',
+    priority: 0.8,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/es/pricing',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/es/faq',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'monthly'
+  },
+  {
+    url: '/es/contact',
+    priority: 0.5,
+    lastMod: new Date(),
+    changeFreq: 'never'
+  },
+  {
+    url: '/es/articles/all/1',
+    priority: 0.9,
+    lastMod: new Date(),
     changeFreq: 'weekly'
   },
 ];
@@ -109,6 +186,8 @@ async function getPostSlugs(lang) {
       let url;
       if(lang === 'en') url = `/article/`
       if(lang === 'zh') url = `/zh/article/`
+      if(lang === 'ja') url = `/ja/article/`
+      if(lang === 'es') url = `/es/article/`
       if (posts.length === 0) break;
       urls.push(...posts.map((post) => ({
           url:url+post.slug,
@@ -129,9 +208,11 @@ async function getPostSlugs(lang) {
 
 async function generateSitemap() {
   try {
-    // Fetch all URLs
+    // Fetch all URLs for all languages
     await getPostSlugs('en');
     await getPostSlugs('zh');
+    await getPostSlugs('ja');
+    await getPostSlugs('es');
 
     // Generate sitemap XML
     const sitemap = await buildSitemaps(urls, 'https://a-pro.ai');

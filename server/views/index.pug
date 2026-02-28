@@ -13,6 +13,43 @@ block append head
   meta(property='og:image:height', content='630')
   meta(property='og:type', content='website')
   meta(property='og:locale', content=lang)
+  
+  // Structured Data (JSON-LD)
+  script(type='application/ld+json').
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "A-Pro",
+      "url": "https://a-pro.ai" + (lang !== 'en' ? '/' + lang : ''),
+      "logo": "https://a-pro.ai/images/logo/apro-logo1.png",
+      "description": !{JSON.stringify(t('homePageMeta.description'))},
+      "sameAs": [
+        "https://www.facebook.com/a-pro.ai",
+        "https://twitter.com/a_pro_ai",
+        "https://www.linkedin.com/company/a-pro-ai"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+1-732-737-7099",
+        "contactType": "customer service",
+        "availableLanguage": ["English", "Chinese", "Japanese", "Spanish"]
+      }
+    }
+  
+  script(type='application/ld+json').
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "A-Pro",
+      "url": "https://a-pro.ai" + (lang !== 'en' ? '/' + lang : ''),
+      "description": !{JSON.stringify(t('homePageMeta.description'))},
+      "inLanguage": lang,
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://a-pro.ai" + (lang !== 'en' ? '/' + lang : '') + "/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
 
 block content
   link(rel="stylesheet" href="/css/pages/index.css")

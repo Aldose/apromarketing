@@ -30,7 +30,48 @@ app.use(express.static('public'));
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(i18nMiddleware);
+app.use(i18nMiddleware);
+
+// Auto-redirect middleware based on browser language (SEO-safe)
+app.use((req, res, next) => {
+  // Detect if it's a search engine crawler
+  const isBot = /bot|crawler|spider|crawling|facebookexternalhit|twitterbot|linkedinbot|whatsapp|google|bing|yahoo|teoma|baidu|yandex|duckduckbot/i.test(req.headers['user-agent']);
+  
+  // Check if user already has a language preference cookie
+  const hasLangCookie = req.cookies.lang;
+  
+  // Only redirect real users (not bots) on the root path, and only if they haven't been redirected before
+  if (!isBot && !hasLangCookie && req.path === '/') {
+    const acceptLanguage = req.headers['accept-language'] || '';
+    const browserLang = acceptLanguage.split(',')[0] || '';
+    
+    // Language detection logic
+    let preferredLang = 'en'; // default
+    
+    if (browserLang.startsWith('zh')) {
+      preferredLang = 'zh';
+    } else if (browserLang.startsWith('ja')) {
+      preferredLang = 'ja';
+    } else if (browserLang.startsWith('es')) {
+      preferredLang = 'es';
+    }
+    
+    // Only redirect if preferred language is not English
+    if (preferredLang !== 'en') {
+      // Set cookie to remember user's preference (1 year)
+      res.cookie('lang', `${preferredLang}-${preferredLang === 'zh' ? 'TW' : preferredLang === 'es' ? 'MX' : preferredLang === 'ja' ? 'JP' : preferredLang.toUpperCase()}`, {
+        maxAge: 365 * 24 * 60 * 60 * 1000, // 1 year
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production'
+      });
+      
+      // Redirect to preferred language
+      return res.redirect(301, `/${preferredLang}`);
+    }
+  }
+  
+  next();
+});
 
 // Add middleware to store original URL
 app.use((req, res, next) => {
@@ -71,46 +112,43 @@ app.use('/videos', express.static(path.join(__dirname, 'public/videos')));
 app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
 
 // Language-specific routes first
-// app.get('/:lang(zh)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
-// app.get('/articles', i18nMiddleware, (req, res) => {  res.redirect(`/articles/all/1`); });
+app.get('/:lang(en|zh|ja|es)/articles', i18nMiddleware, (req, res) => { res.redirect(`/${req.params.lang}/articles/all/1`); });
+app.get('/articles', i18nMiddleware, (req, res) => {  res.redirect(`/articles/all/1`); });
 
-// app.get('/:lang(zh)/articles/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
-//   const articles = await getArticles(req.params.lang, req.params.page, req.params.category);
-//   if (!articles) {    return res.status(404).render('404');  }
-//   const jsonLD = articleListJSONLD(req.params.category, req.params.page, res.locals.lang, articles);
-//   res.render('articleList', { articles:articles, category: req.params.category, page: req.params.page,jsonLD:jsonLD }); 
-// });
-// app.get('/articles/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
-//   const articles = await getArticles(res.locals.lang, req.params.page, req.params.category);
-//   if (!articles) {    return res.status(404).render('404');  }
-//   const jsonLD = articleListJSONLD(req.params.category, req.params.page, res.locals.lang, articles);
-//   res.render('articleList', { articles:articles, category: req.params.category, page: req.params.page, jsonLD:jsonLD });
-// });
-// app.get('/articlesRaw/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
-//   const articles = await getArticlesRaw(res.locals.lang, req.params.page, req.params.category);
-//   if (!articles) {    return res.status(404).render('404');  }
-//   res.send(articles)
-// });
+app.get('/:lang(en|zh|ja|es)/articles/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
+  const articles = await getArticles(req.params.lang, req.params.page, req.params.category);
+  if (!articles) {    return res.status(404).render('404');  }
+  const jsonLD = articleListJSONLD(req.params.category, req.params.page, res.locals.lang, articles);
+  res.render('articleList', {articles:articles, jsonLD:jsonLD, lang:res.locals.lang, category:req.params.category, page:req.params.page}); 
+});
 
-// app.get('/:lang(zh)/article/:slug', i18nMiddleware, async (req, res) => {  
-//   const article = await getArticle(req.params.slug);
-//   if(article == null) return res.status(404).render('404');
-//   if (!article) {    return res.status(404).render('404');  }
-//   const jsonLD = articleJSONLD(article);
-//   res.render('article', { article:article, jsonLD:jsonLD }); 
-// });
-// app.get('/article/:slug', i18nMiddleware, async (req, res) => {  
-//   const article = await getArticle(req.params.slug);
-//   if(article == null) return res.status(404).render('404');
-//   if (!article ) {  return res.status(404).render('404');}
+app.get('/articles/:category(all|news|guides|posts)/:page(\\d+)', i18nMiddleware, async (req, res) => {  
+  const articles = await getArticles('en', req.params.page, req.params.category);
+  if (!articles) {    return res.status(404).render('404');  }
+  const jsonLD = articleListJSONLD(req.params.category, req.params.page, 'en', articles);
+  res.render('articleList', {articles:articles, jsonLD:jsonLD, lang:'en', category:req.params.category, page:req.params.page}); 
+});
+
+app.get('/:lang(en|zh|ja|es)/article/:slug', i18nMiddleware, async (req, res) => {  
+  const article = await getArticle(req.params.slug);
+  if(article == null) return res.status(404).render('404');
+  if (!article) {    return res.status(404).render('404');  }
   
-//   // if (!article) {  return res.status(404).render('404');  }
-//   const jsonLD = articleJSONLD(article);
-//   res.render('article', { article:article, jsonLD:jsonLD }); 
-// });
+  const jsonLD = articleJSONLD(article);
+  res.render('article', { article:article, jsonLD:jsonLD }); 
+});
 
-// app.get('/faq', i18nMiddleware, (req, res) => {  res.render('faq'); });
-// app.get('/:lang(zh)/faq', i18nMiddleware, (req, res) => {  res.render('faq'); });
+app.get('/article/:slug', i18nMiddleware, async (req, res) => {  
+  const article = await getArticle(req.params.slug);
+  if(article == null) return res.status(404).render('404');
+  if (!article) {    return res.status(404).render('404');  }
+  
+  const jsonLD = articleJSONLD(article);
+  res.render('article', { article:article, jsonLD:jsonLD }); 
+});
+
+app.get('/faq', i18nMiddleware, (req, res) => {  res.render('faq'); });
+app.get('/:lang(en|zh|ja|es)/faq', i18nMiddleware, (req, res) => {  res.render('faq'); });
 
 // app.get('/articleRaw/:slug', i18nMiddleware, async (req, res) => {  
 //   const article = await getArticleRaw(req.params.slug);
@@ -118,8 +156,8 @@ app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
 // });
 
 
-// app.get('/:lang(zh)/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
-// app.get('/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
+app.get('/:lang(en|zh|ja|es)/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
+app.get('/contact', i18nMiddleware, (req, res) => {  res.render('contact'); });
 // app.post('/:lang(zh|en)/contact', i18nMiddleware, (req, res) => {
 //   try {
 //     const { name, email, message } = req.body;
@@ -140,22 +178,21 @@ app.use('/fonts', express.static(path.join(__dirname, 'public/fonts')));
 //   }
 // });
 
-// app.get('/:lang(zh)/pricing', i18nMiddleware, (req, res) => {
-//   res.render('pricing',{pricingPlans:pricingPlans, currency:'ntd'}); 
-// });
-
-// app.get('/pricing', i18nMiddleware, (req, res) => {
-//   res.render('pricing',{pricingPlans:pricingPlans, currency:'usd'}); 
-// });
+app.get('/:lang(en|zh|ja|es)/pricing', i18nMiddleware, (req, res) => {
+  res.render('pricing',{pricingPlans:pricingPlans, currency:'usd'}); 
+});
+app.get('/pricing', i18nMiddleware, (req, res) => {
+  res.render('pricing',{pricingPlans:pricingPlans, currency:'usd'}); 
+});
 
 // app.get('/:lang(en|zh)/pricing/:currency(ntd|usd)', i18nMiddleware, (req, res) => {
 //   res.render('components/CurrencyUpdate',{pricingPlans:pricingPlans, currency:req.params.currency}); 
 // });
 
-// app.get('/:lang(zh)/about', i18nMiddleware, (req, res) => {  res.render('about'); });
-// app.get('/about', i18nMiddleware, (req, res) => {  res.render('about'); });
+app.get('/:lang(en|zh|ja|es)/about', i18nMiddleware, (req, res) => {  res.render('about'); });
+app.get('/about', i18nMiddleware, (req, res) => {  res.render('about'); });
 
-app.get('/:lang(zh)', i18nMiddleware, async (req, res) => {  
+app.get('/:lang(en|zh|ja|es)', i18nMiddleware, async (req, res) => {  
   var articles = await getArticles(res.locals.lang, 1, 'all');
   if (!articles) {    articles = [];  }
   else articles = articles ? articles.slice(0, 4) : [];

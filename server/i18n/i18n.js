@@ -2,11 +2,13 @@ import enUS from './en-US/en-us.js'
 import zhTW from './zh-TW/zh-tw.js'
 import esMX from './es-MX/es-mx.js'
 import nl from './nl/nl.js'
+import jaJP from './ja-JP/ja-jp.js'
 export const i18n =  {
   'en': enUS,
   'zh': zhTW,
   'es': esMX,
   'nl': nl,
+  'ja': jaJP,
 }
 // Helper function to get nested translations
 export function translate(obj, path) {
@@ -34,7 +36,7 @@ export function i18nMiddleware(req, res, next) {
     next();
   }
   else{
-    res.cookie('lang', `${lang}-${lang === 'zh' ? 'TW' : lang === 'es' ? 'MX' : lang.toUpperCase()}`);
+    res.cookie('lang', `${lang}-${lang === 'zh' ? 'TW' : lang === 'es' ? 'MX' : lang === 'ja' ? 'JP' : lang.toUpperCase()}`);
     next();
   }
 } 

@@ -1,0 +1,66 @@
+User-agent: *
+Allow: /
+
+# Allow all language versions
+Allow: /zh/
+Allow: /ja/
+Allow: /es/
+
+# Allow articles in all languages
+Allow: /article/
+Allow: /zh/article/
+Allow: /ja/article/
+Allow: /es/article/
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /_next/
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+
+# Disallow temporary files and system directories
+Disallow: /tmp/
+Disallow: /cache/
+Disallow: *.tmp$
+Disallow: *.cache$
+
+# Disallow specific file types
+Disallow: /*.json$
+Disallow: /*.xml$
+Disallow: /*.txt$
+Disallow: /*.log$
+
+# Allow specific important files despite above rules
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://a-pro.ai/sitemap.xml
+
+# Additional instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# Block unwanted bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

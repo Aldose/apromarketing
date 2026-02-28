@@ -1,6 +1,7 @@
 doctype html
 html(lang=lang)
   head    
+    - const currentPath = originalUrl ? originalUrl.replace(/^\/(en|zh|ja|es|nl)/, '') || '/' : '/'
     meta(charset="utf-8")
     meta(name="viewport" content=" initial-scale=1,  minimum-scale=1, width=device-width")    
     link(rel="shortcut icon" type="image/x-icon" href="/images/icons/favicon.ico")
@@ -14,6 +15,30 @@ html(lang=lang)
     script( async src="https://assets.endorsely.com/endorsely.js" data-endorsely="5bb1d451-51ff-457a-8037-dd667ed42daa")
     meta( name="facebook-domain-verification" content="iplnkugt95lf3gg4l97vctbp54jws3" )
     meta(property="fb:app_id" content="447977480928831")
+    
+    // SEO Hreflang Tags
+    if currentPath && currentPath.indexOf('/article/') !== -1 && article != null
+      // Article-specific hreflang
+      link(rel="alternate" hreflang="en" href=`https://a-pro.ai/article/${article.slug}`)
+      if article.translations && article.translations.zh
+        link(rel="alternate" hreflang="zh" href=`https://a-pro.ai/zh/article/${article.translations.zh.slug}`)
+      if article.translations && article.translations.ja
+        link(rel="alternate" hreflang="ja" href=`https://a-pro.ai/ja/article/${article.translations.ja.slug}`)
+      if article.translations && article.translations.es
+        link(rel="alternate" hreflang="es" href=`https://a-pro.ai/es/article/${article.translations.es.slug}`)
+      // Self-referencing hreflang
+      link(rel="alternate" hreflang=lang href=`https://a-pro.ai${lang != 'en' ? '/' + lang : ''}/article/${article.slug}`)
+    else
+      // Page-specific hreflang
+      link(rel="alternate" hreflang="en" href=`https://a-pro.ai${currentPath || '/'}`)
+      link(rel="alternate" hreflang="zh" href=`https://a-pro.ai/zh${currentPath || '/'}`)
+      link(rel="alternate" hreflang="ja" href=`https://a-pro.ai/ja${currentPath || '/'}`)
+      link(rel="alternate" hreflang="es" href=`https://a-pro.ai/es${currentPath || '/'}`)
+      // Self-referencing hreflang
+      link(rel="alternate" hreflang=lang href=`https://a-pro.ai${lang != 'en' ? '/' + lang : ''}${currentPath || '/'}`)
+    
+    // x-default for international users
+    link(rel="alternate" hreflang="x-default" href=`https://a-pro.ai${currentPath || '/'}`)
 
     block head
   body(style="width:100%;")
@@ -51,7 +76,6 @@ html(lang=lang)
       block content
     
     footer.q-mt-xl.text-center.q-pa-md
-      - const currentPath = originalUrl ? originalUrl.replace(/^\/(zh|es|nl)/, '') : ''
       p &copy; #{new Date().getFullYear()} APro #{t('allRightsReserved')}
       if currentPath && currentPath.indexOf('/article/') !== -1 && article != null
         if article.translations && article.translations.en
