@@ -1,3 +1,9 @@
 node_modules
 ./.env
 public/sitemap.xml
+.vscode/
+.playwright-mcp/
+.claude/
+migration/
+server/playwright-report/
+server/test-results/
