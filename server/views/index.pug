@@ -53,10 +53,21 @@ block append head
 
 block content
   link(rel="stylesheet" href="/css/pages/index.css")
-  .container
-    section.hero-section
+  // Vue.js CDN for demo animations
+  script(src="https://unpkg.com/vue@3/dist/vue.global.js")
+
+  #demo-app.container
+    // White fade overlay for smooth layout transitions
+    .transition-overlay(:class="{ 'fade-active': isTransitioning }")
+
+    //- !! AI WARNING: The hero section below uses Vue.js for the demo animation.
+    //- !! #hero-graphic fades out when demo starts, #demo-form-section moves left,
+    //- !! and .blog-panel-container slides in from the right. These IDs and Vue
+    //- !! bindings are required. Do not remove or restructure without approval.
+    section.hero-section(:class="{ 'with-blog-panel': showBlogPanel }" style="transform:translate3d(0,0,0)")
       .row
-        .col-lg-6.col-sm-12.text-center
+        // Left column — Jade graphic, fades out when demo starts
+        .col-lg-6.col-sm-12.text-center#hero-graphic(v-show="!formSubmitted" :class="{ 'fade-out': isAnimating }")
           h1.mb-0.poppins-bold=t('heroTitle1')
           h1.green-underline=t('heroTitle2')
           br
@@ -64,23 +75,96 @@ block content
           br
           h2.green-underline.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle1')
           h3.text-center.poppins-bold.q-mb-lg!=t('heroSubTitle2')
-        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center
-          h2.mb-5.poppins-bold!=t('heroSubTitle3')
-            
-          //- img(src="/images/jade/jade-confident.webp" alt="Jade" style="width:300px;")
-          //- a(href=`${appUrl}/demo`) helloasdfasf
-          form#demo-form
+
+        // Right column — Demo form, moves left when demo starts
+        .col-lg-6.offset-lg-0.col-md-8.offset-md-2.col-sm-12.offset-sm-0.mt-sm-5.text-center.flex.flex-column.justify-content-center#demo-form-section(
+          :class="{ 'move-left': isAnimating, 'form-with-blog': formSubmitted }"
+        )
+          .header-content#header-content(v-show="!isAnimating" :class="{ 'fade-up': isAnimating }")
+            h2.mb-5.poppins-bold!=t('heroSubTitle3')
+
+          form#demo-form(@submit.prevent="handleFormSubmit" v-show="!showResults")
             p!=t('homeInputTitle')
             .row
               .col-8
-                input#demo-website-input(type="text" name="website" placeholder!=t('homeInputPlaceholder') style="width:100%; " required)
+                input#demo-website-input(
+                  type="text"
+                  v-model="websiteUrl"
+                  placeholder!=t('homeInputPlaceholder')
+                  style="width:100%;"
+                  required
+                  :disabled="isLoading"
+                )
               .col-4
-                button.btn-primary.cta-btn(type="submit" style=" background:white;color:black;")
+                button.btn-primary.cta-btn(type="submit" style="background:white;color:black;" :disabled="isLoading")
                   img(style="width:35px;height:35px" width="35" src="/images/icons/apro-star1.png" alt="star")
-                  span(style="text-transform: uppercase;")=t('homeInputButton')
-          #demo-status(style="margin-top:10px; font-size:14px; color:#333; display:none;")
-          h2.mt-5.mb-0.poppins-bold!=t('heroSubTitle4') 
-          //- h2.mb-5.poppins-bold!=t('heroSubTitle5')
+                  span(style="text-transform:uppercase;") {{ isLoading ? 'ANALYZING...' : '!{t("homeInputButton")}' }}
+
+          .loading-section(v-show="isLoading")
+            .progress-container
+              .progress-bar
+                .progress-fill(:style="{ width: progress + '%' }")
+              .progress-text {{ progressMessage }}
+            .analysis-steps
+              .step(v-for="step in analysisSteps" :key="step.id" :class="{ active: currentStep === step.id, completed: currentStep > step.id }")
+                .step-icon {{ step.icon }}
+                .step-text {{ step.text }}
+
+          .results-section(v-show="showResults")
+            .results-content(v-html="resultsHtml")
+            button.btn.btn-secondary(@click="resetDemo") Analyze Another Website
+
+          h2.mt-5.mb-0.poppins-bold(v-show="!isLoading")!=t('heroSubTitle4')
+
+        // Blog panel — slides in from the right while the demo analysis runs
+        .col-lg-6.col-md-12.blog-panel-container#blog-panel(
+          v-show="showBlogPanel"
+          :class="{ 'slide-in-right': showBlogPanel }"
+        )
+          .blog-panel-header
+            h3 Latest Marketing Insights
+            p Read while your analysis processes
+
+          .blog-panel-content
+            .blog-loading(v-if="isFetchingPosts")
+              .loading-spinner 🔄
+              p Loading latest posts...
+
+            .blog-error(v-if="blogLoadingError && !isFetchingPosts")
+              p ⚠️ Unable to load blog posts
+
+            // Expanded article view — replaces the post grid when a card is clicked
+            .expanded-article-container(v-if="isArticleExpanded" :class="{ 'article-expanded': isArticleExpanded }")
+              button.article-close-btn(@click="closeArticle") ✕
+              .article-loading(v-if="isFetchingPost")
+                .loading-spinner 🔄
+                p Loading article...
+              .article-error(v-if="postFetchError && !isFetchingPost")
+                p ⚠️ Unable to load article. Please try again.
+              .article-content(v-if="!isFetchingPost && !postFetchError && expandedPostContent")
+                h2.article-title {{ expandedPostContent.title }}
+                p.article-meta {{ expandedPostContent.publishedAt }}
+                img(v-if="expandedPostContent.featureImage" :src="expandedPostContent.featureImage" :alt="expandedPostContent.title" style="width:100%;border-radius:8px;margin-bottom:15px;")
+                .article-body(v-html="expandedPostContent.content")
+
+            // Post grid — only shown when no article is expanded
+            .blog-posts-section(v-if="!isArticleExpanded && !isFetchingPosts && !blogLoadingError && blogPosts.length > 0")
+              .blog-posts-grid
+                .blog-post-card(
+                  v-for="(post, index) in paginatedPosts"
+                  :key="post.slug"
+                  :style="{ animationDelay: (index * 0.1) + 's' }"
+                  @click="expandArticle(post)"
+                )
+                  .blog-post-title {{ post.title }}
+                  .blog-post-excerpt {{ post.excerpt }}
+                  .blog-post-date {{ post.publishedAt }}
+
+              .blog-pagination(v-if="totalPages > 1")
+                button.pagination-btn.prev-btn(@click="prevPage" :disabled="!canGoPrev") ❮
+                span.page-info {{ currentPage + 1 }} of {{ totalPages }}
+                button.pagination-btn.next-btn(@click="nextPage" :disabled="!canGoNext") ❯
+
     section.beta-signup-section.mt-5.py-5(style="background: linear-gradient(135deg, #ff6b6b, #ee5a24); border-radius: 15px;")
       .container
         .row.justify-content-center
@@ -154,11 +238,43 @@ block content
                 onerror="this.style.display='none'" )
 
 
-    //- include components/features-overview
-    //- .row.justify-center
-      a.btn-lg.btn-primary.cta-btn(href=`https://app.a-pro.ai/register?lang=${lang}` hx-boost="true")
-        img(src="/icons/apro-star1.png" alt="star")
-        span= t('homeHeroBtn')
+    //- !! AI WARNING: Do not remove or restructure the blog section below.
+    //- !! This section was accidentally deleted twice (commits 53effd5 and
+    //- !! 0ae4c72) as a side-effect of unrelated edits. Always verify the
+    //- !! `each article` loop and `section.blog` block are still present after
+    //- !! any edit to this file. Seek approval before removing any lines here.
+    .mt-5
+      section.blog.q-pa-md
+        .text-h1.roboto.text-center=t('latestArticles')
+        .q-my-md
+          .container
+            if !articles || articles.length === 0
+              .row.justify-center.mt-5
+                .col-12.text-center
+                  h3.q-my-md= t('noArticlesFound')
+            else
+              .row.mt-5.justify-content-center
+                each article, i in articles
+                  .col-12.col-sm-6.col-md-4.col-lg-4.col-xl-3.mb-3.px-2(style=('view-transition-name:' + article.slug))
+                    a(href=(lang != 'en' ? '/' + lang : '') + '/article/' + article.slug)
+                      .articles.card.flex.column.justify-between.blog-article(class='animation-delay-' + i, style="height: 100%")
+                        .article-title
+                          img.blur-up.lazyload(data-src=article.medImg loading="lazy" alt=article.imgAlt)
+                        .article-content
+                          h3.q-px-sm.q-pt-sm.ellipsis-2-lines.text-left!= article.title
+                          .green-line
+                          .flex.justify-content-between.align-items-center(style="margin-bottom: 20px;")
+                            .flex.align-items-center
+                              .avatar
+                                img.blur-up.lazyload(src=article.authorImg loading="lazy")
+                              .text-subtitle2 #{article.author}
+                            b.text-subtitle2 #{article.date}
+                          .text-body1(style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;")!= article.summary
+              .row.justify-content-end
+                .btn(style="width:300px;")
+                  a.btn-primary.cta-btn(style="padding:5px 10px;background:white;color:black;" href=(lang != 'en' ? '/' + lang : '') + '/articles/all/1')
+                    img(style="width:25px;height:25px;" width="25" src="/images/icons/apro-star1.png" alt="star")
+                    span(style="text-transform: uppercase;")= t('more')
 
     section.newsletter-section.mt-5.py-5(style="background: linear-gradient(135deg, #0fffad, #00d4aa); border-radius: 15px;")
       .container
@@ -187,69 +303,190 @@ block content
 
     
 block append scripts
+  // Vue.js Application — Demo Form Animations + Blog Panel
+  script.
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          isAnimating: false,
+          formSubmitted: false,
+          isLoading: false,
+          showResults: false,
+          isTransitioning: false,
+          websiteUrl: '',
+          progress: 0,
+          progressMessage: 'Starting analysis...',
+          currentStep: 0,
+          analysisSteps: [
+            { id: 1, icon: '🚀', text: 'Starting website analysis...' },
+            { id: 2, icon: '🔍', text: 'Checking for cached data...' },
+            { id: 3, icon: '📊', text: 'Analyzing website content...' },
+            { id: 4, icon: '📱', text: 'Analyzing social media profiles...' },
+            { id: 5, icon: '⚡', text: 'Running performance audit...' },
+            { id: 6, icon: '🧠', text: 'Generating insights...' },
+            { id: 7, icon: '🎉', text: 'Analysis complete!' }
+          ],
+          resultsHtml: '',
+          showBlogPanel: false,
+          blogPosts: [],
+          isFetchingPosts: false,
+          blogLoadingError: false,
+          currentPage: 0,
+          postsPerPage: 4,
+          isArticleExpanded: false,
+          expandedPostContent: null,
+          isFetchingPost: false,
+          postFetchError: false
+        };
+      },
+
+      computed: {
+        paginatedPosts() {
+          const start = this.currentPage * this.postsPerPage;
+          return this.blogPosts.slice(start, start + this.postsPerPage);
+        },
+        totalPages() { return Math.ceil(this.blogPosts.length / this.postsPerPage); },
+        canGoNext() { return this.currentPage < this.totalPages - 1; },
+        canGoPrev() { return this.currentPage > 0; }
+      },
+
+      methods: {
+        async handleFormSubmit() {
+          if (!this.websiteUrl.trim()) return;
+          this.isAnimating = true;
+          this.isLoading = true;
+          this.isTransitioning = true;
+
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.formSubmitted = true;
+              setTimeout(() => {
+                this.isTransitioning = false;
+                setTimeout(() => this.startPhase2(), 200);
+              }, 300);
+            }, 200);
+          });
+
+          this.startAnalysis();
+        },
+
+        async startPhase2() {
+          this.fetchBlogPosts();
+          this.$nextTick(() => {
+            setTimeout(() => { this.showBlogPanel = true; }, 100);
+          });
+        },
+
+        async fetchBlogPosts() {
+          this.isFetchingPosts = true;
+          this.blogLoadingError = false;
+          try {
+            const res = await fetch('/api/ghost-posts');
+            const data = await res.json();
+            if (data.success) { this.blogPosts = data.posts; }
+            else { this.blogLoadingError = true; }
+          } catch (e) { this.blogLoadingError = true; }
+          finally { this.isFetchingPosts = false; }
+        },
+
+        async startAnalysis() {
+          const eventSource = new EventSource('/demo-stream?url=' + encodeURIComponent(this.websiteUrl));
+          const timeout = setTimeout(() => {
+            eventSource.close();
+            this.handleError('Analysis timed out. Please try again.');
+          }, 90000);
+
+          eventSource.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              if (data.step) this.updateProgress(data.progress || 0, data.message || '', data.step);
+              if (data.complete && data.data) {
+                clearTimeout(timeout);
+                eventSource.close();
+                this.showAnalysisResults(data.data);
+              }
+              if (data.error) { clearTimeout(timeout); eventSource.close(); this.handleError(data.error); }
+            } catch (e) {}
+          };
+
+          eventSource.onerror = () => {
+            clearTimeout(timeout);
+            eventSource.close();
+            this.handleError('Connection error. Please try again.');
+          };
+        },
+
+        updateProgress(value, message, step) {
+          this.progress = value;
+          this.progressMessage = message;
+          const map = { init: 1, checking: 2, scraping: 3, social: 4, lighthouse: 5, analysis: 6, complete: 7 };
+          this.currentStep = map[step] || 1;
+        },
+
+        showAnalysisResults(data) {
+          this.isLoading = false;
+          this.showResults = true;
+          let html = '<div class="analysis-summary" style="text-align:left;font-size:14px;line-height:1.6;">';
+          if (data.analysis) {
+            html += `<p><strong>🏢 ${data.analysis.companyName || ''}</strong><br>${data.analysis.businessOverview || ''}</p>`;
+            html += `<p><strong>🎯 Target Audience:</strong> ${(data.analysis.targetAudience && data.analysis.targetAudience.primary) || 'N/A'}</p>`;
+          }
+          if (data.lighthouse) {
+            html += `<p><strong>⚡ Performance:</strong> ${data.lighthouse.performance || 'N/A'}/100 &nbsp; <strong>SEO:</strong> ${data.lighthouse.seo || 'N/A'}/100</p>`;
+          }
+          const kws = data.keywords && data.keywords.msg ? data.keywords.msg : (Array.isArray(data.keywords) ? data.keywords : []);
+          if (kws.length > 0) html += `<p><strong>🔑 Keywords:</strong> ${kws.slice(0,5).map(k=>k.keyword).join(', ')}</p>`;
+          html += '</div>';
+          this.resultsHtml = html;
+        },
+
+        handleError(msg) {
+          this.isLoading = false;
+          this.showResults = true;
+          this.resultsHtml = `<p style="color:#dc3545;">⚠️ ${msg}</p>`;
+        },
+
+        resetDemo() {
+          this.isAnimating = false; this.formSubmitted = false;
+          this.isLoading = false; this.showResults = false;
+          this.showBlogPanel = false; this.websiteUrl = '';
+          this.progress = 0; this.currentStep = 0;
+          this.progressMessage = 'Starting analysis...'; this.resultsHtml = '';
+          this.isArticleExpanded = false; this.expandedPostContent = null;
+        },
+
+        async expandArticle(post) {
+          this.isArticleExpanded = true;
+          this.isFetchingPost = true;
+          this.postFetchError = false;
+          this.expandedPostContent = null;
+          try {
+            const res = await fetch('/api/ghost-post/' + post.slug);
+            const data = await res.json();
+            if (data.success) { this.expandedPostContent = data.post; }
+            else { this.postFetchError = true; }
+          } catch (e) { this.postFetchError = true; }
+          finally { this.isFetchingPost = false; }
+        },
+
+        closeArticle() {
+          this.isArticleExpanded = false;
+          this.expandedPostContent = null;
+          this.isFetchingPost = false;
+          this.postFetchError = false;
+        },
+
+        nextPage() { if (this.canGoNext) this.currentPage++; },
+        prevPage() { if (this.canGoPrev) this.currentPage--; }
+      },
+
+      mounted() { console.log('Vue Demo App mounted'); }
+    }).mount('#demo-app');
+
   script.
     document.addEventListener('DOMContentLoaded', function() {
-      // Demo form submission
-      const demoForm = document.getElementById('demo-form');
-      const demoStatus = document.getElementById('demo-status');
-
-      demoForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const websiteUrl = document.getElementById('demo-website-input').value.trim();
-        if (!websiteUrl) return;
-
-        demoStatus.style.display = 'block';
-        demoStatus.textContent = 'Starting analysis...';
-
-        const submitBtn = demoForm.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-
-        const eventSource = new EventSource('/demo-stream?url=' + encodeURIComponent(websiteUrl));
-
-        const timeout = setTimeout(function() {
-          eventSource.close();
-          submitBtn.disabled = false;
-          demoStatus.textContent = 'Analysis timed out. Please try again.';
-        }, 90000);
-
-        eventSource.onmessage = function(event) {
-          try {
-            const data = JSON.parse(event.data);
-            if (data.message) demoStatus.textContent = data.message;
-            if (data.complete && data.data) {
-              clearTimeout(timeout);
-              eventSource.close();
-              submitBtn.disabled = false;
-              showDemoResults(data.data);
-            }
-          } catch(err) {}
-        };
-
-        eventSource.onerror = function() {
-          clearTimeout(timeout);
-          eventSource.close();
-          submitBtn.disabled = false;
-          demoStatus.textContent = 'Analysis encountered an error. Please try again.';
-        };
-
-        function showDemoResults(d) {
-          var html = '<div style="margin-top:15px;text-align:left;background:#f9f9f9;padding:15px;border-radius:8px;font-size:14px;line-height:1.6;">';
-          if (d.analysis) {
-            html += '<p><strong>🏢 ' + (d.analysis.companyName || '') + '</strong><br>' + (d.analysis.businessOverview || '') + '</p>';
-            html += '<p><strong>🎯 Target Audience:</strong> ' + ((d.analysis.targetAudience && d.analysis.targetAudience.primary) || 'N/A') + '</p>';
-          }
-          if (d.lighthouse) {
-            html += '<p><strong>⚡ Performance:</strong> ' + (d.lighthouse.performance || 'N/A') + '/100 &nbsp; <strong>Accessibility:</strong> ' + (d.lighthouse.accessibility || 'N/A') + '/100 &nbsp; <strong>SEO:</strong> ' + (d.lighthouse.seo || 'N/A') + '/100</p>';
-          }
-          var keywords = d.keywords && d.keywords.msg ? d.keywords.msg : (Array.isArray(d.keywords) ? d.keywords : []);
-          if (keywords.length > 0) {
-            html += '<p><strong>🔑 Top Keywords:</strong> ' + keywords.slice(0, 5).map(function(k){ return k.keyword; }).join(', ') + '</p>';
-          }
-          html += '</div>';
-          demoStatus.innerHTML = html;
-        }
-      });
-
       // Newsletter form submission
       const newsletterForm = document.getElementById('newsletter-form');
       const newsletterResponse = document.getElementById('newsletter-response');
@@ -698,3 +935,181 @@ block append styles
         margin-bottom: 15px;
       }
     }
+
+    /* White Fade Overlay for Smooth Transitions */
+    .transition-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(2px);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .transition-overlay.fade-active { opacity: 1; }
+
+    /* Phase 1 — Hero graphic fades and slides out left */
+    #hero-graphic {
+      transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
+    }
+    #hero-graphic.fade-out {
+      opacity: 0;
+      transform: translate3d(-30px, 0, 0) scale(0.95);
+    }
+
+    /* Phase 1 — Demo form section moves left */
+    #demo-form-section {
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      will-change: transform, width;
+    }
+    #demo-form-section.move-left { transform: translate3d(-15%, 0, 0); }
+    #demo-form-section.form-with-blog {
+      flex: 0 0 48%;
+      max-width: 48%;
+      transform: translate3d(0, 0, 0);
+    }
+
+    .header-content {
+      transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      will-change: opacity, transform;
+    }
+    .header-content.fade-up { opacity: 0; transform: translate3d(0, -20px, 0); }
+
+    /* Phase 2 — Blog panel slides in from the right */
+    .blog-panel-container {
+      position: absolute;
+      top: 0; left: 50%;
+      width: 45%;
+      transform: translate3d(100%, 0, 0);
+      opacity: 0;
+      transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+                  opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1),
+                  position 0s 0.7s;
+      padding: 20px 15px;
+      background: #fff;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-height: 400px;
+      max-height: 500px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 1000;
+      will-change: transform, opacity;
+      margin: 0.75rem 0;
+      box-sizing: border-box;
+    }
+    .blog-panel-container.slide-in-right {
+      transform: translate3d(4%, 0, 0);
+      opacity: 1;
+      position: relative;
+      left: auto; top: auto;
+      margin-left: 4%;
+      margin-bottom: 30px;
+    }
+
+    .hero-section .row {
+      min-height: 400px;
+      position: relative;
+      transform: translate3d(0, 0, 0);
+    }
+    .hero-section.with-blog-panel { margin-bottom: 100px; }
+    .hero-section.with-blog-panel + .mt-3 { margin-top: 20px !important; }
+
+    .blog-panel-header h3 { margin-bottom: 10px; color: #333; font-weight: bold; }
+    .blog-panel-header p { margin-bottom: 20px; color: #666; font-size: 14px; }
+
+    .blog-posts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .blog-post-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translate3d(0, 20px, 0);
+      animation: slideInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+      transition: box-shadow 0.3s, transform 0.2s;
+      will-change: transform, box-shadow;
+    }
+    .blog-post-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translate3d(0, -2px, 0);
+    }
+    .blog-post-title { font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #333; line-height: 1.3; }
+    .blog-post-excerpt {
+      font-size: 12px; color: #666; line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .blog-post-date { font-size: 11px; color: #999; margin-top: 5px; font-style: italic; }
+    .blog-loading, .blog-error { text-align: center; padding: 40px 20px; color: #666; }
+    .loading-spinner { font-size: 24px; animation: spin 1s linear infinite; }
+
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translate3d(0, 20px, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+
+    .blog-pagination {
+      display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;
+    }
+    .pagination-btn {
+      background: #0fffad; border: none; border-radius: 6px; padding: 6px 12px;
+      cursor: pointer; font-weight: bold;
+    }
+    .pagination-btn:disabled { opacity: 0.4; cursor: default; }
+    .page-info { font-size: 13px; color: #666; }
+
+    /* Expanded article view inside the blog panel */
+    .expanded-article-container {
+      position: absolute;
+      top: 2%; left: 2%;
+      width: 96%; height: 96%;
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      z-index: 2000;
+      overflow-y: auto;
+      transform: scale(0.8);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .expanded-article-container.article-expanded {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .article-close-btn {
+      position: sticky;
+      top: 0;
+      float: right;
+      width: 30px; height: 30px;
+      background: rgba(224, 224, 224, 0.95);
+      border: none; border-radius: 50%;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; color: #666;
+      transition: background-color 0.2s ease;
+      z-index: 2001;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .article-close-btn:hover { background: rgba(208, 208, 208, 0.95); color: #333; }
+    .article-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; line-height: 1.3; }
+    .article-meta { font-size: 12px; color: #999; margin-bottom: 15px; }
+    .article-body { font-size: 14px; line-height: 1.7; color: #333; }
+    .article-body img { max-width: 100%; border-radius: 6px; margin: 10px 0; }
+    .article-loading, .article-error { text-align: center; padding: 40px 20px; color: #666; }

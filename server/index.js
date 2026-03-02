@@ -273,6 +273,43 @@ app.post('/demo', async (req, res) => {
   }
 });
 
+// Ghost blog posts API for the demo blog panel animation
+app.get('/api/ghost-posts', async (req, res) => {
+  try {
+    const articles = await getArticles('en', 1, 'all');
+    const posts = (articles || []).slice(0, 8).map(a => ({
+      title: a.title,
+      excerpt: a.summary,
+      slug: a.slug,
+      publishedAt: a.date
+    }));
+    res.json({ success: true, posts });
+  } catch (error) {
+    res.status(503).json({ success: false, message: 'Blog content temporarily unavailable.' });
+  }
+});
+
+// Individual post for inline article expansion inside the blog panel
+app.get('/api/ghost-post/:slug', async (req, res) => {
+  try {
+    const article = await getArticle(req.params.slug);
+    if (!article) return res.status(404).json({ success: false, message: 'Post not found.' });
+    res.json({
+      success: true,
+      post: {
+        title: article.title,
+        excerpt: article.excerpt,
+        content: article.content,
+        slug: article.slug,
+        publishedAt: article.date,
+        featureImage: article.img
+      }
+    });
+  } catch (error) {
+    res.status(503).json({ success: false, message: 'Article content temporarily unavailable.' });
+  }
+});
+
 app.get('/demo-stream', async (req, res) => {
   try {
     const { url } = req.query;
