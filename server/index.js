@@ -484,8 +484,10 @@ const setupSitemapGeneration = () => {
     .catch(error => console.error('Error during initial sitemap generation:', error));
 };
 
-// Initialize sitemap generation
-setupSitemapGeneration();
+// Initialize sitemap generation (production only — Ghost is not accessible locally)
+if (process.env.NODE_ENV === 'production') {
+  setupSitemapGeneration();
+}
 
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain');
