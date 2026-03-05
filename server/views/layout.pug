@@ -41,39 +41,43 @@ html(lang=lang)
     link(rel="alternate" hreflang="x-default" href=`https://a-pro.ai${currentPath || '/'}`)
 
     block head
-  //- <!-- Google tag (gtag.js) -->
-  script( async src="https://www.googletagmanager.com/gtag/js?id=G-JKKFSFQENJ")
-  script.
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-JKKFSFQENJ');
+    //- Google tag (gtag.js)
+    script( async src="https://www.googletagmanager.com/gtag/js?id=G-JKKFSFQENJ")
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JKKFSFQENJ');
   body(style="width:100%;")
     div(style="box-shadow:none; padding:0 15px;" )
+      //- !! AI WARNING: Do not remove or restructure the nav block below.
+      //- !! The desktop links, hamburger, and mobile menu have been accidentally
+      //- !! wiped before (commits 53effd5, 0ae4c72). Always verify all nav
+      //- !! children are intact after any edit to this file. Seek approval before
+      //- !! removing any lines here.
       nav
         .row.d-flex.justify-content-between.align-items-center
           a.col-8.col-md-6.col-lg-2(href=lang != 'en' ? `/${lang}` : '/')
             img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
           //- Desktop Menu
           .col-4.col-md-6.nav-links.gt-md.flex.justify-content-end.align-items-center.roboto
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
             //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/team` : '/team')= t('team')
             //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/features` : '/features')= t('features')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
-          
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
+
           //- Hamburger Menu
-          //- .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
+          .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
             span
             span
             span
           //- Mobile Menu
-          //- .mobile-menu
+          .mobile-menu
             a(href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
             a(href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
             a(href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
