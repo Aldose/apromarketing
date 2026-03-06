@@ -5,3 +5,15 @@ deploy.sh
 ./server/.env
 .env
 .windsurfrules
+CLAUDE.md 
+.vscode/*
+.claude/*
+.playwright-mcp/*
+server/.claude/*
+server/claudedocs/*
+server/exports/*
+server/test-results/*
+server/tests/*
+scripts/*
+server/playwright-report/*
+server/scripts/*
