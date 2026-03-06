@@ -1,4 +1,5 @@
 import express from 'express';
+import http from 'http';
 import cookieParser from 'cookie-parser';
 import { fileURLToPath } from 'url';
 import path from 'path';
@@ -24,6 +25,9 @@ import { generateSitemap } from './sitemapGen.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
+
+const STREAM_TIMEOUT_MS = parseInt(process.env.STREAM_TIMEOUT_MS || '600000');   // default 10 min
+const KEEPALIVE_TIMEOUT_MS = parseInt(process.env.KEEPALIVE_TIMEOUT_MS || '620000');
 
 // Middleware
 app.use(express.static('public'));
@@ -220,7 +224,7 @@ app.get('/free-7-day-trial', i18nMiddleware, (req, res) => {
 app.post('/demo', async (req, res) => {
   try {
     const { url } = req.body;
-    
+
     // Set up SSE headers
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
@@ -230,13 +234,24 @@ app.post('/demo', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
+    // Disable socket timeout for long-running SSE streams
+    req.socket.setTimeout(0);
+
+    // Heartbeat every 20s to keep proxies/browsers from dropping the connection
+    const heartbeat = setInterval(() => res.write(': ping\n\n'), 20000);
+    req.on('close', () => clearInterval(heartbeat));
+
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
+
     const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ website: url }),
+      signal: controller.signal
     });
+
+    clearTimeout(fetchTimeout);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -263,6 +278,7 @@ app.post('/demo', async (req, res) => {
         }
       }
     } finally {
+      clearInterval(heartbeat);
       reader.releaseLock();
       res.end();
     }
@@ -327,13 +343,24 @@ app.get('/demo-stream', async (req, res) => {
       'Access-Control-Allow-Headers': 'Cache-Control'
     });
 
+    // Disable socket timeout for long-running SSE streams
+    req.socket.setTimeout(0);
+
+    // Heartbeat every 20s to keep proxies/browsers from dropping the connection
+    const heartbeat = setInterval(() => res.write(': ping\n\n'), 20000);
+    req.on('close', () => clearInterval(heartbeat));
+
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
+
     const response = await fetch('http://localhost:8000/api/demo', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ website: url })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ website: url }),
+      signal: controller.signal
     });
+
+    clearTimeout(fetchTimeout);
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -346,10 +373,10 @@ app.get('/demo-stream', async (req, res) => {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        
+
         const chunk = decoder.decode(value);
         const lines = chunk.split('\n');
-        
+
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const data = line.slice(6);
@@ -360,6 +387,7 @@ app.get('/demo-stream', async (req, res) => {
         }
       }
     } finally {
+      clearInterval(heartbeat);
       reader.releaseLock();
       res.end();
     }
@@ -536,7 +564,12 @@ app.use(
 // Start server
 
 const port = process.env.PORT || 8888;
-app.listen(port, () => {
+
+const server = http.createServer(app);
+server.timeout = STREAM_TIMEOUT_MS;
+server.keepAliveTimeout = KEEPALIVE_TIMEOUT_MS;
+
+server.listen(port, () => {
   console.log('Development environment:', process.env.NODE_ENV);
   console.log(`Server running on port ${port}`);
 });
