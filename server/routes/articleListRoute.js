@@ -1,109 +1,107 @@
 import express from 'express';
 import axios from 'axios';
-import categories from '../data/blogCategories.json';
 
 const router = express.Router();
 
-async function categoryMatcher(category){
-  let currentCategory;
-  const theCat = await categories.find(cat => cat.slug == category)?.id || 'all';
-  theCat == 'all' ? currentCategory = '' : currentCategory = `&categories=${theCat}`;
-  return currentCategory;
+const GHOST_URL = process.env.GHOST_URL || 'https://blog.apromarketing.com';
+const GHOST_API_KEY = process.env.GHOST_API_KEY;
+
+function buildFilter(category) {
+  if (!category || category === 'all') return '';
+  return `&filter=tag:${category}`;
 }
 
-export const getArticles = async (lang, page, category) => {
-  try{
-    // const categoriesResponse = await axios.get('https://blog.a-pro.ai/wp-json/wp/v2/categories?per_page=100');
-    const cat = await categoryMatcher(category);
-    let articles;
-    
-    const {data, headers} = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?lang=${lang}&page=${page}&_fields=id,title,excerpt,modified,slug,date_gmt,author,featured_media,_links,_embedded&_embed${cat}`);
+function applyLazyLoad(html) {
+  return (html || '')
+    .replace(
+      /<img[^>]+src="data:image\/[^>]+>|<noscript>([\s\S]*?)<\/noscript>/g,
+      '$1'
+    )
+    .replace(/<img((?:\s+[^>]+)?)>/gi, (match, attributes) => {
+      if (/class\s*=\s*(['"])(.*?)\1/.test(attributes)) {
+        return match
+          .replace(/(class\s*=\s*["'])([^"']*)(["'])/, (_, p1, classes, p3) => `${p1}${classes} blur-up${p3}`)
+          .replace('>', ' loading="lazy">');
+      }
+      return `<img${attributes} class="blur-up lazyload" loading="lazy">`;
+    });
+}
 
-    return articles = data.map(post => ({
-      totalPages : headers['x-wp-totalpages'],
+export const getArticles = async (_lang, page, category) => {
+  try {
+    const filter = buildFilter(category);
+    const url = `${GHOST_URL}/ghost/api/content/posts/?key=${GHOST_API_KEY}&include=authors,tags&limit=15&page=${page}${filter}`;
+    const { data } = await axios.get(url);
+    const totalPages = data.meta?.pagination?.pages || 1;
+
+    return data.posts.map(post => ({
+      totalPages,
       id: post.id,
-      title: post.title.rendered || '',
-      author: post._embedded?.author?.[0]?.name || 'Unknown',
-      publishedDate: new Date(post.date_gmt).toLocaleDateString(),
-      date: new Date(post.modified).toLocaleDateString(),
-      summary: post.excerpt.rendered || '',
+      title: post.title || '',
+      author: post.primary_author?.name || '',
+      publishedDate: new Date(post.published_at).toLocaleDateString(),
+      date: new Date(post.published_at).toLocaleDateString(),
+      summary: post.excerpt || '',
       slug: post.slug || '',
-      img: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-      // medImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details.sizes?.medium?.source_url || '',
-      // smImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details.sizes?.thumbnail.source_url || '',
-      medImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url || '',
-      smImg: post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.thumbnail?.source_url || '',
-      imgAlt: post._embedded?.['wp:featuredmedia']?.[0]?.alt_text || '',
-      author: post._embedded?.['author']?.[0]?.name || '',
-      authorImg: post._embedded?.['author']?.[0]?.avatar_urls?.['96'] || '',
-      authorDescription: post._embedded?.['author']?.[0]?.description || '',
-      authorId: post.author || '',
-      terms: post._embedded?.['wp:term']?.[0] || [],
-    }))
-  }catch(error){
-    console.log(error)
+      img: post.feature_image || '',
+      medImg: post.feature_image || '',
+      smImg: post.feature_image || '',
+      imgAlt: post.feature_image_alt || '',
+      authorImg: post.primary_author?.profile_image || '',
+      authorDescription: post.primary_author?.bio || '',
+      authorId: post.primary_author?.id || '',
+      terms: post.tags || [],
+    }));
+  } catch (error) {
+    console.log(error);
   }
 };
-export const getArticlesRaw = async (lang, page, category) => {
-  try{
-    const cat = await categoryMatcher(category);
-    const {data, headers} = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?lang=${lang}&page=${page}&_fields=id,title,excerpt,modified,slug,date_gmt,author,featured_media,_links,_embedded&_embed${cat}`);
 
-    return data
-  }catch(error){
-    console.log(error)
+export const getArticlesRaw = async (lang, page, category) => {
+  try {
+    const filter = buildFilter(category);
+    const url = `${GHOST_URL}/ghost/api/content/posts/?key=${GHOST_API_KEY}&include=authors,tags&limit=15&page=${page}${filter}`;
+    const { data } = await axios.get(url);
+    return data.posts;
+  } catch (error) {
+    console.log(error);
   }
 };
 
 export const getArticle = async (slug) => {
   try {
-    let article;
-    const { data } = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
-    if (!data.length) return null;
-    return article = {
-      id: data[0].id,
-      title: data[0].title.rendered,
-      excerpt: data[0].excerpt.rendered,
-      content: data[0].content.rendered
-        .replace(
-          /<img[^>]+src="data:image\/[^>]+>|<noscript>([\s\S]*?)<\/noscript>/g,
-          '$1'
-        )
-        .replace(/<img((?:\s+[^>]+)?)>/gi, (match, attributes) => {
-          // Check if a class attribute exists
-          if (/class\s*=\s*(['"])(.*?)\1/.test(attributes)) {
-            // Append "wrap-up" to the existing class attribute
-            return match.replace(/(class\s*=\s*["'])([^"']*)(["'])/, (m, p1, classes, p3) => {
-              return `${p1}${classes} blur-up${p3}`;
-            }).replace('>', ' loading="lazy">');
-          } else {
-            // No class attribute, so add one with "wrap-up"
-            return `<img${attributes} class="blur-up lazyload" loading="lazy">`;
-          }
-        }),
-      modified: data[0].modified,
-      slug: data[0].slug,
-      date: new Date(data[0].date_gmt).toLocaleDateString(),
-      translations: data[0].translations,
-      lang: data[0].lang,
-      img: data[0]._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
-      author: data[0]._embedded?.author?.[0]?.name || 'Unknown',
-      authorImg: data[0]._embedded?.author?.[0]?.avatar_urls?.[96] || '',
-      translations: data[0].translations,
+    const url = `${GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${GHOST_API_KEY}&include=authors,tags`;
+    const { data } = await axios.get(url);
+    if (!data.posts?.length) return null;
+    const post = data.posts[0];
+
+    return {
+      id: post.id,
+      title: post.title,
+      excerpt: post.excerpt || '',
+      content: applyLazyLoad(post.html),
+      modified: post.updated_at,
+      slug: post.slug,
+      date: new Date(post.published_at).toLocaleDateString(),
+      translations: null,
+      lang: null,
+      img: post.feature_image || '',
+      author: post.primary_author?.name || '',
+      authorImg: post.primary_author?.profile_image || '',
     };
   } catch (error) {
-    console.log(error)
-  }
-};
-export const getArticleRaw = async (slug) => {
-  try {
-    const { data } = await axios.get(`https://blog.a-pro.ai/wp-json/wp/v2/posts?slug=${slug}&_fields=id,title,excerpt,content,modified,slug,date_gmt,author,translations,lang,featured_media,_links,_embedded&_embed`);
-    return data;
-    
-  } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
+export const getArticleRaw = async (slug) => {
+  try {
+    const url = `${GHOST_URL}/ghost/api/content/posts/slug/${slug}/?key=${GHOST_API_KEY}&include=authors,tags`;
+    const { data } = await axios.get(url);
+    return data.posts;
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export default router;

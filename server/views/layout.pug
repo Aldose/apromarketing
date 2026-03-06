@@ -1,6 +1,7 @@
 doctype html
 html(lang=lang)
   head    
+    - const currentPath = originalUrl ? originalUrl.replace(/^\/(en|zh|ja|es|nl)/, '') || '/' : '/'
     meta(charset="utf-8")
     meta(name="viewport" content=" initial-scale=1,  minimum-scale=1, width=device-width")    
     link(rel="shortcut icon" type="image/x-icon" href="/images/icons/favicon.ico")
@@ -14,33 +15,69 @@ html(lang=lang)
     script( async src="https://assets.endorsely.com/endorsely.js" data-endorsely="5bb1d451-51ff-457a-8037-dd667ed42daa")
     meta( name="facebook-domain-verification" content="iplnkugt95lf3gg4l97vctbp54jws3" )
     meta(property="fb:app_id" content="447977480928831")
+    
+    // SEO Hreflang Tags
+    if currentPath && currentPath.indexOf('/article/') !== -1 && article != null
+      // Article-specific hreflang
+      link(rel="alternate" hreflang="en" href=`https://a-pro.ai/article/${article.slug}`)
+      if article.translations && article.translations.zh
+        link(rel="alternate" hreflang="zh" href=`https://a-pro.ai/zh/article/${article.translations.zh.slug}`)
+      if article.translations && article.translations.ja
+        link(rel="alternate" hreflang="ja" href=`https://a-pro.ai/ja/article/${article.translations.ja.slug}`)
+      if article.translations && article.translations.es
+        link(rel="alternate" hreflang="es" href=`https://a-pro.ai/es/article/${article.translations.es.slug}`)
+      // Self-referencing hreflang
+      link(rel="alternate" hreflang=lang href=`https://a-pro.ai${lang != 'en' ? '/' + lang : ''}/article/${article.slug}`)
+    else
+      // Page-specific hreflang
+      link(rel="alternate" hreflang="en" href=`https://a-pro.ai${currentPath || '/'}`)
+      link(rel="alternate" hreflang="zh" href=`https://a-pro.ai/zh${currentPath || '/'}`)
+      link(rel="alternate" hreflang="ja" href=`https://a-pro.ai/ja${currentPath || '/'}`)
+      link(rel="alternate" hreflang="es" href=`https://a-pro.ai/es${currentPath || '/'}`)
+      // Self-referencing hreflang
+      link(rel="alternate" hreflang=lang href=`https://a-pro.ai${lang != 'en' ? '/' + lang : ''}${currentPath || '/'}`)
+    
+    // x-default for international users
+    link(rel="alternate" hreflang="x-default" href=`https://a-pro.ai${currentPath || '/'}`)
 
     block head
+    //- Google tag (gtag.js)
+    script( async src="https://www.googletagmanager.com/gtag/js?id=G-JKKFSFQENJ")
+    script.
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-JKKFSFQENJ');
   body(style="width:100%;")
     div(style="box-shadow:none; padding:0 15px;" )
+      //- !! AI WARNING: Do not remove or restructure the nav block below.
+      //- !! The desktop links, hamburger, and mobile menu have been accidentally
+      //- !! wiped before (commits 53effd5, 0ae4c72). Always verify all nav
+      //- !! children are intact after any edit to this file. Seek approval before
+      //- !! removing any lines here.
       nav
         .row.d-flex.justify-content-between.align-items-center
           a.col-8.col-md-6.col-lg-2(href=lang != 'en' ? `/${lang}` : '/')
             img.logo(width="150" src="/images/logo/apro-logo1.png" alt="A-Pro Logo")
           //- Desktop Menu
           .col-4.col-md-6.nav-links.gt-md.flex.justify-content-end.align-items-center.roboto
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
             //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/team` : '/team')= t('team')
             //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/features` : '/features')= t('features')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
-            //- a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
-            //- a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
-          
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/faq` : '/faq')= t('faq')
+            a.q-mr-sm(style="margin-right:10px" href=lang != 'en' ? `/${lang}/contact` : '/contact')= t('contact')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/login?lang=${lang}`)= t('login')
+            a.q-mr-sm(style="margin-right:10px" href=`https://app.a-pro.ai/register?lang=${lang}`)= t('register')
+
           //- Hamburger Menu
-          //- .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
+          .hamburger.col-4.lt-md(onclick="document.body.classList.toggle('menu-open')")
             span
             span
             span
           //- Mobile Menu
-          //- .mobile-menu
+          .mobile-menu
             a(href=lang != 'en' ? `/${lang}/about` : '/about')= t('about')
             a(href=lang != 'en' ? `/${lang}/articles/all/1` : '/articles/all/1')= t('articles')
             a(href=lang != 'en' ? `/${lang}/pricing` : '/pricing')= t('pricing')
@@ -51,7 +88,6 @@ html(lang=lang)
       block content
     
     footer.q-mt-xl.text-center.q-pa-md
-      - const currentPath = originalUrl ? originalUrl.replace(/^\/(zh|es|nl)/, '') : ''
       p &copy; #{new Date().getFullYear()} APro #{t('allRightsReserved')}
       if currentPath && currentPath.indexOf('/article/') !== -1 && article != null
         if article.translations && article.translations.en
